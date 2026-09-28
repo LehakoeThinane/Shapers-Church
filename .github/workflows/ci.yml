@@ -88,5 +88,10 @@ jobs:
       - name: Build admin portal
         run: pnpm --filter @shapers/admin build
 
+      - name: Bundle member app (iOS and Android JavaScript)
+        run: pnpm --filter @shapers/mobile exec expo export --platform ios --platform android --output-dir ${{ runner.temp }}/expo-export
+        env:
+          CI: 1
+
       - name: Dependency audit
         run: pnpm audit --audit-level high
