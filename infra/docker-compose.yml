@@ -1,0 +1,24 @@
+# Local development services. Not for production.
+# Start with:  docker compose -f infra/docker-compose.yml up -d
+name: shapers
+
+services:
+  postgres:
+    # pgvector is bundled for semantic search later; plain Postgres 17 otherwise.
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: shapers
+      POSTGRES_USER: shapers
+      POSTGRES_PASSWORD: shapers_local_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - shapers-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shapers -d shapers"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  shapers-postgres:

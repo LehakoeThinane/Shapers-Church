@@ -1,0 +1,39 @@
+# Local tooling files (never commit)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# Local working brief (the team-facing version lives in docs/)
+shapers-church-project-brief.md
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+*.user
+appsettings.*.local.json
+
+# .NET
+bin/
+obj/
+TestResults/
+*.suo
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# Expo / React Native
+.expo/
+web-build/
+expo-env.d.ts
+ios/
+android/
+
+# Editors and OS
+.vs/
+.idea/
+.DS_Store
+Thumbs.db

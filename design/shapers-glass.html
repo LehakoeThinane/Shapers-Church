@@ -1,0 +1,293 @@
+<title>Shapers Liquid Glass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ground:#050304; --screen:#070304; --frame:#000; --frame-edge:#1a1f5c;
+  --blob1:rgba(25,25,112,.95); --blob2:rgba(8,10,48,.95); --blob3:rgba(212,178,111,.22); --blob4:rgba(25,25,112,.65);
+  --ink:#F3EEE6; --ink-2:rgba(243,238,230,.74); --ink-3:rgba(243,238,230,.52);
+  --glass:rgba(255,255,255,.05); --glass-on:rgba(212,178,111,.16); --edge:rgba(255,255,255,.06);
+  --hi:rgba(255,236,200,.28); --sheen:rgba(255,255,255,.1); --shadow:rgba(0,0,0,.55);
+  --rim:linear-gradient(135deg,rgba(232,200,130,.95),rgba(70,90,210,.55) 30%,rgba(25,25,112,.1) 55%,rgba(70,90,210,.5) 80%,rgba(232,200,130,.7));
+  --glow:0 0 18px rgba(50,70,190,.45),0 0 1px rgba(232,200,130,.6);
+  --accent:#D4B26F; --accent-ink:#0B0F2E; --accent-2:#E0C07F;
+  --accent-glow:0 0 18px rgba(212,178,111,.55),0 0 42px rgba(50,70,190,.45);
+  --btn-top:#E6C98C; --btn-bot:#C9A35C; --btn-ink:#0B0F2E;
+  --tile:rgba(25,25,112,.6); --tile-edge:rgba(212,178,111,.45);
+  --v1:#03040C; --v2:#191970; --v3:#0A0E2E; --vglow:rgba(212,178,111,.45);
+  --track:rgba(255,255,255,.12);
+  --av1:#D4B26F; --av2:#E5DDD0; --av3:#6F7FD1;
+  --ui:-apple-system,"SF Pro Text","SF Pro Display","Figtree",system-ui,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+}
+:root[data-palette="rose"]{
+  color-scheme: light;
+  --ground:#E4DDDA; --screen:#EBE6E4; --frame:#2E2624; --frame-edge:#8f807a;
+  --blob1:rgba(210,151,159,.85); --blob2:rgba(181,165,158,.9); --blob3:rgba(210,151,159,.55); --blob4:rgba(181,165,158,.7);
+  --ink:#3A2E2B; --ink-2:rgba(58,46,43,.78); --ink-3:rgba(58,46,43,.58);
+  --glass:rgba(255,255,255,.42); --glass-on:rgba(255,255,255,.7); --edge:rgba(255,255,255,.75);
+  --hi:rgba(255,255,255,.9); --sheen:rgba(255,255,255,.45); --shadow:rgba(90,66,62,.16);
+  --rim:none; --glow:0 0 0 transparent; --accent-glow:0 8px 20px rgba(90,66,62,.16);
+  --accent:#D2979F; --accent-ink:#3A1B21; --accent-2:#9E5A64;
+  --btn-top:#3F3230; --btn-bot:#2F2523; --btn-ink:#EBE6E4;
+  --tile:rgba(210,151,159,.4); --tile-edge:rgba(255,255,255,.7);
+  --v1:#8E7C76; --v2:#D2979F; --v3:#B5A59E; --vglow:rgba(235,230,228,.7);
+  --track:rgba(58,46,43,.14);
+  --av1:#D2979F; --av2:#B5A59E; --av3:#9E5A64;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--ui);padding-inline:16px;padding-block:28px 48px;margin:0;transition:background-color .5s,color .5s}
+.intro{max-width:760px;margin:0 auto 28px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.intro h1{font-size:22px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+.intro p{margin:0;color:var(--ink-3);font-size:13px}
+
+.switch{display:flex;padding:4px;border-radius:99px;gap:2px}
+.switch button{border:0;background:none;font:inherit;color:var(--ink-2);font-size:13px;font-weight:600;padding:8px 14px 8px 10px;border-radius:99px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .3s,color .3s}
+.switch button.on{background:var(--glass-on);color:var(--ink);box-shadow:inset 0 1px 0 var(--hi)}
+.dots{display:flex}
+.dots i{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--ground);margin-left:-5px;display:block}
+.dots i:first-child{margin-left:0}
+
+.stage{display:flex;flex-wrap:wrap;gap:40px;justify-content:center}
+.phone{width:360px;max-width:100%;height:760px;border-radius:52px;padding:10px;background:var(--frame);box-shadow:0 0 0 1.5px var(--frame-edge),0 30px 80px var(--shadow),var(--glow)}
+.pill,.give,.btn{box-shadow:var(--accent-glow)}
+.tab.on{text-shadow:0 0 12px rgba(212,178,111,.35)}
+:root[data-palette="rose"] .tab.on{text-shadow:none}
+.screen{position:relative;height:100%;border-radius:43px;overflow:hidden;background:var(--screen);isolation:isolate;color:var(--ink);transition:background-color .5s}
+.screen::before{content:"";position:absolute;inset:-20%;z-index:-1;
+  background:
+    radial-gradient(38% 30% at 85% 12%, var(--blob1), transparent 70%),
+    radial-gradient(45% 35% at 5% 45%, var(--blob2), transparent 70%),
+    radial-gradient(30% 22% at 80% 70%, var(--blob3), transparent 70%),
+    radial-gradient(40% 30% at 20% 95%, var(--blob4), transparent 70%);
+  animation:drift 18s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(4%,-3%) scale(1.05)}}
+
+.glass{position:relative;background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);
+  border:1px solid var(--edge);
+  box-shadow:inset 0 1px 0 var(--hi),inset 0 -1px 1px rgba(255,255,255,.06),0 10px 30px var(--shadow),var(--glow);
+  transition:background-color .5s,border-color .5s,box-shadow .5s}
+.glass::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:var(--rim);pointer-events:none;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(135deg,var(--sheen),transparent 35%,transparent 70%,rgba(255,255,255,.06))}
+
+.status{height:50px;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0;font-size:15px;font-weight:600}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:108px;height:32px;border-radius:20px;background:#000;z-index:6}
+.sicons{display:flex;gap:5px;align-items:center}
+.sicons svg{display:block}
+
+.scroll{position:absolute;inset:50px 0 0;overflow-y:auto;padding:6px 18px 120px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+
+.top{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 18px}
+.hello small{display:block;color:var(--ink-3);font-size:13px;font-weight:500}
+.hello strong{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;color:var(--accent-2)}
+
+.live{border-radius:30px;padding:10px;margin-bottom:18px}
+.video{position:relative;height:168px;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,var(--v1) 0%,var(--v2) 45%,var(--v3) 100%)}
+.video::before,.player::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(40% 55% at 50% 110%, var(--vglow), transparent 70%),
+  repeating-linear-gradient(100deg, rgba(255,255,255,.06) 0 2px, transparent 2px 38px)}
+.pill{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent-ink);background:var(--accent)}
+.pill b{width:6px;height:6px;border-radius:50%;background:var(--accent-ink);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.viewers{position:absolute;top:12px;right:12px;padding:5px 10px;border-radius:99px;font-size:11px;font-weight:600;color:#fff}
+.live-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 6px 4px}
+.live-meta h3{margin:0;font-size:17px;font-weight:600}
+.live-meta p{margin:2px 0 0;color:var(--ink-3);font-size:12.5px}
+.btn{border:0;font:inherit;cursor:pointer;color:var(--btn-ink);background:linear-gradient(180deg,var(--btn-top),var(--btn-bot));font-weight:600;font-size:14px;padding:10px 16px;border-radius:99px;box-shadow:inset 0 -2px 4px rgba(0,0,0,.12),var(--accent-glow);white-space:nowrap}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.q{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);font-weight:500}
+.q span{width:58px;height:58px;border-radius:20px;display:grid;place-items:center}
+.q svg{stroke:var(--accent-2)}
+
+.sect{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 10px}
+.sect h4{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.sect a{color:var(--accent-2);font-size:13px;text-decoration:none;font-weight:500}
+
+.cont{display:flex;gap:12px;align-items:center;border-radius:24px;padding:10px;margin-bottom:22px}
+.thumb{width:74px;height:74px;border-radius:16px;flex:none;background:linear-gradient(145deg,var(--v2),var(--v1));display:grid;place-items:center;font-family:var(--serif);font-style:italic;font-size:24px;color:var(--accent)}
+:root[data-palette="rose"] .thumb{color:#fff}
+.cont h5{margin:0;font-size:15px;font-weight:600}
+.cont p{margin:2px 0 8px;color:var(--ink-3);font-size:12.5px}
+.bar{height:4px;border-radius:4px;background:var(--track);overflow:hidden}
+.bar i{display:block;height:100%;width:62%;background:var(--accent);border-radius:4px}
+
+.events{display:grid;gap:10px}
+.ev{display:flex;gap:12px;align-items:center;border-radius:22px;padding:10px 14px 10px 10px}
+.date{width:52px;height:56px;border-radius:15px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--tile);border:1px solid var(--tile-edge)}
+.date small{font-size:10px;letter-spacing:.1em;color:var(--accent-2);font-weight:700}
+.date b{font-size:20px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.ev div{flex:1;min-width:0}
+.ev h5{margin:0;font-size:15px;font-weight:600}
+.ev p{margin:2px 0 0;color:var(--ink-3);font-size:12.5px}
+.price{font-size:13px;font-weight:600;color:var(--accent-2);font-variant-numeric:tabular-nums}
+
+.dock{position:absolute;left:14px;right:14px;bottom:22px;display:flex;gap:10px;align-items:center;z-index:5}
+.tabs{flex:1;display:flex;justify-content:space-between;border-radius:99px;padding:6px}
+.tab{flex:1;border:0;background:none;color:var(--ink-2);font:inherit;font-size:10px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 6px;border-radius:99px;cursor:pointer;transition:background .25s,color .25s}
+.tab svg{stroke:currentColor}
+.tab.on{color:var(--accent-2);background:var(--glass-on);box-shadow:inset 0 1px 0 var(--hi)}
+.search{width:56px;height:56px;border-radius:50%;flex:none;display:grid;place-items:center}
+.search svg{stroke:var(--ink)}
+
+.player{position:relative;height:220px;margin:0 -18px 14px;background:linear-gradient(170deg,var(--v1),var(--v2) 45%,var(--v3))}
+.player .pill{top:14px;left:18px}
+.title{margin:0 2px 14px}
+.title h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.015em}
+.title p{margin:3px 0 0;color:var(--ink-3);font-size:13px}
+.seg{display:flex;border-radius:99px;padding:4px;margin-bottom:14px}
+.seg button{flex:1;border:0;background:none;color:var(--ink-2);font:inherit;font-size:13px;font-weight:600;padding:8px 0;border-radius:99px;cursor:pointer}
+.seg button.on{background:var(--glass-on);color:var(--ink);box-shadow:inset 0 1px 0 var(--hi)}
+.verse{border-radius:24px;padding:16px 18px;margin-bottom:16px}
+.verse small{font-size:11px;letter-spacing:.12em;color:var(--accent-2);font-weight:700}
+.verse p{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.4;margin:6px 0 0}
+.chat{display:grid;gap:8px}
+.msg{display:flex;gap:8px;align-items:flex-end}
+.msg i{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;color:#2a1a1a}
+.bub{border-radius:18px 18px 18px 6px;padding:8px 12px;font-size:13.5px;line-height:1.35}
+.bub b{display:block;font-size:11px;color:var(--accent-2);font-weight:600;margin-bottom:1px}
+.composer{position:absolute;left:14px;right:14px;bottom:22px;display:flex;gap:10px;z-index:5}
+.field{flex:1;border-radius:99px;padding:15px 18px;color:var(--ink-3);font-size:14px}
+.give{width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),var(--accent-glow)}
+.give svg{stroke:var(--accent-ink)}
+.caption{text-align:center;color:var(--ink-3);font-size:12px;margin-top:12px;letter-spacing:.04em}
+@media (prefers-reduced-motion:reduce){.screen::before,.pill b{animation:none}*{transition:none!important}}
+</style>
+
+<header class="intro">
+  <div>
+    <h1>Shapers Church app</h1>
+    <p>Liquid glass concept · switch between the two palettes</p>
+  </div>
+  <div class="switch glass" role="radiogroup" aria-label="Palette">
+    <button id="p-crimson" class="on" data-p="crimson" role="radio" aria-checked="true"><span class="dots"><i style="background:#191970"></i><i style="background:#000"></i><i style="background:#D4B26F"></i></span>Midnight</button>
+    <button id="p-rose" data-p="rose" role="radio" aria-checked="false"><span class="dots"><i style="background:#B5A59E"></i><i style="background:#D2979F"></i><i style="background:#EBE6E4"></i></span>Rose</button>
+  </div>
+</header>
+
+<main class="stage">
+  <figure style="margin:0">
+  <div class="phone"><div class="screen">
+    <div class="island"></div>
+    <div class="status"><span>19:31</span>
+      <span class="sicons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="15" height="8" rx="2" fill="currentColor"/><rect x="24" y="4" width="1.5" height="4" rx=".7" fill="currentColor" opacity=".5"/></svg>
+      </span></div>
+
+    <div class="scroll">
+      <div class="top">
+        <div class="hello"><small>Good evening,</small><strong>Lehakoe</strong></div>
+        <div class="avatar glass">LT</div>
+      </div>
+
+      <section class="live glass">
+        <div class="video">
+          <span class="pill"><b></b>LIVE</span>
+          <span class="viewers glass">1.2k watching</span>
+        </div>
+        <div class="live-meta">
+          <div><h3>Sunday Evening Service</h3><p>Worship &amp; Word · Main auditorium</p></div>
+          <button class="btn">Watch</button>
+        </div>
+      </section>
+
+      <nav class="quick" aria-label="Quick actions">
+        <div class="q"><span class="glass"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>Give</div>
+        <div class="q"><span class="glass"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M9 6h6"/><path d="M6 21h12l-2-9H8z"/></svg></span>Prayer</div>
+        <div class="q"><span class="glass"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M15 14.5a4.5 4.5 0 0 1 6 4.5"/></svg></span>Groups</div>
+        <div class="q"><span class="glass"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg></span>Serve</div>
+      </nav>
+
+      <div class="sect"><h4>Continue watching</h4><a href="#">All</a></div>
+      <div class="cont glass">
+        <div class="thumb">S</div>
+        <div style="flex:1;min-width:0">
+          <h5>Shaped by Grace · Part 3</h5>
+          <p>Ephesians 2:8–10 · 24 min left</p>
+          <div class="bar"><i></i></div>
+        </div>
+      </div>
+
+      <div class="sect"><h4>Coming up</h4><a href="#">Calendar</a></div>
+      <div class="events">
+        <div class="ev glass"><span class="date"><small>OCT</small><b>09</b></span><div><h5>Worship Night</h5><p>Fri · 19:00 · Main auditorium</p></div><span class="price">Free</span></div>
+        <div class="ev glass"><span class="date"><small>OCT</small><b>17</b></span><div><h5>Youth Conference</h5><p>Sat · 09:00 · 143 of 300 going</p></div><span class="price">R150</span></div>
+      </div>
+    </div>
+
+    <div class="dock">
+      <div class="tabs glass" role="tablist">
+        <button class="tab on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4z"/></svg>Home</button>
+        <button class="tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>Discover</button>
+        <button class="tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg>Live</button>
+        <button class="tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M15 14.5a4.5 4.5 0 0 1 6 4.5"/></svg>Community</button>
+        <button class="tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Give</button>
+      </div>
+      <div class="search glass"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></div>
+    </div>
+  </div></div>
+  <figcaption class="caption">Home</figcaption>
+  </figure>
+
+  <figure style="margin:0">
+  <div class="phone"><div class="screen">
+    <div class="island"></div>
+    <div class="status" style="position:relative;z-index:4;color:#fff"><span>19:31</span>
+      <span class="sicons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="15" height="8" rx="2" fill="currentColor"/><rect x="24" y="4" width="1.5" height="4" rx=".7" fill="currentColor" opacity=".5"/></svg>
+      </span></div>
+    <div class="scroll" style="inset:0 0 0;padding-top:0">
+      <div class="player"><span class="pill" style="top:60px"><b></b>LIVE · 1:12:40</span></div>
+      <div class="title"><h3>Sunday Evening Service</h3><p>Shaped by Grace · Part 4</p></div>
+      <div class="seg glass" role="tablist">
+        <button class="on">Notes</button><button>Bible</button><button>Prayer</button><button>Connect</button>
+      </div>
+      <div class="verse glass">
+        <small>ROMANS 8:28 · KJV</small>
+        <p>And we know that all things work together for good to them that love God, to them who are the called according to his purpose.</p>
+      </div>
+      <div class="chat">
+        <div class="msg"><i style="background:var(--av1)">S</i><div class="bub glass"><b>Sarah</b>Amen, needed this word tonight.</div></div>
+        <div class="msg"><i style="background:var(--av2)">T</i><div class="bub glass"><b>Thabo</b>Watching from Pretoria with the family.</div></div>
+        <div class="msg"><i style="background:var(--av3)">N</i><div class="bub glass"><b>Naledi</b>Please pray for my mom's surgery tomorrow.</div></div>
+      </div>
+    </div>
+    <div class="composer">
+      <div class="field glass">Say something kind…</div>
+      <div class="give" aria-label="Give"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div>
+    </div>
+  </div></div>
+  <figcaption class="caption">Live service</figcaption>
+  </figure>
+</main>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var btns=document.querySelectorAll('.switch button');
+  function apply(p){
+    if(p==='rose') root.setAttribute('data-palette','rose'); else root.removeAttribute('data-palette');
+    btns.forEach(function(b){var on=b.dataset.p===p;b.classList.toggle('on',on);b.setAttribute('aria-checked',on)});
+    try{localStorage.setItem('shapers-palette',p)}catch(e){}
+  }
+  var saved=null; try{saved=localStorage.getItem('shapers-palette')}catch(e){}
+  apply(saved==='rose'?'rose':'crimson');
+  btns.forEach(function(b){b.addEventListener('click',function(){apply(b.dataset.p)})});
+  document.querySelectorAll('.tabs,.seg').forEach(function(group){
+    group.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      group.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});
+    });
+  });
+  document.querySelectorAll('a[href="#"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault()})});
+})();
+</script>
