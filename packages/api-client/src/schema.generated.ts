@@ -823,7 +823,7 @@ export interface components {
             name: string;
             stage: components["schemas"]["JourneyStage"];
             /** Format: int32 */
-            sortOrder: number | string;
+            sortOrder: number;
         };
         CreateMinistryRequest: {
             name: string;
@@ -851,7 +851,7 @@ export interface components {
             personA: components["schemas"]["PersonListItemDto"];
             personB: components["schemas"]["PersonListItemDto"];
             /** Format: int32 */
-            score: number | string;
+            score: number;
             reasons: string;
             /** Format: date-time */
             detectedAt: string;
@@ -909,7 +909,7 @@ export interface components {
             name: string;
             stage: components["schemas"]["JourneyStage"];
             /** Format: int32 */
-            sortOrder: number | string;
+            sortOrder: number;
             isDefault: boolean;
             isActive: boolean;
         };
@@ -941,6 +941,7 @@ export interface components {
             displayName: string;
             hasMfa: boolean;
             twoFactorEnabled: boolean;
+            mfaRequiredForSensitive: boolean;
             palette: string;
             permissions: components["schemas"]["PermissionScopesDto"][];
         };
@@ -959,20 +960,20 @@ export interface components {
         PagedResultOfAuditEntryDto: {
             items: components["schemas"]["AuditEntryDto"][];
             /** Format: int32 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            pageSize: number | string;
+            pageSize: number;
             /** Format: int32 */
-            total: number | string;
+            total: number;
         };
         PagedResultOfPersonListItemDto: {
             items: components["schemas"]["PersonListItemDto"][];
             /** Format: int32 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            pageSize: number | string;
+            pageSize: number;
             /** Format: int32 */
-            total: number | string;
+            total: number;
         };
         PermissionDto: {
             key: string;
@@ -1154,7 +1155,7 @@ export interface components {
         TwoFactorStatus: {
             enabled: boolean;
             /** Format: int32 */
-            recoveryCodesLeft: number | string;
+            recoveryCodesLeft: number;
         };
         UpdateCampusRequest: {
             name: string;
@@ -1217,8 +1218,8 @@ export interface operations {
                 entityType?: string;
                 entityId?: string;
                 actorUserId?: string;
-                page?: number | string;
-                pageSize?: number | string;
+                page?: number;
+                pageSize?: number;
             };
             header?: never;
             path?: never;
@@ -1378,8 +1379,8 @@ export interface operations {
                 Scope?: string;
                 MembershipStatusId?: string;
                 IncludeInactive?: boolean;
-                Page?: number | string;
-                PageSize?: number | string;
+                Page?: number;
+                PageSize?: number;
             };
             header?: never;
             path?: never;

@@ -17,6 +17,7 @@ public sealed record MyAccessDto(
     string DisplayName,
     bool HasMfa,
     bool TwoFactorEnabled,
+    bool MfaRequiredForSensitive,
     string Palette,
     IReadOnlyList<PermissionScopesDto> Permissions);
 
@@ -48,6 +49,7 @@ public sealed class AccessService(
     IPeopleDirectory people,
     IChurchDirectory church,
     IAuditLog audit,
+    Microsoft.Extensions.Options.IOptions<IdentitySecurityOptions> security,
     TimeProvider clock)
 {
     public async Task<Result<MyAccessDto>> GetMyAccessAsync(CancellationToken cancellationToken)
@@ -71,7 +73,7 @@ public sealed class AccessService(
             }
         }
 
-        return new MyAccessDto(user.Id, user.PersonId, person?.DisplayName ?? "Member", currentUser.HasMfa, user.TwoFactorEnabled, user.Palette, permissions);
+        return new MyAccessDto(user.Id, user.PersonId, person?.DisplayName ?? "Member", currentUser.HasMfa, user.TwoFactorEnabled, security.Value.RequireMfaForSensitivePermissions, user.Palette, permissions);
     }
 
     public async Task<Result> SetPreferencesAsync(PreferencesRequest request, CancellationToken cancellationToken)

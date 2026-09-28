@@ -14,12 +14,14 @@ export interface ApiProblem {
 }
 
 export class ApiError extends Error {
-  constructor(
-    readonly status: number,
-    readonly problem: ApiProblem,
-  ) {
+  readonly status: number;
+  readonly problem: ApiProblem;
+
+  constructor(status: number, problem: ApiProblem) {
     super(problem.title ?? `Request failed (${status})`);
     this.name = 'ApiError';
+    this.status = status;
+    this.problem = problem;
   }
 
   get code(): string | undefined {

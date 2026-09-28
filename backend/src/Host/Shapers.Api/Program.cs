@@ -40,7 +40,11 @@ foreach (var module in modules)
 }
 
 builder.Services.AddShapersJobs(builder.Configuration);
-builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
+builder.Services.ConfigureHttpJsonOptions(o =>
+{
+    o.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    o.SerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.Strict;
+});
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ShapersExceptionHandler>();
 builder.Services.AddOpenApi();
