@@ -1,0 +1,41 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Shapers.Platform/Shapers.Platform.csproj" />
+    <Project Path="src/BuildingBlocks/Shapers.SharedKernel/Shapers.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/Host/">
+    <Project Path="src/Host/Shapers.Api/Shapers.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Church/">
+    <Project Path="src/Modules/Church/Shapers.Church.Api/Shapers.Church.Api.csproj" />
+    <Project Path="src/Modules/Church/Shapers.Church.Application/Shapers.Church.Application.csproj" />
+    <Project Path="src/Modules/Church/Shapers.Church.Contracts/Shapers.Church.Contracts.csproj" />
+    <Project Path="src/Modules/Church/Shapers.Church.Domain/Shapers.Church.Domain.csproj" />
+    <Project Path="src/Modules/Church/Shapers.Church.Infrastructure/Shapers.Church.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Identity/">
+    <Project Path="src/Modules/Identity/Shapers.Identity.Api/Shapers.Identity.Api.csproj" />
+    <Project Path="src/Modules/Identity/Shapers.Identity.Application/Shapers.Identity.Application.csproj" />
+    <Project Path="src/Modules/Identity/Shapers.Identity.Contracts/Shapers.Identity.Contracts.csproj" />
+    <Project Path="src/Modules/Identity/Shapers.Identity.Domain/Shapers.Identity.Domain.csproj" />
+    <Project Path="src/Modules/Identity/Shapers.Identity.Infrastructure/Shapers.Identity.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/People/">
+    <Project Path="src/Modules/People/Shapers.People.Api/Shapers.People.Api.csproj" />
+    <Project Path="src/Modules/People/Shapers.People.Application/Shapers.People.Application.csproj" />
+    <Project Path="src/Modules/People/Shapers.People.Contracts/Shapers.People.Contracts.csproj" />
+    <Project Path="src/Modules/People/Shapers.People.Domain/Shapers.People.Domain.csproj" />
+    <Project Path="src/Modules/People/Shapers.People.Infrastructure/Shapers.People.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Shapers.ArchitectureTests/Shapers.ArchitectureTests.csproj" />
+    <Project Path="tests/Shapers.IntegrationTests/Shapers.IntegrationTests.csproj" />
+    <Project Path="tests/Shapers.Platform.Tests/Shapers.Platform.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/Modules/">
+    <Project Path="tests/Modules/Shapers.Identity.Tests/Shapers.Identity.Tests.csproj" />
+    <Project Path="tests/Modules/Shapers.People.Tests/Shapers.People.Tests.csproj" />
+  </Folder>
+</Solution>
