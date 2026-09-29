@@ -1,0 +1,21 @@
+{
+  "name": "@shapers/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Typed client for the Shapers API, generated from the backend's OpenAPI document.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "generate": "openapi-typescript openapi.json -o src/schema.generated.ts",
+    "check": "openapi-typescript openapi.json -o src/schema.generated.ts --check",
+    "typecheck": "tsc --noEmit",
+    "lint": "pnpm check"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.13.0",
+    "typescript": "~6.0.3"
+  }
+}

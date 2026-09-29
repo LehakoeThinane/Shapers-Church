@@ -1,0 +1,11 @@
+root = false
+
+[*.cs]
+indent_style = space
+indent_size = 4
+csharp_style_namespace_declarations = file_scoped:warning
+
+# EF Core migrations are generated; don't hold them to hand-written style rules.
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none

@@ -1,0 +1,6448 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Shapers.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/church": {
+      "get": {
+        "tags": [
+          "Church"
+        ],
+        "operationId": "GetChurch",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChurchOverviewDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/connect": {
+      "post": {
+        "tags": [
+          "Connect"
+        ],
+        "operationId": "SubmitConnectCard",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectCardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectCardReceipt"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/podcast.xml": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "PodcastFeed",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/audit": {
+      "get": {
+        "tags": [
+          "Audit"
+        ],
+        "operationId": "ListAuditEntries",
+        "parameters": [
+          {
+            "name": "entityType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "actorUserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfAuditEntryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/scopes": {
+      "get": {
+        "tags": [
+          "Church"
+        ],
+        "operationId": "ListScopes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScopeSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/campuses": {
+      "get": {
+        "tags": [
+          "Church"
+        ],
+        "operationId": "ListCampuses",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CampusDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Church"
+        ],
+        "operationId": "CreateCampus",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCampusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/campuses/{id}": {
+      "put": {
+        "tags": [
+          "Church"
+        ],
+        "operationId": "UpdateCampus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCampusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/ministries": {
+      "get": {
+        "tags": [
+          "Church"
+        ],
+        "operationId": "ListMinistries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MinistryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Church"
+        ],
+        "operationId": "CreateMinistry",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMinistryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MinistryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "ListPeople",
+        "parameters": [
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Scope",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "MembershipStatusId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "IncludeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfPersonListItemDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "CreatePerson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{id}": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "GetPerson",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "UpdatePerson",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{id}/contacts": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "AddPersonContact",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddContactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{id}/contacts/{contactId}": {
+      "delete": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "RemovePersonContact",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{id}/status": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "ChangeMembershipStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{id}/campus": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "MovePersonCampus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoveCampusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{id}/consents": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "RecordPersonConsent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsentDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/merge": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "MergePeople",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/duplicates": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "ListDuplicates",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DuplicateCandidateDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/duplicates/{id}/dismiss": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "DismissDuplicate",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/households/{id}": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "GetHousehold",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/households": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "CreateHousehold",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHouseholdRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/households/{id}/members": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "AddHouseholdMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/households/{id}/members/{personId}": {
+      "delete": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "RemoveHouseholdMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/households/{id}/primary-contact/{personId}": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "SetHouseholdPrimaryContact",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/connect-cards": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "ListConnectCards",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ConnectCardStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConnectCardDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/connect-cards/{id}/handled": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "HandleConnectCard",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandleConnectCardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/membership-statuses": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "ListMembershipStatuses",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MembershipStatusDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "CreateMembershipStatus",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMembershipStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipStatusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/profile": {
+      "get": {
+        "tags": [
+          "My profile"
+        ],
+        "operationId": "GetMyProfile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "My profile"
+        ],
+        "operationId": "UpdateMyProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMyProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/consents": {
+      "post": {
+        "tags": [
+          "My profile"
+        ],
+        "operationId": "RecordMyConsent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsentDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/otp/request": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "RequestSignInCode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestCodeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/otp/verify": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "VerifySignInCode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignInResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "RefreshSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/auth/staff/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "StaffLogin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffSignInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffLoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/staff/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "StaffLogout",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/auth/staff/set-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "SetStaffPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/auth/2fa": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "GetTwoFactorStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TwoFactorStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/2fa/setup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "SetupAuthenticator",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticatorSetup"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/2fa/enable": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "EnableTwoFactor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableTwoFactorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryCodes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/access": {
+      "get": {
+        "tags": [
+          "My account"
+        ],
+        "operationId": "GetMyAccess",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAccessDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/preferences": {
+      "put": {
+        "tags": [
+          "My account"
+        ],
+        "operationId": "SetMyPreferences",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/permissions": {
+      "get": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "ListPermissions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PermissionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/roles": {
+      "get": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "ListRoles",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "CreateRole",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/roles/{id}": {
+      "put": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "UpdateRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{personId}/access": {
+      "get": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "GetPersonAccess",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonAccessDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/{personId}/staff-login": {
+      "post": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "PrepareStaffLogin",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffLoginRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffLoginSetupDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/grants": {
+      "post": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "CreateGrant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGrantRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrantDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/grants/{id}": {
+      "delete": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "RevokeGrant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/media/sermons": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "SearchSermons",
+        "parameters": [
+          {
+            "name": "Q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Series",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SpeakerId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Book",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Topic",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Year",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfSermonSummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/sermons/{slugOrId}": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "GetSermon",
+        "parameters": [
+          {
+            "name": "slugOrId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/series": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "ListPublicSeries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/series/{slug}": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "GetSeries",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/speakers": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "ListPublicSpeakers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpeakerDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/live": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "LiveNow",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveNowDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminListSermons",
+        "parameters": [
+          {
+            "name": "Q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SermonStatus"
+            }
+          },
+          {
+            "name": "SeriesId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfSermonAdminListItemDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateSermon",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSermonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminGetSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSermonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "DeleteSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/audio": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "SetSermonAudio",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSermonAssetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/notes-pdf": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "SetSermonNotesPdf",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSermonAssetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/publish": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "PublishSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/schedule": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ScheduleSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/unpublish": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UnpublishSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/archive": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ArchiveSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/restore": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "RestoreSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/scripture-check": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CheckScripture",
+        "parameters": [
+          {
+            "name": "text",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptureCheckDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/import/youtube": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ImportFromYouTube",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/series": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminListSeries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateSeries",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSeriesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/series/{id}": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateSeries",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSeriesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/speakers": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminListSpeakers",
+        "parameters": [
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpeakerDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateSpeaker",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSpeakerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpeakerDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/speakers/{id}": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateSpeaker",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSpeakerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpeakerDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ListLivestreams",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LivestreamAdminDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateLivestream",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLivestreamRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "GetLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLivestreamRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/go-live": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "GoLive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/end": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "EndLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CancelLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/cues": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AddScriptureCue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/cues/{cueId}": {
+      "delete": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "RemoveScriptureCue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/on-screen": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ShowScriptureCue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowCueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/make-sermon": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "MakeSermonFromLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/uploads": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "StartUpload",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartUploadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/uploads/{id}/complete": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CompleteUpload",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/playback": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "ContinueListening",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContinueListeningDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/playback/{sermonId}": {
+      "put": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "UpdatePlayback",
+        "parameters": [
+          {
+            "name": "sermonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaybackUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddContactRequest": {
+        "required": [
+          "type",
+          "value",
+          "isPrimary"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "value": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AddCueRequest": {
+        "required": [
+          "reference",
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string"
+          },
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "AddressDto": {
+        "required": [
+          "line1",
+          "line2",
+          "suburb",
+          "city",
+          "province",
+          "postalCode"
+        ],
+        "type": "object",
+        "properties": {
+          "line1": {
+            "type": "string"
+          },
+          "line2": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "suburb": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "city": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string",
+            "default": "ZA"
+          }
+        }
+      },
+      "AssetDto": {
+        "required": [
+          "id",
+          "kind",
+          "url",
+          "contentType",
+          "sizeBytes",
+          "durationSeconds",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/MediaKind"
+          },
+          "url": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "durationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MediaAssetStatus"
+          }
+        }
+      },
+      "AudioDto": {
+        "required": [
+          "assetId",
+          "url",
+          "contentType",
+          "sizeBytes",
+          "durationSeconds"
+        ],
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "durationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "AuditEntryDto": {
+        "required": [
+          "id",
+          "occurredAt",
+          "actorUserId",
+          "actorPersonId",
+          "action",
+          "entityType",
+          "entityId",
+          "scope",
+          "isSensitiveRead",
+          "ipAddress"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorUserId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "actorPersonId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isSensitiveRead": {
+            "type": "boolean"
+          },
+          "ipAddress": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "AuthenticatorSetup": {
+        "required": [
+          "sharedKey",
+          "authenticatorUri"
+        ],
+        "type": "object",
+        "properties": {
+          "sharedKey": {
+            "type": "string"
+          },
+          "authenticatorUri": {
+            "type": "string"
+          }
+        }
+      },
+      "CampusDto": {
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "scope",
+          "address",
+          "status",
+          "isPrimary"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "address": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CampusStatus": {
+        "enum": [
+          "Planned",
+          "Active",
+          "Closed"
+        ]
+      },
+      "ChangeStatusRequest": {
+        "required": [
+          "membershipStatusId",
+          "effectiveDate"
+        ],
+        "type": "object",
+        "properties": {
+          "membershipStatusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "effectiveDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          }
+        }
+      },
+      "ChurchOverviewDto": {
+        "required": [
+          "organisation",
+          "campuses"
+        ],
+        "type": "object",
+        "properties": {
+          "organisation": {
+            "$ref": "#/components/schemas/OrganisationDto"
+          },
+          "campuses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CampusDto"
+            }
+          }
+        }
+      },
+      "CompleteUploadRequest": {
+        "required": [
+          "durationSeconds"
+        ],
+        "type": "object",
+        "properties": {
+          "durationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "ConnectCardDto": {
+        "required": [
+          "id",
+          "personId",
+          "personName",
+          "mobile",
+          "email",
+          "reasons",
+          "message",
+          "source",
+          "status",
+          "submittedAt",
+          "handledAt",
+          "handlerNote",
+          "isNewPerson"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personName": {
+            "type": "string"
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectReason"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConnectCardStatus"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "handledAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "handlerNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isNewPerson": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ConnectCardReceipt": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ConnectCardRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "mobile",
+          "email",
+          "reasons",
+          "message",
+          "source",
+          "sourceId",
+          "consentToKeepDetails",
+          "policyVersion"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lastName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectReason"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "consentToKeepDetails": {
+            "type": "boolean"
+          },
+          "policyVersion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ConnectCardStatus": {
+        "enum": [
+          "New",
+          "Handled"
+        ]
+      },
+      "ConnectReason": {
+        "enum": [
+          "FirstTime",
+          "Decision",
+          "Prayer",
+          "MoreInfo",
+          "JoinGroup",
+          "Serve"
+        ]
+      },
+      "ConsentDecision": {
+        "required": [
+          "purpose",
+          "granted"
+        ],
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "type": "string"
+          },
+          "granted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ConsentDecisionDto": {
+        "required": [
+          "purpose",
+          "granted"
+        ],
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "type": "string"
+          },
+          "granted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ConsentDto": {
+        "required": [
+          "purpose",
+          "granted",
+          "lawfulBasis",
+          "policyVersion",
+          "source",
+          "recordedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "type": "string"
+          },
+          "granted": {
+            "type": "boolean"
+          },
+          "lawfulBasis": {
+            "$ref": "#/components/schemas/LawfulBasis"
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ConsentSource"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ConsentSource": {
+        "enum": [
+          "MobileApp",
+          "Website",
+          "AdminPortal",
+          "PaperForm",
+          "Import"
+        ]
+      },
+      "ContactDto": {
+        "required": [
+          "id",
+          "type",
+          "value",
+          "isPrimary",
+          "isVerified"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "value": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          },
+          "isVerified": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ContactType": {
+        "enum": [
+          "Email",
+          "Mobile",
+          "WhatsApp"
+        ]
+      },
+      "ContinueListeningDto": {
+        "required": [
+          "sermon",
+          "positionSeconds",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "sermon": {
+            "$ref": "#/components/schemas/SermonSummaryDto"
+          },
+          "positionSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateCampusRequest": {
+        "required": [
+          "name",
+          "slug",
+          "address"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "address": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          }
+        }
+      },
+      "CreateGrantRequest": {
+        "required": [
+          "personId",
+          "roleId",
+          "scope",
+          "expiresAt",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "roleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CreateHouseholdRequest": {
+        "required": [
+          "name",
+          "campusId",
+          "members"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HouseholdMemberRequest"
+            }
+          }
+        }
+      },
+      "CreateMembershipStatusRequest": {
+        "required": [
+          "name",
+          "stage",
+          "sortOrder"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/JourneyStage"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateMinistryRequest": {
+        "required": [
+          "name",
+          "slug",
+          "campusId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "CreatePersonRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "preferredName",
+          "dateOfBirth",
+          "gender",
+          "campusId",
+          "membershipStatusId",
+          "email",
+          "mobile"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "preferredName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "gender": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "campusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "membershipStatusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CueDto": {
+        "required": [
+          "id",
+          "reference",
+          "text",
+          "order",
+          "shownAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "shownAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "DuplicateCandidateDto": {
+        "required": [
+          "id",
+          "personA",
+          "personB",
+          "score",
+          "reasons",
+          "detectedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personA": {
+            "$ref": "#/components/schemas/PersonListItemDto"
+          },
+          "personB": {
+            "$ref": "#/components/schemas/PersonListItemDto"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reasons": {
+            "type": "string"
+          },
+          "detectedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EnableTwoFactorRequest": {
+        "required": [
+          "code"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "Gender": {
+        "enum": [
+          "Female",
+          "Male",
+          null
+        ]
+      },
+      "GrantDto": {
+        "required": [
+          "id",
+          "roleId",
+          "roleName",
+          "scope",
+          "grantedAt",
+          "expiresAt",
+          "reason",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "roleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "roleName": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "grantedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "HandleConnectCardRequest": {
+        "required": [
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "HouseholdDto": {
+        "required": [
+          "id",
+          "name",
+          "scope",
+          "members"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HouseholdMemberDto"
+            }
+          }
+        }
+      },
+      "HouseholdMemberDto": {
+        "required": [
+          "personId",
+          "displayName",
+          "role",
+          "isPrimaryContact"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/HouseholdRole"
+          },
+          "isPrimaryContact": {
+            "type": "boolean"
+          }
+        }
+      },
+      "HouseholdMemberRequest": {
+        "required": [
+          "personId",
+          "role"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "$ref": "#/components/schemas/HouseholdRole"
+          }
+        }
+      },
+      "HouseholdRole": {
+        "enum": [
+          "Adult",
+          "Child"
+        ]
+      },
+      "ImportResultDto": {
+        "required": [
+          "found",
+          "created",
+          "alreadyImported",
+          "createdTitles"
+        ],
+        "type": "object",
+        "properties": {
+          "found": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alreadyImported": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdTitles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "JourneyStage": {
+        "enum": [
+          "Visitor",
+          "Regular",
+          "GrowthTrack",
+          "Member",
+          "Inactive"
+        ]
+      },
+      "LawfulBasis": {
+        "enum": [
+          "Consent",
+          "LegitimateInterest",
+          "LegalObligation",
+          "Contract"
+        ]
+      },
+      "LiveNowDto": {
+        "required": [
+          "state",
+          "stream"
+        ],
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/LiveState"
+          },
+          "stream": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PublicLivestreamDto"
+              }
+            ]
+          }
+        }
+      },
+      "LiveState": {
+        "enum": [
+          "None",
+          "Upcoming",
+          "Live"
+        ]
+      },
+      "LivestreamAdminDto": {
+        "required": [
+          "id",
+          "title",
+          "scope",
+          "scheduledStart",
+          "status",
+          "video",
+          "notes",
+          "giveUrl",
+          "startedAt",
+          "endedAt",
+          "currentCueId",
+          "sermonId",
+          "cues"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "scheduledStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LivestreamStatus"
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VideoDto"
+              }
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "giveUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "currentCueId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "sermonId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "cues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CueDto"
+            }
+          }
+        }
+      },
+      "LivestreamStatus": {
+        "enum": [
+          "Scheduled",
+          "Live",
+          "Ended",
+          "Cancelled"
+        ]
+      },
+      "LogoutRequest": {
+        "required": [
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "MediaAssetStatus": {
+        "enum": [
+          "Pending",
+          "Ready"
+        ]
+      },
+      "MediaKind": {
+        "enum": [
+          "Audio",
+          "NotesPdf",
+          "Image"
+        ]
+      },
+      "MembershipStatusDto": {
+        "required": [
+          "id",
+          "name",
+          "stage",
+          "sortOrder",
+          "isDefault",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/JourneyStage"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MergeRequest": {
+        "required": [
+          "survivorId",
+          "duplicateId"
+        ],
+        "type": "object",
+        "properties": {
+          "survivorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "duplicateId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "MinistryDto": {
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "scope",
+          "campusId",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MoveCampusRequest": {
+        "required": [
+          "campusId"
+        ],
+        "type": "object",
+        "properties": {
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "MyAccessDto": {
+        "required": [
+          "userId",
+          "personId",
+          "displayName",
+          "hasMfa",
+          "twoFactorEnabled",
+          "mfaRequiredForSensitive",
+          "palette",
+          "permissions"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "hasMfa": {
+            "type": "boolean"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean"
+          },
+          "mfaRequiredForSensitive": {
+            "type": "boolean"
+          },
+          "palette": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PermissionScopesDto"
+            }
+          }
+        }
+      },
+      "OrganisationDto": {
+        "required": [
+          "id",
+          "name",
+          "legalName",
+          "scope",
+          "timeZone",
+          "currency",
+          "contactEmail",
+          "website",
+          "isSection18AApproved"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "legalName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "contactEmail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "website": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isSection18AApproved": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PagedResultOfAuditEntryDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditEntryDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResultOfPersonListItemDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonListItemDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResultOfSermonAdminListItemDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SermonAdminListItemDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResultOfSermonSummaryDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SermonSummaryDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PermissionDto": {
+        "required": [
+          "key",
+          "module",
+          "description",
+          "isSensitive"
+        ],
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "module": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isSensitive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PermissionScopesDto": {
+        "required": [
+          "permission",
+          "scopes"
+        ],
+        "type": "object",
+        "properties": {
+          "permission": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PersonAccessDto": {
+        "required": [
+          "personId",
+          "userId",
+          "email",
+          "phone",
+          "twoFactorEnabled",
+          "hasPassword",
+          "lastSignInAt",
+          "grants"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "phone": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "twoFactorEnabled": {
+            "type": "boolean"
+          },
+          "hasPassword": {
+            "type": "boolean"
+          },
+          "lastSignInAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "grants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrantDto"
+            }
+          }
+        }
+      },
+      "PersonDetailDto": {
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "preferredName",
+          "displayName",
+          "dateOfBirth",
+          "gender",
+          "scope",
+          "campusName",
+          "membershipStatus",
+          "status",
+          "mergedIntoId",
+          "source",
+          "hasLogin",
+          "contacts",
+          "households",
+          "statusHistory",
+          "consents",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "preferredName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "gender": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "campusName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "membershipStatus": {
+            "$ref": "#/components/schemas/MembershipStatusDto"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PersonStatus"
+          },
+          "mergedIntoId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PersonSource"
+          },
+          "hasLogin": {
+            "type": "boolean"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactDto"
+            }
+          },
+          "households": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HouseholdDto"
+            }
+          },
+          "statusHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusChangeDto"
+            }
+          },
+          "consents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsentDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PersonListItemDto": {
+        "required": [
+          "id",
+          "displayName",
+          "firstName",
+          "lastName",
+          "scope",
+          "campusName",
+          "membershipStatus",
+          "stage",
+          "status",
+          "primaryEmail",
+          "primaryMobile"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "campusName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "membershipStatus": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "primaryEmail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "primaryMobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "PersonSource": {
+        "enum": [
+          "Admin",
+          "SelfRegistration",
+          "VisitorCard",
+          "EventRegistration",
+          "Giving",
+          "Import"
+        ]
+      },
+      "PersonStatus": {
+        "enum": [
+          "Active",
+          "Inactive",
+          "Deceased",
+          "Merged"
+        ]
+      },
+      "PlaybackUpdateRequest": {
+        "required": [
+          "positionSeconds"
+        ],
+        "type": "object",
+        "properties": {
+          "positionSeconds": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PreferencesRequest": {
+        "required": [
+          "palette"
+        ],
+        "type": "object",
+        "properties": {
+          "palette": {
+            "type": "string"
+          }
+        }
+      },
+      "PublicLivestreamDto": {
+        "required": [
+          "id",
+          "title",
+          "status",
+          "scheduledStart",
+          "startedAt",
+          "youTubeId",
+          "notes",
+          "giveUrl",
+          "onScreen",
+          "shown"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LivestreamStatus"
+          },
+          "scheduledStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "youTubeId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "giveUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "onScreen": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CueDto"
+              }
+            ]
+          },
+          "shown": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CueDto"
+            }
+          }
+        }
+      },
+      "RecordConsentRequest": {
+        "required": [
+          "decisions",
+          "policyVersion",
+          "source"
+        ],
+        "type": "object",
+        "properties": {
+          "decisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsentDecisionDto"
+            }
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ConsentSource"
+          },
+          "lawfulBasis": {
+            "$ref": "#/components/schemas/LawfulBasis"
+          }
+        }
+      },
+      "RecoveryCodes": {
+        "required": [
+          "codes"
+        ],
+        "type": "object",
+        "properties": {
+          "codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RefreshRequest": {
+        "required": [
+          "refreshToken",
+          "device"
+        ],
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          },
+          "device": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RegisterRequest": {
+        "required": [
+          "challengeId",
+          "registrationTicket",
+          "firstName",
+          "lastName",
+          "email",
+          "campusId",
+          "policyVersion",
+          "consents",
+          "device"
+        ],
+        "type": "object",
+        "properties": {
+          "challengeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "registrationTicket": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "campusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "consents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsentDecision"
+            }
+          },
+          "device": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RequestCodeRequest": {
+        "required": [
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "RequestCodeResponse": {
+        "required": [
+          "challengeId",
+          "expiresAt",
+          "maskedPhone"
+        ],
+        "type": "object",
+        "properties": {
+          "challengeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "maskedPhone": {
+            "type": "string"
+          }
+        }
+      },
+      "RoleDto": {
+        "required": [
+          "id",
+          "name",
+          "description",
+          "isSystem",
+          "permissions"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isSystem": {
+            "type": "boolean"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SaveLivestreamRequest": {
+        "required": [
+          "title",
+          "scheduledStart",
+          "videoUrl",
+          "notes",
+          "giveUrl",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "scheduledStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "videoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "giveUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SaveRoleRequest": {
+        "required": [
+          "name",
+          "description",
+          "permissions"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SaveSeriesRequest": {
+        "required": [
+          "title",
+          "description",
+          "startsOn",
+          "endsOn",
+          "artworkAssetId"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "endsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "artworkAssetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "SaveSermonRequest": {
+        "required": [
+          "title",
+          "preachedOn",
+          "seriesId",
+          "summary",
+          "notes",
+          "topics",
+          "speakerIds",
+          "scripture",
+          "videoUrl",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "seriesId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "speakerIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "scripture": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "videoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SaveSpeakerRequest": {
+        "required": [
+          "name",
+          "title",
+          "bio",
+          "personId",
+          "photoAssetId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bio": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "photoAssetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "ScheduleRequest": {
+        "required": [
+          "publishAt"
+        ],
+        "type": "object",
+        "properties": {
+          "publishAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ScopeSummary": {
+        "required": [
+          "path",
+          "name",
+          "type",
+          "entityId"
+        ],
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "ScriptureCheckDto": {
+        "required": [
+          "recognised",
+          "unrecognised"
+        ],
+        "type": "object",
+        "properties": {
+          "recognised": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unrecognised": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ScriptureDto": {
+        "required": [
+          "display",
+          "bookNumber",
+          "book",
+          "chapterFrom",
+          "verseFrom",
+          "chapterTo",
+          "verseTo"
+        ],
+        "type": "object",
+        "properties": {
+          "display": {
+            "type": "string"
+          },
+          "bookNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "book": {
+            "type": "string"
+          },
+          "chapterFrom": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "verseFrom": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "chapterTo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "verseTo": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SeriesDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "description",
+          "artworkUrl",
+          "startsOn",
+          "endsOn",
+          "scope",
+          "sermonCount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "artworkUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "endsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "sermonCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SermonAdminDto": {
+        "required": [
+          "sermon",
+          "status",
+          "publishAt",
+          "scope",
+          "importSource",
+          "publishProblems",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "sermon": {
+            "$ref": "#/components/schemas/SermonDetailDto"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SermonStatus"
+          },
+          "publishAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "importSource": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "publishProblems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SermonAdminListItemDto": {
+        "required": [
+          "id",
+          "title",
+          "preachedOn",
+          "status",
+          "publishAt",
+          "speakers",
+          "seriesTitle",
+          "hasAudio",
+          "hasVideo"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SermonStatus"
+          },
+          "publishAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "speakers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "seriesTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hasAudio": {
+            "type": "boolean"
+          },
+          "hasVideo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SermonDetailDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "preachedOn",
+          "summary",
+          "notes",
+          "speakers",
+          "series",
+          "scripture",
+          "topics",
+          "video",
+          "audio",
+          "notesPdfUrl",
+          "publishedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "speakers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpeakerDto"
+            }
+          },
+          "series": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SeriesDto"
+              }
+            ]
+          },
+          "scripture": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScriptureDto"
+            }
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VideoDto"
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioDto"
+              }
+            ]
+          },
+          "notesPdfUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "publishedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "SermonStatus": {
+        "enum": [
+          "Draft",
+          "Scheduled",
+          "Published",
+          "Archived"
+        ]
+      },
+      "SermonSummaryDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "preachedOn",
+          "speakers",
+          "seriesTitle",
+          "seriesSlug",
+          "scripture",
+          "thumbnailUrl",
+          "audioDurationSeconds",
+          "hasAudio",
+          "hasVideo"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "speakers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "seriesTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "seriesSlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scripture": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnailUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "audioDurationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "hasAudio": {
+            "type": "boolean"
+          },
+          "hasVideo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SetPasswordRequest": {
+        "required": [
+          "userId",
+          "token",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "token": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "SetSermonAssetRequest": {
+        "required": [
+          "assetId"
+        ],
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "ShowCueRequest": {
+        "required": [
+          "cueId"
+        ],
+        "type": "object",
+        "properties": {
+          "cueId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "SignInResponse": {
+        "required": [
+          "status",
+          "tokens",
+          "registrationTicket",
+          "existingRecordFound"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/SignInStatus"
+          },
+          "tokens": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TokenPair"
+              }
+            ]
+          },
+          "registrationTicket": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "existingRecordFound": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SignInStatus": {
+        "enum": [
+          "SignedIn",
+          "RegistrationRequired"
+        ]
+      },
+      "SpeakerDto": {
+        "required": [
+          "id",
+          "name",
+          "title",
+          "bio",
+          "photoUrl",
+          "personId",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bio": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "photoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "StaffLoginRequestDto": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "StaffLoginResponse": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/StaffLoginStatus"
+          }
+        }
+      },
+      "StaffLoginSetupDto": {
+        "required": [
+          "userId",
+          "email",
+          "setupToken"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "setupToken": {
+            "type": "string"
+          }
+        }
+      },
+      "StaffLoginStatus": {
+        "enum": [
+          "SignedIn",
+          "TwoFactorRequired"
+        ]
+      },
+      "StaffSignInRequest": {
+        "required": [
+          "email",
+          "password",
+          "twoFactorCode",
+          "recoveryCode"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "twoFactorCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "recoveryCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "StartUploadRequest": {
+        "required": [
+          "kind",
+          "fileName",
+          "contentType",
+          "sizeBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/MediaKind"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "StartUploadResponse": {
+        "required": [
+          "assetId",
+          "upload"
+        ],
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "upload": {
+            "$ref": "#/components/schemas/UploadTarget"
+          }
+        }
+      },
+      "StatusChangeDto": {
+        "required": [
+          "from",
+          "to",
+          "effectiveDate",
+          "recordedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "to": {
+            "type": "string"
+          },
+          "effectiveDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TokenPair": {
+        "required": [
+          "accessToken",
+          "accessTokenExpiresAt",
+          "refreshToken",
+          "refreshTokenExpiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "accessTokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "refreshTokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TwoFactorStatus": {
+        "required": [
+          "enabled",
+          "recoveryCodesLeft"
+        ],
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "recoveryCodesLeft": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateCampusRequest": {
+        "required": [
+          "name",
+          "address",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/CampusStatus"
+          }
+        }
+      },
+      "UpdateMyProfileRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "preferredName",
+          "dateOfBirth"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "preferredName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          }
+        }
+      },
+      "UpdatePersonRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "preferredName",
+          "dateOfBirth",
+          "gender"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "preferredName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "gender": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          }
+        }
+      },
+      "UploadTarget": {
+        "required": [
+          "url",
+          "method",
+          "headers",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "VerifyCodeRequest": {
+        "required": [
+          "challengeId",
+          "code",
+          "device"
+        ],
+        "type": "object",
+        "properties": {
+          "challengeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "device": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "VideoDto": {
+        "required": [
+          "provider",
+          "externalId",
+          "watchUrl",
+          "thumbnailUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/VideoProvider"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "watchUrl": {
+            "type": "string"
+          },
+          "thumbnailUrl": {
+            "type": "string"
+          }
+        }
+      },
+      "VideoProvider": {
+        "enum": [
+          "YouTube"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Church"
+    },
+    {
+      "name": "Connect"
+    },
+    {
+      "name": "Sermons"
+    },
+    {
+      "name": "Audit"
+    },
+    {
+      "name": "People"
+    },
+    {
+      "name": "My profile"
+    },
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "My account"
+    },
+    {
+      "name": "Access"
+    },
+    {
+      "name": "Sermons admin"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+/* Generated from design/tokens/tokens.json by `pnpm tokens`. Do not edit by hand. */
+
+:root {
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-card: 30px;
+  --radius-pill: 999px;
+  --space-xxs: 4px;
+  --space-xs: 6px;
+  --space-sm: 10px;
+  --space-md: 14px;
+  --space-lg: 18px;
+  --space-xl: 22px;
+  --space-xxl: 32px;
+  --blur-glass: 26px;
+  --font-ui: -apple-system, "SF Pro Text", "SF Pro Display", Figtree, system-ui, sans-serif;
+  --font-serif: Newsreader, Georgia, serif;
+}
+
+/* Midnight is the default; Rose applies when chosen, or when the system is light and no palette is set. */
+:root,
+:root[data-palette="midnight"] {
+  --color-background: #050304;
+  --color-glow-primary: rgba(25,25,112,0.95);
+  --color-glow-secondary: rgba(8,10,48,0.95);
+  --color-glow-accent: rgba(212,178,111,0.22);
+  --color-glow-tertiary: rgba(25,25,112,0.65);
+  --color-glow-edge: rgba(70,90,210,0.45);
+  --color-glass-fill: rgba(255,255,255,0.05);
+  --color-glass-fill-active: rgba(212,178,111,0.16);
+  --color-glass-edge: rgba(255,255,255,0.06);
+  --color-glass-highlight: rgba(255,236,200,0.28);
+  --color-glass-sheen: rgba(255,255,255,0.10);
+  --color-glass-shadow: rgba(0,0,0,0.55);
+  --color-text-primary: #F3EEE6;
+  --color-text-secondary: rgba(243,238,230,0.74);
+  --color-text-tertiary: rgba(243,238,230,0.52);
+  --color-text-on-accent: #0B0F2E;
+  --color-text-on-button: #0B0F2E;
+  --color-accent: #D4B26F;
+  --color-interactive: #E0C07F;
+  --color-button-primary-top: #E6C98C;
+  --color-button-primary-bottom: #C9A35C;
+  --color-track: rgba(255,255,255,0.12);
+  --color-tile: rgba(25,25,112,0.60);
+  --color-tile-edge: rgba(212,178,111,0.45);
+  --color-danger: #F2A08F;
+  --color-success: #9FD8B0;
+  --color-video-start: #03040C;
+  --color-video-middle: #191970;
+  --color-video-end: #0A0E2E;
+  --color-video-glow: rgba(212,178,111,0.45);
+  --color-rim: linear-gradient(135deg, rgba(232,200,130,0.95) 0%, rgba(70,90,210,0.55) 30%, rgba(25,25,112,0.10) 55%, rgba(70,90,210,0.50) 80%, rgba(232,200,130,0.70) 100%);
+  color-scheme: dark;
+}
+
+:root[data-palette="rose"] {
+  --color-background: #EBE6E4;
+  --color-glow-primary: rgba(210,151,159,0.85);
+  --color-glow-secondary: rgba(181,165,158,0.90);
+  --color-glow-accent: rgba(210,151,159,0.55);
+  --color-glow-tertiary: rgba(181,165,158,0.70);
+  --color-glow-edge: rgba(0,0,0,0);
+  --color-glass-fill: rgba(255,255,255,0.42);
+  --color-glass-fill-active: rgba(255,255,255,0.70);
+  --color-glass-edge: rgba(255,255,255,0.75);
+  --color-glass-highlight: rgba(255,255,255,0.90);
+  --color-glass-sheen: rgba(255,255,255,0.45);
+  --color-glass-shadow: rgba(90,66,62,0.16);
+  --color-text-primary: #3A2E2B;
+  --color-text-secondary: rgba(58,46,43,0.78);
+  --color-text-tertiary: rgba(58,46,43,0.58);
+  --color-text-on-accent: #3A1B21;
+  --color-text-on-button: #EBE6E4;
+  --color-accent: #D2979F;
+  --color-interactive: #9E5A64;
+  --color-button-primary-top: #3F3230;
+  --color-button-primary-bottom: #2F2523;
+  --color-track: rgba(58,46,43,0.14);
+  --color-tile: rgba(210,151,159,0.40);
+  --color-tile-edge: rgba(255,255,255,0.70);
+  --color-danger: #A3372B;
+  --color-success: #2F6B45;
+  --color-video-start: #8E7C76;
+  --color-video-middle: #D2979F;
+  --color-video-end: #B5A59E;
+  --color-video-glow: rgba(235,230,228,0.70);
+  --color-rim: none;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-palette]) {
+    --color-background: #EBE6E4;
+    --color-glow-primary: rgba(210,151,159,0.85);
+    --color-glow-secondary: rgba(181,165,158,0.90);
+    --color-glow-accent: rgba(210,151,159,0.55);
+    --color-glow-tertiary: rgba(181,165,158,0.70);
+    --color-glow-edge: rgba(0,0,0,0);
+    --color-glass-fill: rgba(255,255,255,0.42);
+    --color-glass-fill-active: rgba(255,255,255,0.70);
+    --color-glass-edge: rgba(255,255,255,0.75);
+    --color-glass-highlight: rgba(255,255,255,0.90);
+    --color-glass-sheen: rgba(255,255,255,0.45);
+    --color-glass-shadow: rgba(90,66,62,0.16);
+    --color-text-primary: #3A2E2B;
+    --color-text-secondary: rgba(58,46,43,0.78);
+    --color-text-tertiary: rgba(58,46,43,0.58);
+    --color-text-on-accent: #3A1B21;
+    --color-text-on-button: #EBE6E4;
+    --color-accent: #D2979F;
+    --color-interactive: #9E5A64;
+    --color-button-primary-top: #3F3230;
+    --color-button-primary-bottom: #2F2523;
+    --color-track: rgba(58,46,43,0.14);
+    --color-tile: rgba(210,151,159,0.40);
+    --color-tile-edge: rgba(255,255,255,0.70);
+    --color-danger: #A3372B;
+    --color-success: #2F6B45;
+    --color-video-start: #8E7C76;
+    --color-video-middle: #D2979F;
+    --color-video-end: #B5A59E;
+    --color-video-glow: rgba(235,230,228,0.70);
+    --color-rim: none;
+    color-scheme: light;
+  }
+}

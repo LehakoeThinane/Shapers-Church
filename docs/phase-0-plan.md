@@ -1,6 +1,6 @@
 # Phase 0 Plan: Foundation
 
-Status: **Proposed. Awaiting approval.** Nothing is scaffolded until this is approved.
+Status: **Approved and in progress.** Backend, tokens, API client and CI are done; admin and mobile shells are being filled in. Where the build differs from the original proposal, this document has been updated to match the code.
 
 Goal: a running skeleton where a staff member can sign in to the admin portal and see people for the campuses they have permission for, and a member can sign in to the app and see the five-tab shell in either palette. Every later module plugs into these foundations without reworking them.
 
@@ -63,16 +63,16 @@ Why the additions beyond your list:
 - REST + OpenAPI (built into .NET 10). The TypeScript client is generated from it, so the API contract is checked at compile time on the clients.
 - Optimistic concurrency via Postgres `xmin` on aggregates.
 
-### Tenancy (depends on your answer to Q2)
-My recommendation, whatever the answer: every tenant-owned row carries **`organisation_id`**, applied automatically by an EF global query filter. With one organisation this costs almost nothing. Retrofitting it later into every table, index, query and cache key is one of the most expensive changes a system can face. If you confirm "Shapers only, forever", I will still keep the column but skip tenant onboarding tooling.
+### Tenancy
+Shapers only (single-tenant). There is exactly one Organisation, and it is the root of the scope tree (`shapers`). Campuses and ministries carry `organisation_id`; other records carry a scope path that starts at the organisation. There is no tenant resolution or global query filter. See [ADR 0002](decisions/0002-single-tenant.md).
 
 ### Outbox and background jobs
 - Aggregates raise domain events. On `SaveChanges`, events that other modules care about become **integration events** written to the module's `outbox_messages` table **in the same transaction** as the data change.
-- A dispatcher picks up unsent rows with `FOR UPDATE SKIP LOCKED`, publishes them in-process to subscribers, and marks them sent. Subscribers record handled message IDs in an **inbox** table, so a handler that runs twice does no harm.
-- **Hangfire** (Postgres storage) runs scheduled and recurring jobs: the outbox sweep, retention clean-up, later reminders and statements. MassTransit only pays off with a broker and several services, which we do not have. Agree with your lean.
+- A background service per module picks up unsent rows with `FOR UPDATE SKIP LOCKED`, publishes them in-process to subscribers, and marks them sent. Subscribers record handled message IDs in an **inbox** table, so a handler that runs twice does no harm.
+- **Hangfire** (Postgres storage, `jobs` schema) runs recurring jobs declared by modules: outbox, inbox and credential clean-up now; reminders and statements later. Its dashboard is at `/jobs` behind `platform.jobs.view`. MassTransit only pays off with a broker and several services, which we do not have.
 
 ### Audit log (POPIA)
-`platform.audit_entries`: actor, action, entity type/id, scope, timestamp, IP, request ID, and a JSON diff. The log is append-only: the database role that the app uses has no update or delete rights on the table. Writes to Person, grants and consent are always audited. **Reads** of anything marked sensitive are audited too.
+`platform.audit_entries`: actor, action, entity type/id, scope, timestamp, IP, request ID, and a JSON diff. The log is append-only: a database trigger rejects UPDATE, DELETE and TRUNCATE on the table, whoever connects. Writes to Person, grants and consent are always audited. **Reads** of anything marked sensitive are audited too.
 
 ---
 
@@ -81,25 +81,26 @@ My recommendation, whatever the answer: every tenant-owned row carries **`organi
 ### Church / Campus module
 | Entity | Key fields | Notes |
 |---|---|---|
-| Organisation | id, name, legal_name, pbo_number?, is_18a_approved, default_time_zone, default_currency (ZAR) | the tenant root |
-| Campus | id, org_id, name, slug, address, geo, time_zone, status, is_primary | first and only confirmed campus: 2 Wakis Avenue, Strydom Park, Randburg, 2196 |
+| Organisation | id, name, legal_name, pbo_number?, is_18a_approved, default_time_zone, default_currency (ZAR) | the root of the scope tree |
+| Campus | id, org_id, name, slug, address, geo, time_zone, status, is_primary | one campus: Rivonia (street address to be confirmed) |
 | Ministry | id, org_id, campus_id?, name, slug, parent_ministry_id? | null campus = church-wide (e.g. Kids across all campuses) |
 
 Groups are a V2 module but are also a scope, so the scope model below supports them without Phase 0 knowing anything about groups.
 
 ### Scope model (shared by all modules)
-A single `platform.scope_nodes` table forms a tree using Postgres **`ltree`** paths:
+Scopes are dot-separated paths. The Church module owns the tree (organisation, campuses, ministries) and exposes it through `IChurchDirectory`:
 
 ```text
-org                                  GLOBAL
-org.campus_randburg                  CAMPUS
-org.campus_randburg.min_kids         MINISTRY
-org.campus_randburg.min_kids.grp_7f3a   GROUP (added in V2)
+shapers                                      GLOBAL
+shapers.campus_rivonia                       CAMPUS
+shapers.campus_rivonia.ministry_kids         MINISTRY
+shapers.ministry_worship                     MINISTRY spanning every campus
+shapers.campus_rivonia.ministry_kids.group_x GROUP (added in V2)
 ```
 
-- Modules create nodes by publishing events (for example, `CampusCreated` creates a node).
-- Every scoped record stores its `scope_path`.
-- "Does grant G cover record R?" becomes `R.scope_path <@ G.scope_path`, one indexed operation. List queries filter with `scope_path <@ ANY(@allowedPaths)`.
+- Every scoped record stores its path in a `scope` column.
+- "Does grant G cover record R?" is `R.scope = G.scope OR R.scope LIKE G.scope || '.%'`, which uses a `text_pattern_ops` index. List queries OR together the user's allowed scopes.
+- Slugs are fixed when a campus or ministry is created, so renaming never changes a path. See [ADR 0003](decisions/0003-scoped-permissions.md).
 - **PERSONAL** is not a tree node. It is an ownership rule: you may always see and edit your own profile and household, subject to field rules.
 
 ### Identity module
@@ -225,6 +226,6 @@ Rules:
 3. Church module, then Identity (auth + grants), then People.
 4. Tokens package.
 5. Mobile shell, then admin shell, both against the real API.
-6. Seed data: the Shapers organisation, the Randburg (Strydom Park) campus, a few ministries, demo people and roles.
+6. Seed data: the Shapers organisation, the Rivonia campus, system roles and the first administrator. Development adds example ministries.
 
 Copy and tone across both apps follow the church's own language: "build productive people for the kingdom of God", with a focus on purpose, spiritual growth and personal development.

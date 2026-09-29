@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (.NET)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+
+      - name: Restore
+        run: dotnet restore Shapers.slnx
+
+      - name: Build (warnings are errors)
+        run: dotnet build Shapers.slnx --no-restore -c Release
+
+      - name: OpenAPI document is up to date
+        working-directory: .
+        run: git diff --exit-code -- packages/api-client/openapi.json
+
+      - name: Unit and architecture tests
+        run: |
+          dotnet test --no-build -c Release --project tests/Shapers.ArchitectureTests
+          dotnet test --no-build -c Release --project tests/Shapers.Platform.Tests
+          dotnet test --no-build -c Release --project tests/Modules/Shapers.Identity.Tests
+          dotnet test --no-build -c Release --project tests/Modules/Shapers.People.Tests
+          dotnet test --no-build -c Release --project tests/Modules/Shapers.Media.Tests
+
+      - name: Integration tests (PostgreSQL via Testcontainers)
+        run: dotnet test --no-build -c Release --project tests/Shapers.IntegrationTests
+
+      - name: Vulnerable packages
+        run: |
+          dotnet list Shapers.slnx package --vulnerable --include-transitive | tee vulnerable.txt
+          ! grep -q "has the following vulnerable packages" vulnerable.txt
+
+  web:
+    name: Web, mobile and shared packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Tokens are generated and meet contrast minimums
+        run: |
+          pnpm --filter @shapers/tokens check
+          pnpm --filter @shapers/tokens test
+
+      - name: API client matches the OpenAPI document
+        run: pnpm --filter @shapers/api-client check
+
+      - name: No hard-coded colours
+        run: pnpm check:colours
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Lint
+        run: pnpm -r lint
+
+      - name: Build admin portal
+        run: pnpm --filter @shapers/admin build
+
+      - name: Bundle member app (iOS and Android JavaScript)
+        run: pnpm --filter @shapers/mobile exec expo export --platform ios --platform android --output-dir ${{ runner.temp }}/expo-export
+        env:
+          CI: 1
+
+      - name: Dependency audit
+        run: pnpm audit --audit-level high
