@@ -51,6 +51,11 @@ internal sealed class ChurchSeeder(ChurchDbContext db)
             campus = Campus.Create(organisation, c.Name, c.Slug, c.Address?.ToDomain(), isPrimary: true);
             db.Campuses.Add(campus);
         }
+        else if (campus.Address is null && options.PrimaryCampus.Address is { } address)
+        {
+            // Fill in an address configured after the campus was first created. Never overwrite staff edits.
+            campus.Update(campus.Name, address.ToDomain(), campus.Status);
+        }
 
         if (includeDemoData)
         {

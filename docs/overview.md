@@ -10,7 +10,7 @@ Our own equivalent of Planning Center and Church Center, built to grow with Shap
 
 Shapers exists to "build productive people for the kingdom of God", with a focus on purpose, spiritual growth and personal development. That language shapes the product's copy and tone. The existing **Shapers Growth Track**, a two-week programme for new and growing members, becomes a trackable pathway in the Discipleship module: enrolment, sessions and completion, leading to next steps such as joining a group or serving.
 
-Church contact: info@shaperschurch.com. One campus, in Rivonia, Johannesburg.
+Church contact: info@shaperschurch.com. One campus: 8 Mellis Road, Rivonia, Sandton, Johannesburg.
 
 ## Architecture
 
@@ -87,6 +87,5 @@ Tabs: Home · Discover · Live · Community · Give, plus a separate Search butt
 
 1. Ticketing: event tickets, support tickets, or both?
 2. Payment gateway, and is Shapers an 18A-approved PBO?
-3. Campus street address (the website and recent event material disagree).
-4. Congregation size.
-5. Existing membership data to migrate, if any.
+3. Congregation size.
+4. Existing membership data to migrate, if any.
