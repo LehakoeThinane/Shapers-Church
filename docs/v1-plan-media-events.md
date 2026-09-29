@@ -1,6 +1,6 @@
 # V1 Plan: Sermons and Media, Livestream, Events
 
-Status: **Proposed. Awaiting approval.**
+Status: **Approved (2026-09-29).** Decisions are recorded at the end; building starts with slice A.
 
 This is the first part of V1. It adds two modules, **Media** (sermons, series, speakers, audio, podcast, livestream) and **Events** (events, registration, waiting lists, tickets, check-in), and the screens that use them in the admin portal and the member app. Giving, Prayer and Notifications get their own plans.
 
@@ -170,16 +170,12 @@ Paid registration needs the payment gateway. Until one is chosen, events are **f
 
 ---
 
-## Questions for you
+## Decisions (2026-09-29)
 
-1. **Audio source.** Can the team get an audio file of each sermon from the sound desk or the recording? If only the YouTube video exists, someone would export the audio from the original video file before upload. Downloading from YouTube isn't allowed. Is there an archive of older recordings we could load?
-2. **Bible translation.** Which translation does Shapers preach from? Modern ones (NIV, ESV, NLT) need a licence to show verse text in the app. Until then I'd show references, with verse text from a public-domain translation (WEB or KJV).
-3. **Guest registration.** Should visitors register for events without an account, verifying by SMS or email code? (Recommended: yes, it's how EPA-style events will grow.) This needs the SMS/email provider decision, so the choice of provider becomes more urgent.
-4. **Live chat.** Ship Livestream first without chat and follow with moderated chat (recommended), or hold Livestream until chat is ready?
-5. **Public web pages.** Event registration and sermon links need a web page for people without the app. Options:
-   - a small public site now (static, fast, good for WhatsApp previews and search), which later grows into the new shaperschurch.com
-   - app-only links for now
-
-   I recommend the small public site, with **Astro** (static pages, tiny bundles) reading the same API.
-6. **YouTube channel.** What is the church's YouTube channel URL, and is there a Google account the team controls for an API key?
-7. **Hosting region.** Are you happy with Azure **South Africa North** (Johannesburg) for files and, later, the database? It keeps members' data in South Africa.
+1. **Audio:** staff upload an audio file in the admin portal after each service. The media team is confirming whether desk or encoder recordings are available. Automated capture is a later improvement.
+2. **Bible:** show references, plus World English Bible (WEB) text where verse text is shown. The preaching translation is to be confirmed; licensing comes later.
+3. **Guest registration:** yes. Email verification codes first, SMS and WhatsApp once a provider is chosen. A guest record can later gain a login without losing its history.
+4. **Livestream first, then moderated chat** as a follow-up slice.
+5. **Public site with Astro**, built to become the new shaperschurch.com over time.
+6. **YouTube channel:** https://www.youtube.com/channel/UCZf66xLSk4RyXbMzI_lVf-g. The Google account behind it should belong to the church (e.g. info@shaperschurch.com), with staff added as managers, not a volunteer's personal account.
+7. **Hosting:** Azure South Africa North. See [ADR 0009](decisions/0009-hosting-region.md) for the service availability check.

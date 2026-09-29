@@ -12,3 +12,4 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0006](0006-admin-portal-vite.md) | Admin portal as a React + Vite SPA | Accepted |
 | [0007](0007-theme-tokens.md) | One token source for Midnight and Rose | Accepted |
 | [0008](0008-popia-audit-and-consent.md) | Append-only audit log and consent records | Accepted |
+| [0009](0009-hosting-region.md) | Host in Azure South Africa North | Accepted |
