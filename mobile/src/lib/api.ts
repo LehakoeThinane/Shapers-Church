@@ -24,22 +24,58 @@ interface SessionState {
   setStatus: (status: SessionStatus) => void;
 }
 
-/** Whether a member is signed in. Tokens themselves live only in the device keychain / keystore. */
+/** Whether a member is signed in. On phones the tokens live only in the device keychain / keystore. */
 export const useSession = create<SessionState>((set) => ({
   status: 'unknown',
   setStatus: (status) => set({ status }),
 }));
 
+/**
+ * Browsers have no keychain, and the web build is for development previews only. Keep tokens for this tab
+ * alone (sessionStorage), so closing the tab signs out; fall back to memory if storage is blocked.
+ */
+const webStore = (() => {
+  const memory = new Map<string, string>();
+  const storage = () => {
+    try {
+      return globalThis.sessionStorage ?? null;
+    } catch {
+      return null;
+    }
+  };
+  return {
+    getItemAsync: async (key: string) => storage()?.getItem(key) ?? memory.get(key) ?? null,
+    setItemAsync: async (key: string, value: string) => {
+      try {
+        storage()?.setItem(key, value);
+      } catch {
+        // Storage full or blocked: memory still holds it for this page.
+      }
+      memory.set(key, value);
+    },
+    deleteItemAsync: async (key: string) => {
+      try {
+        storage()?.removeItem(key);
+      } catch {
+        // Nothing to remove.
+      }
+      memory.delete(key);
+    },
+  };
+})();
+
+const store = Platform.OS === 'web' ? webStore : SecureStore;
+
 const tokens: TokenStore = {
-  getAccessToken: () => SecureStore.getItemAsync(ACCESS_KEY),
-  getRefreshToken: () => SecureStore.getItemAsync(REFRESH_KEY),
+  getAccessToken: () => store.getItemAsync(ACCESS_KEY),
+  getRefreshToken: () => store.getItemAsync(REFRESH_KEY),
   save: async ({ accessToken, refreshToken }) => {
-    await SecureStore.setItemAsync(ACCESS_KEY, accessToken);
-    await SecureStore.setItemAsync(REFRESH_KEY, refreshToken);
+    await store.setItemAsync(ACCESS_KEY, accessToken);
+    await store.setItemAsync(REFRESH_KEY, refreshToken);
   },
   clear: async () => {
-    await SecureStore.deleteItemAsync(ACCESS_KEY);
-    await SecureStore.deleteItemAsync(REFRESH_KEY);
+    await store.deleteItemAsync(ACCESS_KEY);
+    await store.deleteItemAsync(REFRESH_KEY);
   },
 };
 
