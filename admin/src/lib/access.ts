@@ -40,4 +40,5 @@ export const Permissions = {
   mediaEdit: 'media.sermons.edit',
   mediaPublish: 'media.sermons.publish',
   speakersManage: 'media.speakers.manage',
+  livestreamManage: 'media.livestream.manage',
 } as const;

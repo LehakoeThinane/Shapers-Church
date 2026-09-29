@@ -13,6 +13,8 @@ import { PersonPage } from './pages/PersonPage';
 import { MediaLibraryPage } from './pages/MediaLibraryPage';
 import { SermonEditorPage } from './pages/SermonEditorPage';
 import { SermonsPage } from './pages/SermonsPage';
+import { ConnectCardsPage } from './pages/ConnectCardsPage';
+import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -45,6 +47,9 @@ const router = createBrowserRouter([
       { path: 'sermons/new', element: <SermonEditorPage /> },
       { path: 'sermons/library', element: <MediaLibraryPage /> },
       { path: 'sermons/:id', element: <SermonEditorPage /> },
+      { path: 'livestreams', element: <LivestreamsPage /> },
+      { path: 'livestreams/:id', element: <LivestreamConsolePage /> },
+      { path: 'connect', element: <ConnectCardsPage /> },
       { path: 'church', element: <ChurchPage /> },
       { path: 'access', element: <RolesPage /> },
       { path: 'audit', element: <AuditPage /> },

@@ -9,8 +9,10 @@ import { Button, Loading, Select } from './ui';
 
 const nav = [
   { to: '/people', label: 'People', permission: Permissions.peopleView },
+  { to: '/connect', label: 'Connect cards', permission: Permissions.peopleView },
   { to: '/duplicates', label: 'Duplicates', permission: Permissions.peopleMerge },
   { to: '/sermons', label: 'Sermons', permission: Permissions.mediaEdit },
+  { to: '/livestreams', label: 'Livestream', permission: Permissions.livestreamManage },
   { to: '/church', label: 'Campuses & ministries', permission: null },
   { to: '/access', label: 'Roles & access', permission: Permissions.usersView },
   { to: '/audit', label: 'Audit log', permission: Permissions.auditView },

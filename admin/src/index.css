@@ -541,3 +541,14 @@ progress {
   font-family: var(--font-serif);
   font-style: italic;
 }
+
+.block {
+  display: block;
+}
+
+.quote {
+  margin: 0;
+  padding-left: var(--space-md);
+  border-left: 3px solid var(--color-interactive);
+  white-space: pre-wrap;
+}
