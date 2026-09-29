@@ -28,7 +28,27 @@ public sealed class ChurchOptions
 
         public string Slug { get; set; } = "rivonia";
 
-        public AddressDto? Address { get; set; }
+        public AddressOptions? Address { get; set; }
+    }
+
+    /// <summary>Configuration-friendly address (settable properties, all optional except the first line and city).</summary>
+    public sealed class AddressOptions
+    {
+        public string Line1 { get; set; } = string.Empty;
+
+        public string? Line2 { get; set; }
+
+        public string? Suburb { get; set; }
+
+        public string City { get; set; } = string.Empty;
+
+        public string Province { get; set; } = string.Empty;
+
+        public string PostalCode { get; set; } = string.Empty;
+
+        public string CountryCode { get; set; } = "ZA";
+
+        public Address ToDomain() => new(Line1, Line2, Suburb, City, Province, PostalCode, CountryCode);
     }
 }
 

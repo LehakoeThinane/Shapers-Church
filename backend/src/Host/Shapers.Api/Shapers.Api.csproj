@@ -10,6 +10,7 @@
     <ProjectReference Include="../../Modules/Identity/Shapers.Identity.Api/Shapers.Identity.Api.csproj" />
     <ProjectReference Include="../../Modules/People/Shapers.People.Api/Shapers.People.Api.csproj" />
     <ProjectReference Include="../../Modules/Church/Shapers.Church.Api/Shapers.Church.Api.csproj" />
+    <ProjectReference Include="../../Modules/Media/Shapers.Media.Api/Shapers.Media.Api.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

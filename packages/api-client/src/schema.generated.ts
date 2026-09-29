@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/podcast.xml": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PodcastFeed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/audit": {
         parameters: {
             query?: never;
@@ -708,6 +724,390 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/media/sermons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SearchSermons"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/media/sermons/{slugOrId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetSermon"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/media/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPublicSeries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/media/series/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetSeries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/media/speakers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPublicSpeakers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminListSermons"];
+        put?: never;
+        post: operations["CreateSermon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminGetSermon"];
+        put: operations["UpdateSermon"];
+        post?: never;
+        delete: operations["DeleteSermon"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/audio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SetSermonAudio"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/notes-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SetSermonNotesPdf"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PublishSermon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ScheduleSermon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnpublishSermon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchiveSermon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RestoreSermon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/scripture-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CheckScripture"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/import/youtube": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImportFromYouTube"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminListSeries"];
+        put?: never;
+        post: operations["CreateSeries"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/series/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateSeries"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/speakers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminListSpeakers"];
+        put?: never;
+        post: operations["CreateSpeaker"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/speakers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateSpeaker"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StartUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/uploads/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CompleteUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/playback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ContinueListening"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/playback/{sermonId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdatePlayback"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -726,6 +1126,28 @@ export interface components {
             postalCode: string;
             /** @default ZA */
             countryCode: string;
+        };
+        AssetDto: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["MediaKind"];
+            url: string;
+            contentType: string;
+            /** Format: int64 */
+            sizeBytes: number;
+            /** Format: int32 */
+            durationSeconds: null | number;
+            status: components["schemas"]["MediaAssetStatus"];
+        };
+        AudioDto: {
+            /** Format: uuid */
+            assetId: string;
+            url: string;
+            contentType: string;
+            /** Format: int64 */
+            sizeBytes: number;
+            /** Format: int32 */
+            durationSeconds: null | number;
         };
         AuditEntryDto: {
             /** Format: uuid */
@@ -769,6 +1191,10 @@ export interface components {
             organisation: components["schemas"]["OrganisationDto"];
             campuses: components["schemas"]["CampusDto"][];
         };
+        CompleteUploadRequest: {
+            /** Format: int32 */
+            durationSeconds: null | number;
+        };
         ConsentDecision: {
             purpose: string;
             granted: boolean;
@@ -798,6 +1224,13 @@ export interface components {
         };
         /** @enum {unknown} */
         ContactType: "Email" | "Mobile" | "WhatsApp";
+        ContinueListeningDto: {
+            sermon: components["schemas"]["SermonSummaryDto"];
+            /** Format: int32 */
+            positionSeconds: number;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         CreateCampusRequest: {
             name: string;
             slug: string;
@@ -896,6 +1329,15 @@ export interface components {
         };
         /** @enum {unknown} */
         HouseholdRole: "Adult" | "Child";
+        ImportResultDto: {
+            /** Format: int32 */
+            found: number;
+            /** Format: int32 */
+            created: number;
+            /** Format: int32 */
+            alreadyImported: number;
+            createdTitles: string[];
+        };
         /** @enum {unknown} */
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
         /** @enum {unknown} */
@@ -903,6 +1345,10 @@ export interface components {
         LogoutRequest: {
             refreshToken: string;
         };
+        /** @enum {unknown} */
+        MediaAssetStatus: "Pending" | "Ready";
+        /** @enum {unknown} */
+        MediaKind: "Audio" | "NotesPdf" | "Image";
         MembershipStatusDto: {
             /** Format: uuid */
             id: string;
@@ -968,6 +1414,24 @@ export interface components {
         };
         PagedResultOfPersonListItemDto: {
             items: components["schemas"]["PersonListItemDto"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            total: number;
+        };
+        PagedResultOfSermonAdminListItemDto: {
+            items: components["schemas"]["SermonAdminListItemDto"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            total: number;
+        };
+        PagedResultOfSermonSummaryDto: {
+            items: components["schemas"]["SermonSummaryDto"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -1043,6 +1507,10 @@ export interface components {
         PersonSource: "Admin" | "SelfRegistration" | "VisitorCard" | "EventRegistration" | "Giving" | "Import";
         /** @enum {unknown} */
         PersonStatus: "Active" | "Inactive" | "Deceased" | "Merged";
+        PlaybackUpdateRequest: {
+            /** Format: int32 */
+            positionSeconds: number;
+        };
         PreferencesRequest: {
             palette: string;
         };
@@ -1095,6 +1563,43 @@ export interface components {
             description: null | string;
             permissions: string[];
         };
+        SaveSeriesRequest: {
+            title: string;
+            description: null | string;
+            /** Format: date */
+            startsOn: null | string;
+            /** Format: date */
+            endsOn: null | string;
+            /** Format: uuid */
+            artworkAssetId: null | string;
+        };
+        SaveSermonRequest: {
+            title: string;
+            /** Format: date */
+            preachedOn: string;
+            /** Format: uuid */
+            seriesId: null | string;
+            summary: null | string;
+            notes: null | string;
+            topics: string[];
+            speakerIds: string[];
+            scripture: null | string;
+            videoUrl: null | string;
+            scope: null | string;
+        };
+        SaveSpeakerRequest: {
+            name: string;
+            title: null | string;
+            bio: null | string;
+            /** Format: uuid */
+            personId: null | string;
+            /** Format: uuid */
+            photoAssetId: null | string;
+        };
+        ScheduleRequest: {
+            /** Format: date-time */
+            publishAt: string;
+        };
         ScopeSummary: {
             path: string;
             name: string;
@@ -1102,11 +1607,111 @@ export interface components {
             /** Format: uuid */
             entityId: null | string;
         };
+        ScriptureCheckDto: {
+            recognised: string[];
+            unrecognised: string[];
+        };
+        ScriptureDto: {
+            display: string;
+            /** Format: int32 */
+            bookNumber: number;
+            book: string;
+            /** Format: int32 */
+            chapterFrom: number;
+            /** Format: int32 */
+            verseFrom: null | number;
+            /** Format: int32 */
+            chapterTo: number;
+            /** Format: int32 */
+            verseTo: null | number;
+        };
+        SeriesDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            slug: string;
+            description: null | string;
+            artworkUrl: null | string;
+            /** Format: date */
+            startsOn: null | string;
+            /** Format: date */
+            endsOn: null | string;
+            scope: string;
+            /** Format: int32 */
+            sermonCount: number;
+        };
+        SermonAdminDto: {
+            sermon: components["schemas"]["SermonDetailDto"];
+            status: components["schemas"]["SermonStatus"];
+            /** Format: date-time */
+            publishAt: null | string;
+            scope: string;
+            importSource: null | string;
+            publishProblems: string[];
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        SermonAdminListItemDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: date */
+            preachedOn: string;
+            status: components["schemas"]["SermonStatus"];
+            /** Format: date-time */
+            publishAt: null | string;
+            speakers: string[];
+            seriesTitle: null | string;
+            hasAudio: boolean;
+            hasVideo: boolean;
+        };
+        SermonDetailDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            slug: string;
+            /** Format: date */
+            preachedOn: string;
+            summary: null | string;
+            notes: null | string;
+            speakers: components["schemas"]["SpeakerDto"][];
+            series: null | components["schemas"]["SeriesDto"];
+            scripture: components["schemas"]["ScriptureDto"][];
+            topics: string[];
+            video: null | components["schemas"]["VideoDto"];
+            audio: null | components["schemas"]["AudioDto"];
+            notesPdfUrl: null | string;
+            /** Format: date-time */
+            publishedAt: null | string;
+        };
+        /** @enum {unknown} */
+        SermonStatus: "Draft" | "Scheduled" | "Published" | "Archived";
+        SermonSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            slug: string;
+            /** Format: date */
+            preachedOn: string;
+            speakers: string[];
+            seriesTitle: null | string;
+            seriesSlug: null | string;
+            scripture: string[];
+            thumbnailUrl: null | string;
+            /** Format: int32 */
+            audioDurationSeconds: null | number;
+            hasAudio: boolean;
+            hasVideo: boolean;
+        };
         SetPasswordRequest: {
             /** Format: uuid */
             userId: string;
             token: string;
             password: string;
+        };
+        SetSermonAssetRequest: {
+            /** Format: uuid */
+            assetId: null | string;
         };
         SignInResponse: {
             status: components["schemas"]["SignInStatus"];
@@ -1116,6 +1721,17 @@ export interface components {
         };
         /** @enum {unknown} */
         SignInStatus: "SignedIn" | "RegistrationRequired";
+        SpeakerDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            title: null | string;
+            bio: null | string;
+            photoUrl: null | string;
+            /** Format: uuid */
+            personId: null | string;
+            isActive: boolean;
+        };
         StaffLoginRequestDto: {
             email: string;
         };
@@ -1135,6 +1751,18 @@ export interface components {
             password: string;
             twoFactorCode: null | string;
             recoveryCode: null | string;
+        };
+        StartUploadRequest: {
+            kind: components["schemas"]["MediaKind"];
+            fileName: string;
+            contentType: string;
+            /** Format: int64 */
+            sizeBytes: number;
+        };
+        StartUploadResponse: {
+            /** Format: uuid */
+            assetId: string;
+            upload: components["schemas"]["UploadTarget"];
         };
         StatusChangeDto: {
             from: null | string;
@@ -1177,12 +1805,29 @@ export interface components {
             dateOfBirth: null | string;
             gender: null | components["schemas"]["Gender"];
         };
+        UploadTarget: {
+            url: string;
+            method: string;
+            headers: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expiresAt: string;
+        };
         VerifyCodeRequest: {
             /** Format: uuid */
             challengeId: string;
             code: string;
             device: null | string;
         };
+        VideoDto: {
+            provider: components["schemas"]["VideoProvider"];
+            externalId: string;
+            watchUrl: string;
+            thumbnailUrl: string;
+        };
+        /** @enum {unknown} */
+        VideoProvider: "YouTube";
     };
     responses: never;
     parameters: never;
@@ -1209,6 +1854,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ChurchOverviewDto"];
                 };
+            };
+        };
+    };
+    PodcastFeed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -2352,6 +3015,681 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SearchSermons: {
+        parameters: {
+            query?: {
+                Q?: string;
+                Series?: string;
+                SpeakerId?: string;
+                Book?: number;
+                Topic?: string;
+                Year?: number;
+                Page?: number;
+                PageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResultOfSermonSummaryDto"];
+                };
+            };
+        };
+    };
+    GetSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slugOrId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonDetailDto"];
+                };
+            };
+        };
+    };
+    ListPublicSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesDto"][];
+                };
+            };
+        };
+    };
+    GetSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesDto"];
+                };
+            };
+        };
+    };
+    ListPublicSpeakers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpeakerDto"][];
+                };
+            };
+        };
+    };
+    AdminListSermons: {
+        parameters: {
+            query?: {
+                Q?: string;
+                Status?: components["schemas"]["SermonStatus"];
+                SeriesId?: string;
+                Page?: number;
+                PageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResultOfSermonAdminListItemDto"];
+                };
+            };
+        };
+    };
+    CreateSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSermonRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    AdminGetSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    UpdateSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSermonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    DeleteSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SetSermonAudio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetSermonAssetRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    SetSermonNotesPdf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetSermonAssetRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    PublishSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    ScheduleSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    UnpublishSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    ArchiveSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    RestoreSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    CheckScripture: {
+        parameters: {
+            query?: {
+                text?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptureCheckDto"];
+                };
+            };
+        };
+    };
+    ImportFromYouTube: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    AdminListSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesDto"][];
+                };
+            };
+        };
+    };
+    CreateSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSeriesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesDto"];
+                };
+            };
+        };
+    };
+    UpdateSeries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSeriesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesDto"];
+                };
+            };
+        };
+    };
+    AdminListSpeakers: {
+        parameters: {
+            query?: {
+                includeInactive?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpeakerDto"][];
+                };
+            };
+        };
+    };
+    CreateSpeaker: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSpeakerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpeakerDto"];
+                };
+            };
+        };
+    };
+    UpdateSpeaker: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSpeakerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpeakerDto"];
+                };
+            };
+        };
+    };
+    StartUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartUploadRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StartUploadResponse"];
+                };
+            };
+        };
+    };
+    CompleteUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteUploadRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDto"];
+                };
+            };
+        };
+    };
+    ContinueListening: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContinueListeningDto"][];
+                };
+            };
+        };
+    };
+    UpdatePlayback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sermonId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaybackUpdateRequest"];
+            };
+        };
         responses: {
             /** @description No Content */
             204: {

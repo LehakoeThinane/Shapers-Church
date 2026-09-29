@@ -43,6 +43,7 @@ jobs:
           dotnet test --no-build -c Release --project tests/Shapers.Platform.Tests
           dotnet test --no-build -c Release --project tests/Modules/Shapers.Identity.Tests
           dotnet test --no-build -c Release --project tests/Modules/Shapers.People.Tests
+          dotnet test --no-build -c Release --project tests/Modules/Shapers.Media.Tests
 
       - name: Integration tests (PostgreSQL via Testcontainers)
         run: dotnet test --no-build -c Release --project tests/Shapers.IntegrationTests

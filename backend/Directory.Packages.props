@@ -19,6 +19,8 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.12" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.10" />
+    <!-- Files -->
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.29.2" />
     <!-- Jobs -->
     <PackageVersion Include="Hangfire.Core" Version="1.8.25" />
     <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.25" />

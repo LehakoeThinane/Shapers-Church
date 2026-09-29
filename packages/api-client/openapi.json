@@ -25,6 +25,19 @@
         }
       }
     },
+    "/podcast.xml": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "PodcastFeed",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/admin/audit": {
       "get": {
         "tags": [
@@ -1581,6 +1594,996 @@
           }
         }
       }
+    },
+    "/api/media/sermons": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "SearchSermons",
+        "parameters": [
+          {
+            "name": "Q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Series",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SpeakerId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Book",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Topic",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Year",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfSermonSummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/sermons/{slugOrId}": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "GetSermon",
+        "parameters": [
+          {
+            "name": "slugOrId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/series": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "ListPublicSeries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/series/{slug}": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "GetSeries",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/speakers": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "ListPublicSpeakers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpeakerDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminListSermons",
+        "parameters": [
+          {
+            "name": "Q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SermonStatus"
+            }
+          },
+          {
+            "name": "SeriesId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfSermonAdminListItemDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateSermon",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSermonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminGetSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSermonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "DeleteSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/audio": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "SetSermonAudio",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSermonAssetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/notes-pdf": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "SetSermonNotesPdf",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSermonAssetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/publish": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "PublishSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/schedule": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ScheduleSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/unpublish": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UnpublishSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/archive": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ArchiveSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/restore": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "RestoreSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/scripture-check": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CheckScripture",
+        "parameters": [
+          {
+            "name": "text",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScriptureCheckDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/import/youtube": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ImportFromYouTube",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/series": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminListSeries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateSeries",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSeriesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/series/{id}": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateSeries",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSeriesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/speakers": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AdminListSpeakers",
+        "parameters": [
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpeakerDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateSpeaker",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSpeakerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpeakerDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/speakers/{id}": {
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateSpeaker",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSpeakerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpeakerDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/uploads": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "StartUpload",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartUploadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/uploads/{id}/complete": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CompleteUpload",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/playback": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "ContinueListening",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContinueListeningDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/playback/{sermonId}": {
+      "put": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "UpdatePlayback",
+        "parameters": [
+          {
+            "name": "sermonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaybackUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1642,6 +2645,80 @@
           "countryCode": {
             "type": "string",
             "default": "ZA"
+          }
+        }
+      },
+      "AssetDto": {
+        "required": [
+          "id",
+          "kind",
+          "url",
+          "contentType",
+          "sizeBytes",
+          "durationSeconds",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/MediaKind"
+          },
+          "url": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "durationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MediaAssetStatus"
+          }
+        }
+      },
+      "AudioDto": {
+        "required": [
+          "assetId",
+          "url",
+          "contentType",
+          "sizeBytes",
+          "durationSeconds"
+        ],
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "durationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1814,6 +2891,21 @@
           }
         }
       },
+      "CompleteUploadRequest": {
+        "required": [
+          "durationSeconds"
+        ],
+        "type": "object",
+        "properties": {
+          "durationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "ConsentDecision": {
         "required": [
           "purpose",
@@ -1919,6 +3011,27 @@
           "Mobile",
           "WhatsApp"
         ]
+      },
+      "ContinueListeningDto": {
+        "required": [
+          "sermon",
+          "positionSeconds",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "sermon": {
+            "$ref": "#/components/schemas/SermonSummaryDto"
+          },
+          "positionSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
       },
       "CreateCampusRequest": {
         "required": [
@@ -2296,6 +3409,35 @@
           "Child"
         ]
       },
+      "ImportResultDto": {
+        "required": [
+          "found",
+          "created",
+          "alreadyImported",
+          "createdTitles"
+        ],
+        "type": "object",
+        "properties": {
+          "found": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "created": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alreadyImported": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdTitles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "JourneyStage": {
         "enum": [
           "Visitor",
@@ -2323,6 +3465,19 @@
             "type": "string"
           }
         }
+      },
+      "MediaAssetStatus": {
+        "enum": [
+          "Pending",
+          "Ready"
+        ]
+      },
+      "MediaKind": {
+        "enum": [
+          "Audio",
+          "NotesPdf",
+          "Image"
+        ]
       },
       "MembershipStatusDto": {
         "required": [
@@ -2561,6 +3716,64 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PersonListItemDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResultOfSermonAdminListItemDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SermonAdminListItemDto"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResultOfSermonSummaryDto": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SermonSummaryDto"
             }
           },
           "page": {
@@ -2877,6 +4090,18 @@
           "Merged"
         ]
       },
+      "PlaybackUpdateRequest": {
+        "required": [
+          "positionSeconds"
+        ],
+        "type": "object",
+        "properties": {
+          "positionSeconds": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "PreferencesRequest": {
         "required": [
           "palette"
@@ -3093,6 +4318,175 @@
           }
         }
       },
+      "SaveSeriesRequest": {
+        "required": [
+          "title",
+          "description",
+          "startsOn",
+          "endsOn",
+          "artworkAssetId"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "endsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "artworkAssetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "SaveSermonRequest": {
+        "required": [
+          "title",
+          "preachedOn",
+          "seriesId",
+          "summary",
+          "notes",
+          "topics",
+          "speakerIds",
+          "scripture",
+          "videoUrl",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "seriesId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "speakerIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "scripture": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "videoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SaveSpeakerRequest": {
+        "required": [
+          "name",
+          "title",
+          "bio",
+          "personId",
+          "photoAssetId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bio": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "photoAssetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "ScheduleRequest": {
+        "required": [
+          "publishAt"
+        ],
+        "type": "object",
+        "properties": {
+          "publishAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "ScopeSummary": {
         "required": [
           "path",
@@ -3120,6 +4514,425 @@
           }
         }
       },
+      "ScriptureCheckDto": {
+        "required": [
+          "recognised",
+          "unrecognised"
+        ],
+        "type": "object",
+        "properties": {
+          "recognised": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unrecognised": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ScriptureDto": {
+        "required": [
+          "display",
+          "bookNumber",
+          "book",
+          "chapterFrom",
+          "verseFrom",
+          "chapterTo",
+          "verseTo"
+        ],
+        "type": "object",
+        "properties": {
+          "display": {
+            "type": "string"
+          },
+          "bookNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "book": {
+            "type": "string"
+          },
+          "chapterFrom": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "verseFrom": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "chapterTo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "verseTo": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "SeriesDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "description",
+          "artworkUrl",
+          "startsOn",
+          "endsOn",
+          "scope",
+          "sermonCount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "artworkUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "endsOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "sermonCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SermonAdminDto": {
+        "required": [
+          "sermon",
+          "status",
+          "publishAt",
+          "scope",
+          "importSource",
+          "publishProblems",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "sermon": {
+            "$ref": "#/components/schemas/SermonDetailDto"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SermonStatus"
+          },
+          "publishAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "importSource": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "publishProblems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SermonAdminListItemDto": {
+        "required": [
+          "id",
+          "title",
+          "preachedOn",
+          "status",
+          "publishAt",
+          "speakers",
+          "seriesTitle",
+          "hasAudio",
+          "hasVideo"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SermonStatus"
+          },
+          "publishAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "speakers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "seriesTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hasAudio": {
+            "type": "boolean"
+          },
+          "hasVideo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SermonDetailDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "preachedOn",
+          "summary",
+          "notes",
+          "speakers",
+          "series",
+          "scripture",
+          "topics",
+          "video",
+          "audio",
+          "notesPdfUrl",
+          "publishedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "speakers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpeakerDto"
+            }
+          },
+          "series": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SeriesDto"
+              }
+            ]
+          },
+          "scripture": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScriptureDto"
+            }
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VideoDto"
+              }
+            ]
+          },
+          "audio": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudioDto"
+              }
+            ]
+          },
+          "notesPdfUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "publishedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "SermonStatus": {
+        "enum": [
+          "Draft",
+          "Scheduled",
+          "Published",
+          "Archived"
+        ]
+      },
+      "SermonSummaryDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "preachedOn",
+          "speakers",
+          "seriesTitle",
+          "seriesSlug",
+          "scripture",
+          "thumbnailUrl",
+          "audioDurationSeconds",
+          "hasAudio",
+          "hasVideo"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "preachedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "speakers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "seriesTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "seriesSlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scripture": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "thumbnailUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "audioDurationSeconds": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "hasAudio": {
+            "type": "boolean"
+          },
+          "hasVideo": {
+            "type": "boolean"
+          }
+        }
+      },
       "SetPasswordRequest": {
         "required": [
           "userId",
@@ -3137,6 +4950,21 @@
           },
           "password": {
             "type": "string"
+          }
+        }
+      },
+      "SetSermonAssetRequest": {
+        "required": [
+          "assetId"
+        ],
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           }
         }
       },
@@ -3178,6 +5006,55 @@
           "SignedIn",
           "RegistrationRequired"
         ]
+      },
+      "SpeakerDto": {
+        "required": [
+          "id",
+          "name",
+          "title",
+          "bio",
+          "photoUrl",
+          "personId",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bio": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "photoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
       },
       "StaffLoginRequestDto": {
         "required": [
@@ -3253,6 +5130,46 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "StartUploadRequest": {
+        "required": [
+          "kind",
+          "fileName",
+          "contentType",
+          "sizeBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/MediaKind"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "StartUploadResponse": {
+        "required": [
+          "assetId",
+          "upload"
+        ],
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "upload": {
+            "$ref": "#/components/schemas/UploadTarget"
           }
         }
       },
@@ -3422,6 +5339,33 @@
           }
         }
       },
+      "UploadTarget": {
+        "required": [
+          "url",
+          "method",
+          "headers",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "VerifyCodeRequest": {
         "required": [
           "challengeId",
@@ -3444,12 +5388,43 @@
             ]
           }
         }
+      },
+      "VideoDto": {
+        "required": [
+          "provider",
+          "externalId",
+          "watchUrl",
+          "thumbnailUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/VideoProvider"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "watchUrl": {
+            "type": "string"
+          },
+          "thumbnailUrl": {
+            "type": "string"
+          }
+        }
+      },
+      "VideoProvider": {
+        "enum": [
+          "YouTube"
+        ]
       }
     }
   },
   "tags": [
     {
       "name": "Church"
+    },
+    {
+      "name": "Sermons"
     },
     {
       "name": "Audit"
@@ -3468,6 +5443,9 @@
     },
     {
       "name": "Access"
+    },
+    {
+      "name": "Sermons admin"
     }
   ]
 }

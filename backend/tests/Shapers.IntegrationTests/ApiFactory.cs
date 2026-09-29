@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Shapers.Identity.Application;
+using Shapers.Media.Application;
 using Testcontainers.PostgreSql;
 
 namespace Shapers.IntegrationTests;
@@ -19,6 +20,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public const string Csrf = "X-Shapers-CSRF";
 
     private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("pgvector/pgvector:pg17").Build();
+    private readonly string _mediaPath = Path.Combine(Path.GetTempPath(), "shapers-tests", Guid.NewGuid().ToString("N"));
 
     public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { Converters = { new JsonStringEnumConverter() } };
 
@@ -32,6 +34,11 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         await base.DisposeAsync();
         await _postgres.DisposeAsync();
+        if (Directory.Exists(_mediaPath))
+        {
+            Directory.Delete(_mediaPath, recursive: true);
+        }
+
         GC.SuppressFinalize(this);
     }
 
@@ -46,9 +53,11 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Auth:Otp:HashKey", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
         builder.UseSetting("Auth:Security:RequireMfaForSensitivePermissions", RequireMfa ? "true" : "false");
         builder.UseSetting("RateLimits:AuthPerMinute", "10000");
+        builder.UseSetting("Media:Storage:LocalPath", _mediaPath);
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<ISmsSender>(Sms);
+            services.AddSingleton<IYouTubeClient, FakeYouTubeClient>();
         });
     }
 
@@ -103,4 +112,17 @@ internal static class HttpExtensions
 
     public static Task<HttpResponseMessage> PostJsonAsync(this HttpClient client, string url, object body) =>
         client.PostAsJsonAsync(url, body, ApiFactory.Json);
+}
+
+/// <summary>Stands in for the YouTube Data API: two videos in the shapes the church actually uses.</summary>
+public sealed class FakeYouTubeClient : IYouTubeClient
+{
+    public bool IsConfigured => true;
+
+    public Task<IReadOnlyList<YouTubeVideo>> ListChannelVideosAsync(string channelId, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<YouTubeVideo>>(
+        [
+            new("y0jPz7KFw_o", "Psalm 42: 1-11 Deep calls unto deep", new DateTimeOffset(2026, 8, 30, 8, 0, 0, TimeSpan.Zero), null),
+            new("abcdefghijk", "Faith that works", new DateTimeOffset(2026, 8, 23, 8, 0, 0, TimeSpan.Zero), null),
+        ]);
 }

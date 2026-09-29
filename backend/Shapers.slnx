@@ -22,6 +22,13 @@
     <Project Path="src/Modules/Identity/Shapers.Identity.Domain/Shapers.Identity.Domain.csproj" />
     <Project Path="src/Modules/Identity/Shapers.Identity.Infrastructure/Shapers.Identity.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Media/">
+    <Project Path="src/Modules/Media/Shapers.Media.Api/Shapers.Media.Api.csproj" />
+    <Project Path="src/Modules/Media/Shapers.Media.Application/Shapers.Media.Application.csproj" />
+    <Project Path="src/Modules/Media/Shapers.Media.Contracts/Shapers.Media.Contracts.csproj" />
+    <Project Path="src/Modules/Media/Shapers.Media.Domain/Shapers.Media.Domain.csproj" />
+    <Project Path="src/Modules/Media/Shapers.Media.Infrastructure/Shapers.Media.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/People/">
     <Project Path="src/Modules/People/Shapers.People.Api/Shapers.People.Api.csproj" />
     <Project Path="src/Modules/People/Shapers.People.Application/Shapers.People.Application.csproj" />
@@ -36,6 +43,7 @@
   </Folder>
   <Folder Name="/tests/Modules/">
     <Project Path="tests/Modules/Shapers.Identity.Tests/Shapers.Identity.Tests.csproj" />
+    <Project Path="tests/Modules/Shapers.Media.Tests/Shapers.Media.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.People.Tests/Shapers.People.Tests.csproj" />
   </Folder>
 </Solution>

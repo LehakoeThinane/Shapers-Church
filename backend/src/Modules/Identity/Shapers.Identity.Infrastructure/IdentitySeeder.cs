@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Shapers.Church.Contracts;
 using Shapers.Identity.Contracts;
 using Shapers.Identity.Domain;
+using Shapers.Media.Contracts;
 using Shapers.People.Contracts;
 using Shapers.Platform.Authorization;
 using Shapers.Platform.Messaging;
@@ -17,6 +18,7 @@ public static class SystemRoles
     public const string CampusPastor = "Campus pastor";
     public const string CampusAdministrator = "Campus administrator";
     public const string MinistryLeader = "Ministry leader";
+    public const string MediaTeam = "Media team";
 
     /// <summary>Built-in roles. The church administrator always holds every permission in the catalogue.</summary>
     public static IReadOnlyDictionary<string, (string Description, IReadOnlyList<string> Permissions)> Definitions(PermissionCatalog catalog) =>
@@ -33,6 +35,10 @@ public static class SystemRoles
                 PeoplePermissions.ProfilesView, PeoplePermissions.ProfilesEdit, ChurchPermissions.MinistriesManage,
             ]),
             [MinistryLeader] = ("Leads a ministry; can see the people in it.", [PeoplePermissions.ProfilesView]),
+            [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",
+            [
+                MediaPermissions.SermonsEdit, MediaPermissions.SermonsPublish, MediaPermissions.SpeakersManage,
+            ]),
         };
 }
 

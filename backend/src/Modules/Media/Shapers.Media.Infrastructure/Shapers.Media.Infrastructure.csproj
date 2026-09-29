@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Shapers.Media.Application/Shapers.Media.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shapers.Media.Tests" />
+    <InternalsVisibleTo Include="Shapers.IntegrationTests" />
+  </ItemGroup>
+</Project>

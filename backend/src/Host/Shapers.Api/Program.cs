@@ -8,6 +8,7 @@ using Scalar.AspNetCore;
 using Shapers.Api.Hosting;
 using Shapers.Church.Api;
 using Shapers.Identity.Api;
+using Shapers.Media.Api;
 using Shapers.People.Api;
 using Shapers.Platform;
 using Shapers.Platform.Modules;
@@ -31,7 +32,7 @@ if (generatingOpenApi)
 }
 
 // Initialisation order matters (see DatabaseInitialiser).
-IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule()];
+IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule(), new MediaModule()];
 
 builder.Services.AddPlatform(builder.Configuration);
 foreach (var module in modules)
