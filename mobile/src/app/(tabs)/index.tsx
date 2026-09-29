@@ -6,8 +6,10 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Glass } from '@/components/glass';
 import { Screen } from '@/components/screen';
 import { AppText, Icon } from '@/components/text';
+import { EventRow } from '@/components/event-bits';
 import { SermonRow } from '@/components/sermon-bits';
 import { api, unwrap, useSession } from '@/lib/api';
+import { eventWhen, useMyRegistrations, useUpcomingEvents } from '@/lib/events';
 import { startsIn, useLiveNow } from '@/lib/live';
 import { useContinueListening, useSermons } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
@@ -39,6 +41,8 @@ export default function HomeScreen() {
   const live = useLiveNow().data;
   const isLive = live?.state === 'Live';
   const stream = live?.stream;
+  const events = useUpcomingEvents().data ?? [];
+  const myNext = useMyRegistrations().upcoming[0];
 
   const firstName = profile.data?.preferredName ?? profile.data?.firstName;
   const initials = profile.data ? `${profile.data.firstName[0] ?? ''}${profile.data.lastName[0] ?? ''}` : '';
@@ -118,10 +122,35 @@ export default function HomeScreen() {
         )
       )}
 
+      {myNext && (
+        <Link href="/tickets" asChild>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Your ticket for ${myNext.eventTitle}`}>
+            <Glass style={styles.ticket}>
+              <Icon name={{ ios: 'ticket', android: 'confirmation_number' }} />
+              <View style={styles.flex}>
+                <AppText style={text.headline} numberOfLines={1}>
+                  {myNext.eventTitle}
+                </AppText>
+                <AppText tone="tertiary" style={text.caption}>
+                  {myNext.status === 'Waitlisted' ? 'Waiting list' : eventWhen(myNext.startsAt)}
+                </AppText>
+              </View>
+              <AppText tone="interactive" style={text.callout}>
+                My tickets
+              </AppText>
+            </Glass>
+          </Pressable>
+        </Link>
+      )}
+
       <Section title="Upcoming">
-        <Glass style={styles.card}>
-          <AppText tone="secondary">Events and registrations will appear here.</AppText>
-        </Glass>
+        {events.length > 0 ? (
+          events.slice(0, 3).map((e) => <EventRow key={e.id} event={e} />)
+        ) : (
+          <Glass style={styles.card}>
+            <AppText tone="secondary">No events coming up right now.</AppText>
+          </Glass>
+        )}
       </Section>
 
       <Section title="My church">
@@ -171,4 +200,5 @@ const styles = StyleSheet.create({
   quickIcon: { width: 58, height: 58, alignItems: 'center', justifyContent: 'center' },
   section: { gap: space.sm },
   card: { padding: space.lg, gap: space.xxs },
+  ticket: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md },
 });

@@ -9,6 +9,7 @@ import { Button, Loading, Select } from './ui';
 
 const nav = [
   { to: '/people', label: 'People', permission: Permissions.peopleView },
+  { to: '/events', label: 'Events', permission: Permissions.eventsCheckIn },
   { to: '/connect', label: 'Connect cards', permission: Permissions.peopleView },
   { to: '/duplicates', label: 'Duplicates', permission: Permissions.peopleMerge },
   { to: '/sermons', label: 'Sermons', permission: Permissions.mediaEdit },

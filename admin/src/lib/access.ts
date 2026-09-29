@@ -41,4 +41,9 @@ export const Permissions = {
   mediaPublish: 'media.sermons.publish',
   speakersManage: 'media.speakers.manage',
   livestreamManage: 'media.livestream.manage',
+  eventsEdit: 'events.edit',
+  eventsPublish: 'events.publish',
+  eventsRegistrationsView: 'events.registrations.view',
+  eventsRegistrationsManage: 'events.registrations.manage',
+  eventsCheckIn: 'events.checkin',
 } as const;
