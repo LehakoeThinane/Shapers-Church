@@ -8,6 +8,7 @@ import { Screen } from '@/components/screen';
 import { AppText, Icon } from '@/components/text';
 import { SermonRow } from '@/components/sermon-bits';
 import { api, unwrap, useSession } from '@/lib/api';
+import { startsIn, useLiveNow } from '@/lib/live';
 import { useContinueListening, useSermons } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
 import { serif, text } from '@/theme/type';
@@ -35,6 +36,9 @@ export default function HomeScreen() {
   const church = useQuery({ queryKey: ['church'], queryFn: async () => unwrap(await api.GET('/api/church')) });
   const latest = useSermons({ pageSize: 1 }).data?.items[0];
   const continueListening = useContinueListening().data ?? [];
+  const live = useLiveNow().data;
+  const isLive = live?.state === 'Live';
+  const stream = live?.stream;
 
   const firstName = profile.data?.preferredName ?? profile.data?.firstName;
   const initials = profile.data ? `${profile.data.firstName[0] ?? ''}${profile.data.lastName[0] ?? ''}` : '';
@@ -64,21 +68,21 @@ export default function HomeScreen() {
       <Glass cornerRadius={radius.card} style={styles.live}>
         <View style={[styles.video, { backgroundColor: palette.color.video.middle }]}>
           <View style={[styles.pill, { backgroundColor: palette.color.accent }]}>
-            <AppText style={[text.label, { color: palette.color.text.onAccent }]}>Sunday</AppText>
+            <AppText style={[text.label, { color: palette.color.text.onAccent }]}>{isLive ? '● Live now' : 'Sunday'}</AppText>
           </View>
-          <AppText style={[serif, styles.videoTitle, { color: palette.color.text.primary }]}>Building productive people</AppText>
+          <AppText style={[serif, styles.videoTitle, { color: palette.color.text.primary }]}>{stream?.title ?? 'Building productive people'}</AppText>
         </View>
         <View style={styles.liveMeta}>
           <View style={styles.flex}>
-            <AppText style={text.headline}>Next service</AppText>
+            <AppText style={text.headline}>{isLive ? 'Watch the service' : 'Next service'}</AppText>
             <AppText tone="tertiary" style={text.caption}>
-              Services will stream here live
+              {isLive ? 'Notes, scripture and Give are in the Live tab' : stream ? startsIn(stream.scheduledStart) : 'Services will stream here live'}
             </AppText>
           </View>
           <Link href="/live" asChild>
             <Pressable accessibilityRole="button">
               <AppText tone="interactive" style={text.callout}>
-                Open Live
+                {isLive ? 'Watch now' : 'Open Live'}
               </AppText>
             </Pressable>
           </Link>

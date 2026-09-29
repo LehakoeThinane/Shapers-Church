@@ -1,17 +1,24 @@
 import { Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold, Figtree_700Bold } from '@expo-google-fonts/figtree';
 import { Newsreader_400Regular_Italic } from '@expo-google-fonts/newsreader';
 import { isPalettePreference } from '@shapers/tokens';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { focusManager, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { api, ApiError, restoreSession, unwrap, useSession } from '@/lib/api';
 import { ThemeProvider, usePaletteStore, useTheme } from '@/theme/theme';
 
 void SplashScreen.preventAutoHideAsync();
+
+// Pause polling (e.g. the Live tab) while the app is in the background, to save data and battery.
+focusManager.setEventListener((setFocused) => {
+  const subscription = AppState.addEventListener('change', (state) => setFocused(state === 'active'));
+  return () => subscription.remove();
+});
 
 export default function RootLayout() {
   const [queryClient] = useState(
