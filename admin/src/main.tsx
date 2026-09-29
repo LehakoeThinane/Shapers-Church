@@ -10,6 +10,9 @@ import { AuditPage, ChurchPage, DuplicatesPage, RolesPage, SecurityPage } from '
 import { LoginPage, SetPasswordPage } from './pages/LoginPage';
 import { NewPersonPage, PeoplePage } from './pages/PeoplePage';
 import { PersonPage } from './pages/PersonPage';
+import { MediaLibraryPage } from './pages/MediaLibraryPage';
+import { SermonEditorPage } from './pages/SermonEditorPage';
+import { SermonsPage } from './pages/SermonsPage';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -38,6 +41,10 @@ const router = createBrowserRouter([
       { path: 'people/new', element: <NewPersonPage /> },
       { path: 'people/:id', element: <PersonPage /> },
       { path: 'duplicates', element: <DuplicatesPage /> },
+      { path: 'sermons', element: <SermonsPage /> },
+      { path: 'sermons/new', element: <SermonEditorPage /> },
+      { path: 'sermons/library', element: <MediaLibraryPage /> },
+      { path: 'sermons/:id', element: <SermonEditorPage /> },
       { path: 'church', element: <ChurchPage /> },
       { path: 'access', element: <RolesPage /> },
       { path: 'audit', element: <AuditPage /> },

@@ -37,4 +37,7 @@ export const Permissions = {
   rolesManage: 'identity.roles.manage',
   grantsManage: 'identity.grants.manage',
   auditView: 'platform.audit.view',
+  mediaEdit: 'media.sermons.edit',
+  mediaPublish: 'media.sermons.publish',
+  speakersManage: 'media.speakers.manage',
 } as const;

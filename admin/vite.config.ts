@@ -8,6 +8,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': 'http://localhost:5080',
+      // Development file storage and the podcast feed are served by the API too.
+      '/media-files': 'http://localhost:5080',
+      '/podcast.xml': 'http://localhost:5080',
     },
   },
 });
