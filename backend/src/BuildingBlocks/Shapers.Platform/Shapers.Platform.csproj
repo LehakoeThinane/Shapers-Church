@@ -11,5 +11,6 @@
     <PackageReference Include="EFCore.NamingConventions" />
     <PackageReference Include="Hangfire.Core" />
     <PackageReference Include="libphonenumber-csharp" />
+    <PackageReference Include="Azure.Communication.Email" />
   </ItemGroup>
 </Project>

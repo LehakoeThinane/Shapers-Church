@@ -24,6 +24,7 @@ public static class PeopleInfrastructure
         services.AddScoped<MergeService>();
         services.AddScoped<MyProfileService>();
         services.AddScoped<ConnectCardService>();
+        services.AddScoped<IGuestRecords, GuestRecords>();
         services.AddScoped<IPeopleDirectory, PeopleDirectory>();
         services.AddScoped<IPeopleRegistration, PeopleRegistration>();
         return services;

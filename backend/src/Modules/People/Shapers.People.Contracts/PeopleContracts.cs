@@ -24,7 +24,7 @@ public sealed record ConnectCardSubmittedIntegrationEvent(Guid CardId, Guid Pers
 
 public sealed record PersonMovedCampusIntegrationEvent(Guid PersonId, string FromScope, string ToScope) : IntegrationEvent;
 
-public sealed record PersonSummary(Guid Id, string DisplayName, string Scope, string Status, Guid? MergedIntoId);
+public sealed record PersonSummary(Guid Id, string DisplayName, string Scope, string Status, Guid? MergedIntoId, string? Email = null);
 
 public sealed record ConsentDecision(string Purpose, bool Granted);
 
@@ -40,10 +40,45 @@ public sealed record SelfRegistration(
 
 public sealed record RegistrationOutcome(Guid PersonId, bool LinkedExistingRecord);
 
+public sealed record HouseholdMemberSummary(Guid PersonId, string DisplayName, bool IsChild);
+
 public interface IPeopleDirectory
 {
     /// <summary>Follows merge tombstones, so a stale ID still returns the surviving person.</summary>
     Task<PersonSummary?> GetAsync(Guid personId, CancellationToken cancellationToken = default);
+
+    /// <summary>Summaries for many people at once (unknown IDs are skipped).</summary>
+    Task<IReadOnlyDictionary<Guid, PersonSummary>> GetManyAsync(IReadOnlyCollection<Guid> personIds, CancellationToken cancellationToken = default);
+
+    /// <summary>Everyone who shares a household with this person, excluding them.</summary>
+    Task<IReadOnlyList<HouseholdMemberSummary>> GetHouseholdMembersAsync(Guid personId, CancellationToken cancellationToken = default);
+}
+
+public enum GuestOrigin
+{
+    ConnectCard,
+    EventRegistration,
+}
+
+/// <summary>Someone who isn't signed in, giving their details with consent (e.g. registering for an event).</summary>
+public sealed record GuestDetails(
+    string? FirstName,
+    string? LastName,
+    string? Mobile,
+    string? Email,
+    bool EmailVerified,
+    bool ConsentToKeepDetails,
+    GuestOrigin Origin,
+    bool FromWebsite,
+    string? PolicyVersion);
+
+public interface IGuestRecords
+{
+    /// <summary>
+    /// Creates a new church record for a guest. Never attaches to an existing record (anyone can type anyone's
+    /// details); a possible duplicate is flagged for staff to review instead.
+    /// </summary>
+    Task<Result<Guid>> CreateAsync(GuestDetails guest, CancellationToken cancellationToken = default);
 }
 
 public interface IPeopleRegistration

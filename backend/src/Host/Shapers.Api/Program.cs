@@ -8,9 +8,11 @@ using Scalar.AspNetCore;
 using Shapers.Api.Hosting;
 using Shapers.Church.Api;
 using Shapers.Identity.Api;
+using Shapers.Events.Api;
 using Shapers.Media.Api;
 using Shapers.People.Api;
 using Shapers.Platform;
+using Shapers.Platform.Email;
 using Shapers.Platform.Modules;
 using Shapers.Platform.Web;
 
@@ -32,7 +34,7 @@ if (generatingOpenApi)
 }
 
 // Initialisation order matters (see DatabaseInitialiser).
-IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule(), new MediaModule()];
+IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule(), new MediaModule(), new EventsModule()];
 
 builder.Services.AddPlatform(builder.Configuration);
 foreach (var module in modules)
@@ -40,6 +42,7 @@ foreach (var module in modules)
     module.AddServices(builder.Services, builder.Configuration, builder.Environment);
 }
 
+builder.Services.AddEmail(builder.Configuration, builder.Environment);
 builder.Services.AddShapersJobs(builder.Configuration);
 builder.Services.ConfigureHttpJsonOptions(o =>
 {

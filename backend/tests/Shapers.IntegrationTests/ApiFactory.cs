@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Shapers.Identity.Application;
 using Shapers.Media.Application;
+using Shapers.Platform.Email;
 using Testcontainers.PostgreSql;
 
 namespace Shapers.IntegrationTests;
@@ -25,6 +26,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { Converters = { new JsonStringEnumConverter() } };
 
     public CapturingSmsSender Sms { get; } = new();
+
+    public CapturingEmailSender Email { get; } = new();
 
     protected virtual bool RequireMfa => false;
 
@@ -52,11 +55,13 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Auth:Jwt:SigningKey", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
         builder.UseSetting("Auth:Otp:HashKey", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
         builder.UseSetting("Auth:Security:RequireMfaForSensitivePermissions", RequireMfa ? "true" : "false");
+        builder.UseSetting("Security:HashKey", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
         builder.UseSetting("RateLimits:AuthPerMinute", "10000");
         builder.UseSetting("Media:Storage:LocalPath", _mediaPath);
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<ISmsSender>(Sms);
+            services.AddSingleton<IEmailSender>(Email);
             services.AddSingleton<IYouTubeClient, FakeYouTubeClient>();
         });
     }
@@ -96,6 +101,22 @@ public sealed class CapturingSmsSender : ISmsSender
     }
 
     public string LastCodeFor(string phoneE164) => _lastMessage[phoneE164][..6];
+}
+
+public sealed class CapturingEmailSender : IEmailSender
+{
+    private readonly ConcurrentQueue<EmailMessage> _sent = new();
+
+    public IReadOnlyList<EmailMessage> Sent => [.. _sent];
+
+    public Task SendAsync(EmailMessage message, CancellationToken cancellationToken)
+    {
+        _sent.Enqueue(message);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Verification emails start with the code: "123456 is your Shapers Church code".</summary>
+    public string LastCodeFor(string email) => _sent.Last(m => m.To == email && m.Subject.EndsWith("is your Shapers Church code", StringComparison.Ordinal)).Subject[..6];
 }
 
 internal static class HttpExtensions
