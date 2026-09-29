@@ -57,6 +57,20 @@ pnpm mobile    # Expo dev server
 
 In Development, sign-in codes for the app are written to the API console instead of being sent by SMS.
 
+### Try the app on your phone (Expo Go)
+
+1. Install **Expo Go** from the App Store or Play Store. Phone and PC must be on the same Wi-Fi.
+2. Let the phone reach the API (once, in an **administrator** PowerShell):
+   ```powershell
+   New-NetFirewallRule -DisplayName "Shapers API (dev)" -Direction Inbound -Protocol TCP -LocalPort 5080 -Action Allow -Profile Private
+   ```
+   The Wi-Fi network must be set to *Private* in Windows settings.
+3. Run the API on the network: `dotnet run --project backend/src/Host/Shapers.Api --launch-profile lan`
+4. Tell the app where the API is: copy `mobile/.env.example` to `mobile/.env.local` and set your PC's Wi-Fi address (`ipconfig`).
+5. Start Expo: `pnpm mobile`, then scan the QR code (Camera app on iPhone, Expo Go on Android).
+
+Development builds include demo content (two sermons from the church's site and a Sunday livestream) when the sermon library is empty. Sign in on the phone with any mobile number: the code appears in the API console.
+
 ## Everyday commands
 
 | Command | Does |

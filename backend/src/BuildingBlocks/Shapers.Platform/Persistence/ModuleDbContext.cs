@@ -22,6 +22,8 @@ public abstract class ModuleDbContext(DbContextOptions options) : DbContext(opti
         ConfigureModel(modelBuilder);
     }
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) => configurationBuilder.UseUtcTimestamps();
+
     protected abstract void ConfigureModel(ModelBuilder modelBuilder);
 
     /// <summary>

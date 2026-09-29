@@ -53,6 +53,20 @@ public sealed class LivestreamTests(ApiFactory api) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Times_sent_with_a_south_african_offset_are_stored_as_the_same_instant()
+    {
+        var admin = await api.SignInAdminAsync();
+        var sunday = new DateTimeOffset(2026, 10, 11, 9, 0, 0, TimeSpan.FromHours(2));
+
+        var stream = await (await admin.PostJsonAsync("/api/admin/media/livestreams", new SaveLivestreamRequest("Local time", sunday, null, null, null, null)))
+            .ReadAsync<LivestreamAdminDto>();
+
+        var stored = await (await admin.GetAsync($"/api/admin/media/livestreams/{stream.Id}")).ReadAsync<LivestreamAdminDto>();
+        Assert.Equal(sunday, stored.ScheduledStart);
+        Assert.Equal(TimeSpan.Zero, stored.ScheduledStart.Offset);
+    }
+
+    [Fact]
     public async Task Going_live_without_a_video_link_is_refused()
     {
         var admin = await api.SignInAdminAsync();

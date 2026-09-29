@@ -57,6 +57,7 @@ public static class MediaInfrastructure
         services.AddScoped<PodcastFeedBuilder>();
         services.AddScoped<YouTubeImporter>();
         services.AddScoped<LivestreamService>();
+        services.AddScoped<MediaDemoSeeder>();
 
         services.AddSingleton(new RecurringJobDefinition("media-publish-scheduled", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<ScheduledPublisher>().PublishDueAsync(ct)));
@@ -69,6 +70,10 @@ public static class MediaInfrastructure
     {
         await using var scope = services.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<MediaDbContext>().Database.MigrateAsync(cancellationToken);
+        if (scope.ServiceProvider.GetRequiredService<IHostEnvironment>().IsDevelopment())
+        {
+            await scope.ServiceProvider.GetRequiredService<MediaDemoSeeder>().SeedAsync(cancellationToken);
+        }
     }
 }
 
