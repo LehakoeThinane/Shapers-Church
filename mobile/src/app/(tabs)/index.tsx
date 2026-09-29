@@ -6,7 +6,9 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Glass } from '@/components/glass';
 import { Screen } from '@/components/screen';
 import { AppText, Icon } from '@/components/text';
+import { SermonRow } from '@/components/sermon-bits';
 import { api, unwrap, useSession } from '@/lib/api';
+import { useContinueListening, useSermons } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
 import { serif, text } from '@/theme/type';
 
@@ -31,6 +33,8 @@ export default function HomeScreen() {
     enabled: status === 'signedIn',
   });
   const church = useQuery({ queryKey: ['church'], queryFn: async () => unwrap(await api.GET('/api/church')) });
+  const latest = useSermons({ pageSize: 1 }).data?.items[0];
+  const continueListening = useContinueListening().data ?? [];
 
   const firstName = profile.data?.preferredName ?? profile.data?.firstName;
   const initials = profile.data ? `${profile.data.firstName[0] ?? ''}${profile.data.lastName[0] ?? ''}` : '';
@@ -96,24 +100,19 @@ export default function HomeScreen() {
         ))}
       </View>
 
-      <Section title="Continue watching">
-        <Glass style={styles.row}>
-          <View style={[styles.thumb, { backgroundColor: palette.color.tile }]}>
-            <AppText style={[serif, styles.thumbText]} tone="accent">
-              S
-            </AppText>
-          </View>
-          <View style={styles.flex}>
-            <AppText style={text.headline}>Sermons arrive in V1</AppText>
-            <AppText tone="tertiary" style={text.caption}>
-              Audio-first, with downloads for offline listening
-            </AppText>
-            <View style={[styles.track, { backgroundColor: palette.color.track }]}>
-              <View style={[styles.progress, { backgroundColor: palette.appearance === 'dark' ? palette.color.accent : palette.color.interactive }]} />
-            </View>
-          </View>
-        </Glass>
-      </Section>
+      {continueListening.length > 0 ? (
+        <Section title="Continue listening">
+          {continueListening.slice(0, 3).map((c) => (
+            <SermonRow key={c.sermon.id} sermon={c.sermon} progressSeconds={c.positionSeconds} />
+          ))}
+        </Section>
+      ) : (
+        latest && (
+          <Section title="Latest sermon">
+            <SermonRow sermon={latest} />
+          </Section>
+        )
+      )}
 
       <Section title="Upcoming">
         <Glass style={styles.card}>
@@ -167,10 +166,5 @@ const styles = StyleSheet.create({
   quickItem: { alignItems: 'center', gap: 7, width: '24%' },
   quickIcon: { width: 58, height: 58, alignItems: 'center', justifyContent: 'center' },
   section: { gap: space.sm },
-  row: { flexDirection: 'row', gap: 12, alignItems: 'center', padding: space.sm },
-  thumb: { width: 74, height: 74, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  thumbText: { fontSize: 24 },
-  track: { height: 4, borderRadius: 4, overflow: 'hidden', marginTop: 8 },
-  progress: { width: '0%', height: '100%', borderRadius: 4 },
   card: { padding: space.lg, gap: space.xxs },
 });
