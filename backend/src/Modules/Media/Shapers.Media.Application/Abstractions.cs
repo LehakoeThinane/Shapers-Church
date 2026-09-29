@@ -17,6 +17,8 @@ public interface IMediaDb
 
     DbSet<PlaybackPosition> PlaybackPositions { get; }
 
+    DbSet<Livestream> Livestreams { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
@@ -95,5 +97,6 @@ public sealed class MediaPermissionProvider : IPermissionProvider
         new(MediaPermissions.SermonsEdit, "media", "Create and edit sermons, series and uploads"),
         new(MediaPermissions.SermonsPublish, "media", "Publish, schedule and archive sermons"),
         new(MediaPermissions.SpeakersManage, "media", "Add and edit speakers"),
+        new(MediaPermissions.LivestreamManage, "media", "Schedule livestreams, go live and show scripture"),
     ];
 }

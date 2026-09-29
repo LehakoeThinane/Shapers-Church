@@ -58,6 +58,14 @@ public sealed class MediaModule : IModule
                 (await service.SeriesBySlugAsync(slug, ct)).ToHttp())
             .WithName("GetSeries");
         media.MapGet("/speakers", (PublicMediaService service, CancellationToken ct) => service.SpeakersAsync(ct)).WithName("ListPublicSpeakers");
+
+        // Polled by every app on the Live tab during a service: a short shared cache keeps that cheap.
+        media.MapGet("/live", async (HttpContext http, LivestreamService service, CancellationToken ct) =>
+            {
+                http.Response.Headers.CacheControl = "public, max-age=10";
+                return TypedResults.Ok(await service.NowAsync(ct));
+            })
+            .WithName("LiveNow");
     }
 
     private static void MapAdmin(RouteGroupBuilder admin)
@@ -135,6 +143,35 @@ public sealed class MediaModule : IModule
                 (await service.SaveAsync(id, request, ct)).ToHttp())
             .WithName("UpdateSpeaker")
             .RequirePermission(MediaPermissions.SpeakersManage);
+
+        var live = admin.MapGroup("/livestreams").RequirePermission(MediaPermissions.LivestreamManage);
+        live.MapGet("/", (LivestreamService service, CancellationToken ct) => service.ListAsync(ct)).WithName("ListLivestreams");
+        live.MapGet("/{id:guid}", async (Guid id, LivestreamService service, CancellationToken ct) => (await service.GetAsync(id, ct)).ToHttp())
+            .WithName("GetLivestream");
+        live.MapPost("/", async (SaveLivestreamRequest request, LivestreamService service, CancellationToken ct) =>
+                (await service.CreateAsync(request, ct)).ToCreated(s => $"/api/admin/media/livestreams/{s.Id}"))
+            .WithName("CreateLivestream");
+        live.MapPut("/{id:guid}", async (Guid id, SaveLivestreamRequest request, LivestreamService service, CancellationToken ct) =>
+                (await service.UpdateAsync(id, request, ct)).ToHttp())
+            .WithName("UpdateLivestream");
+        live.MapPost("/{id:guid}/go-live", async (Guid id, LivestreamService service, CancellationToken ct) => (await service.GoLiveAsync(id, ct)).ToHttp())
+            .WithName("GoLive");
+        live.MapPost("/{id:guid}/end", async (Guid id, LivestreamService service, CancellationToken ct) => (await service.EndAsync(id, ct)).ToHttp())
+            .WithName("EndLivestream");
+        live.MapPost("/{id:guid}/cancel", async (Guid id, LivestreamService service, CancellationToken ct) => (await service.CancelAsync(id, ct)).ToHttp())
+            .WithName("CancelLivestream");
+        live.MapPost("/{id:guid}/cues", async (Guid id, AddCueRequest request, LivestreamService service, CancellationToken ct) =>
+                (await service.AddCueAsync(id, request, ct)).ToHttp())
+            .WithName("AddScriptureCue");
+        live.MapDelete("/{id:guid}/cues/{cueId:guid}", async (Guid id, Guid cueId, LivestreamService service, CancellationToken ct) =>
+                (await service.RemoveCueAsync(id, cueId, ct)).ToHttp())
+            .WithName("RemoveScriptureCue");
+        live.MapPost("/{id:guid}/on-screen", async (Guid id, ShowCueRequest request, LivestreamService service, CancellationToken ct) =>
+                (await service.ShowCueAsync(id, request, ct)).ToHttp())
+            .WithName("ShowScriptureCue");
+        live.MapPost("/{id:guid}/make-sermon", async (Guid id, LivestreamService service, CancellationToken ct) =>
+                (await service.MakeSermonAsync(id, ct)).ToHttp())
+            .WithName("MakeSermonFromLivestream");
 
         var uploads = admin.MapGroup("/uploads");
         uploads.MapPost("/", async (StartUploadRequest request, UploadService service, CancellationToken ct) => (await service.StartAsync(request, ct)).ToHttp())

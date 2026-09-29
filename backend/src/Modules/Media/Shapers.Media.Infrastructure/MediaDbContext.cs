@@ -23,6 +23,8 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
 
     public DbSet<PlaybackPosition> PlaybackPositions => Set<PlaybackPosition>();
 
+    public DbSet<Livestream> Livestreams => Set<Livestream>();
+
     Task<int> IMediaDb.SaveChangesAsync(CancellationToken cancellationToken) => SaveChangesAsync(cancellationToken);
 
     protected override void ConfigureModel(ModelBuilder modelBuilder)
@@ -113,6 +115,34 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
             b.HasIndex(a => a.StorageKey).IsUnique();
         });
 
+        modelBuilder.Entity<Livestream>(b =>
+        {
+            b.ToTable("livestreams");
+            b.Property(s => s.Id).ValueGeneratedNever();
+            b.Property(s => s.Title).HasMaxLength(150);
+            b.Property(s => s.Scope).HasMaxLength(512);
+            b.Property(s => s.Status).HasConversion<string>().HasMaxLength(20);
+            b.Property(s => s.GiveUrl).HasMaxLength(500);
+            b.Ignore(s => s.CurrentCue);
+            b.HasIndex(s => new { s.Status, s.ScheduledStart });
+            b.OwnsOne(s => s.Video, v =>
+            {
+                v.Property(x => x.Provider).HasConversion<string>().HasMaxLength(20);
+                v.Property(x => x.ExternalId).HasMaxLength(64);
+            });
+            b.OwnsMany(s => s.Cues, c =>
+            {
+                c.ToTable("livestream_cues");
+                c.WithOwner().HasForeignKey("LivestreamId");
+                c.HasKey(x => x.Id);
+                c.Property(x => x.Id).ValueGeneratedNever();
+                c.Property(x => x.Reference).HasMaxLength(100);
+                c.Property(x => x.Text).HasMaxLength(4000);
+            });
+            b.Navigation(s => s.Cues).HasField("_cues");
+            b.Property<uint>("xmin").IsRowVersion();
+        });
+
         modelBuilder.Entity<PlaybackPosition>(b =>
         {
             b.ToTable("playback_positions");
@@ -124,6 +154,7 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
     protected override IEnumerable<IIntegrationEvent> ToIntegrationEvents(IDomainEvent domainEvent) => domainEvent switch
     {
         SermonPublished e => [new SermonPublishedIntegrationEvent(e.SermonId, e.Title, e.Slug, e.Scope)],
+        LivestreamStarted e => [new LivestreamStartedIntegrationEvent(e.LivestreamId, e.Title, e.Scope)],
         _ => [],
     };
 }

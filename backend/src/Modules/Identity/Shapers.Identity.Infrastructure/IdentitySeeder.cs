@@ -37,7 +37,7 @@ public static class SystemRoles
             [MinistryLeader] = ("Leads a ministry; can see the people in it.", [PeoplePermissions.ProfilesView]),
             [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",
             [
-                MediaPermissions.SermonsEdit, MediaPermissions.SermonsPublish, MediaPermissions.SpeakersManage,
+                MediaPermissions.SermonsEdit, MediaPermissions.SermonsPublish, MediaPermissions.SpeakersManage, MediaPermissions.LivestreamManage,
             ]),
         };
 }

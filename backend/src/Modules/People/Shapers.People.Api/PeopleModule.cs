@@ -28,6 +28,14 @@ public sealed class PeopleModule : IModule
     {
         MapStaffEndpoints(endpoints.MapGroup("/api/admin").WithTags("People").RequireAuthorization());
         MapMemberEndpoints(endpoints.MapGroup("/api/me").WithTags("My profile").RequireAuthorization());
+
+        // Anyone can raise a hand, signed in or not; rate-limited like sign-in to keep bots out.
+        endpoints.MapPost("/api/connect", async (ConnectCardRequest request, ConnectCardService service, CancellationToken ct) =>
+                (await service.SubmitAsync(request, ct)).ToHttp())
+            .WithTags("Connect")
+            .WithName("SubmitConnectCard")
+            .AllowAnonymous()
+            .RequireRateLimiting(RateLimitPolicies.Auth);
     }
 
     private static void MapStaffEndpoints(RouteGroupBuilder admin)
@@ -110,6 +118,14 @@ public sealed class PeopleModule : IModule
         households.MapPost("/{id:guid}/primary-contact/{personId:guid}", async (Guid id, Guid personId, HouseholdService service, CancellationToken ct) =>
                 (await service.SetPrimaryContactAsync(id, personId, ct)).ToHttp())
             .WithName("SetHouseholdPrimaryContact")
+            .RequirePermission(PeoplePermissions.ProfilesEdit);
+
+        admin.MapGet("/connect-cards", (ConnectCardStatus? status, ConnectCardService service, CancellationToken ct) => service.ListAsync(status, ct))
+            .WithName("ListConnectCards")
+            .RequirePermission(PeoplePermissions.ProfilesView);
+        admin.MapPost("/connect-cards/{id:guid}/handled", async (Guid id, HandleConnectCardRequest request, ConnectCardService service, CancellationToken ct) =>
+                (await service.HandleAsync(id, request, ct)).ToHttp())
+            .WithName("HandleConnectCard")
             .RequirePermission(PeoplePermissions.ProfilesEdit);
 
         admin.MapGet("/membership-statuses", (PeopleService service, CancellationToken ct) => service.ListStatusesAsync(ct))

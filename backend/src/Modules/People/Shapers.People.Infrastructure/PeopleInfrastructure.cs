@@ -23,6 +23,7 @@ public static class PeopleInfrastructure
         services.AddScoped<HouseholdService>();
         services.AddScoped<MergeService>();
         services.AddScoped<MyProfileService>();
+        services.AddScoped<ConnectCardService>();
         services.AddScoped<IPeopleDirectory, PeopleDirectory>();
         services.AddScoped<IPeopleRegistration, PeopleRegistration>();
         return services;

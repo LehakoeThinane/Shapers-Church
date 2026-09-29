@@ -19,6 +19,8 @@ public interface IPeopleDb
 
     DbSet<PersonMerge> PersonMerges { get; }
 
+    DbSet<ConnectCard> ConnectCards { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 

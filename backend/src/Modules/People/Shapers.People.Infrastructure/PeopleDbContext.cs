@@ -24,6 +24,8 @@ public sealed class PeopleDbContext(DbContextOptions<PeopleDbContext> options) :
 
     public DbSet<PersonMerge> PersonMerges => Set<PersonMerge>();
 
+    public DbSet<ConnectCard> ConnectCards => Set<ConnectCard>();
+
     Task<int> IPeopleDb.SaveChangesAsync(CancellationToken cancellationToken) => SaveChangesAsync(cancellationToken);
 
     protected override void ConfigureModel(ModelBuilder modelBuilder)
@@ -120,6 +122,26 @@ public sealed class PeopleDbContext(DbContextOptions<PeopleDbContext> options) :
             b.HasIndex(d => d.Status);
         });
 
+        modelBuilder.Entity<ConnectCard>(b =>
+        {
+            b.ToTable("connect_cards");
+            b.Property(c => c.Id).ValueGeneratedNever();
+            b.Property(c => c.Scope).HasMaxLength(512);
+            b.Property(c => c.Reasons).HasConversion(
+                v => v.Select(r => r.ToString()).ToArray(),
+                v => v.Select(Enum.Parse<ConnectReason>).ToList(),
+                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<ConnectReason>>(
+                    (a, b) => a!.SequenceEqual(b!),
+                    v => v.Aggregate(0, (h, r) => HashCode.Combine(h, r)),
+                    v => v.ToList()));
+            b.Property(c => c.Message).HasMaxLength(2000);
+            b.Property(c => c.Source).HasMaxLength(30);
+            b.Property(c => c.Status).HasConversion<string>().HasMaxLength(20);
+            b.Property(c => c.HandlerNote).HasMaxLength(1000);
+            b.HasIndex(c => c.Scope).HasOperators("text_pattern_ops");
+            b.HasIndex(c => new { c.Status, c.SubmittedAt });
+        });
+
         modelBuilder.Entity<PersonMerge>(b =>
         {
             b.ToTable("person_merges");
@@ -136,6 +158,7 @@ public sealed class PeopleDbContext(DbContextOptions<PeopleDbContext> options) :
         PersonMerged e => [new PeopleMergedIntegrationEvent(e.SurvivorId, e.MergedId)],
         MembershipStatusChanged e => [new MembershipStatusChangedIntegrationEvent(e.PersonId, e.ToStage.ToString())],
         PersonMovedCampus e => [new PersonMovedCampusIntegrationEvent(e.PersonId, e.FromScope, e.ToScope)],
+        ConnectCardSubmitted e => [new ConnectCardSubmittedIntegrationEvent(e.CardId, e.PersonId, e.Scope, e.Reasons.Select(r => r.ToString()).ToList())],
         _ => [],
     };
 }

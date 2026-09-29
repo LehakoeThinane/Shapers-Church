@@ -19,6 +19,9 @@ public sealed record PeopleMergedIntegrationEvent(Guid SurvivorId, Guid MergedId
 
 public sealed record MembershipStatusChangedIntegrationEvent(Guid PersonId, string ToStage) : IntegrationEvent;
 
+/// <summary>Someone raised a hand on a connect card. Notifications will tell the campus follow-up team.</summary>
+public sealed record ConnectCardSubmittedIntegrationEvent(Guid CardId, Guid PersonId, string Scope, IReadOnlyList<string> Reasons) : IntegrationEvent;
+
 public sealed record PersonMovedCampusIntegrationEvent(Guid PersonId, string FromScope, string ToScope) : IntegrationEvent;
 
 public sealed record PersonSummary(Guid Id, string DisplayName, string Scope, string Status, Guid? MergedIntoId);

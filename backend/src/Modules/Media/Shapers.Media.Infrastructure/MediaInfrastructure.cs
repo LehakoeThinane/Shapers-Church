@@ -56,6 +56,7 @@ public static class MediaInfrastructure
         services.AddScoped<ScheduledPublisher>();
         services.AddScoped<PodcastFeedBuilder>();
         services.AddScoped<YouTubeImporter>();
+        services.AddScoped<LivestreamService>();
 
         services.AddSingleton(new RecurringJobDefinition("media-publish-scheduled", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<ScheduledPublisher>().PublishDueAsync(ct)));

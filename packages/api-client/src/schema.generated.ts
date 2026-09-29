@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SubmitConnectCard"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/podcast.xml": {
         parameters: {
             query?: never;
@@ -350,6 +366,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["SetHouseholdPrimaryContact"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/connect-cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListConnectCards"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/connect-cards/{id}/handled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandleConnectCard"];
         delete?: never;
         options?: never;
         head?: never;
@@ -804,6 +852,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/media/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LiveNow"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/media/sermons": {
         parameters: {
             query?: never;
@@ -1044,6 +1108,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/media/livestreams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListLivestreams"];
+        put?: never;
+        post: operations["CreateLivestream"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLivestream"];
+        put: operations["UpdateLivestream"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}/go-live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GoLive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["EndLivestream"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelLivestream"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}/cues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AddScriptureCue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}/cues/{cueId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["RemoveScriptureCue"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}/on-screen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ShowScriptureCue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/livestreams/{id}/make-sermon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MakeSermonFromLivestream"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/media/uploads": {
         parameters: {
             query?: never;
@@ -1116,6 +1324,10 @@ export interface components {
             type: components["schemas"]["ContactType"];
             value: string;
             isPrimary: boolean;
+        };
+        AddCueRequest: {
+            reference: string;
+            text: null | string;
         };
         AddressDto: {
             line1: string;
@@ -1195,6 +1407,46 @@ export interface components {
             /** Format: int32 */
             durationSeconds: null | number;
         };
+        ConnectCardDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            personName: string;
+            mobile: null | string;
+            email: null | string;
+            reasons: components["schemas"]["ConnectReason"][];
+            message: null | string;
+            source: string;
+            status: components["schemas"]["ConnectCardStatus"];
+            /** Format: date-time */
+            submittedAt: string;
+            /** Format: date-time */
+            handledAt: null | string;
+            handlerNote: null | string;
+            isNewPerson: boolean;
+        };
+        ConnectCardReceipt: {
+            /** Format: uuid */
+            id: string;
+        };
+        ConnectCardRequest: {
+            firstName: null | string;
+            lastName: null | string;
+            mobile: null | string;
+            email: null | string;
+            reasons: components["schemas"]["ConnectReason"][];
+            message: null | string;
+            source: string;
+            /** Format: uuid */
+            sourceId: null | string;
+            consentToKeepDetails: boolean;
+            policyVersion: null | string;
+        };
+        /** @enum {unknown} */
+        ConnectCardStatus: "New" | "Handled";
+        /** @enum {unknown} */
+        ConnectReason: "FirstTime" | "Decision" | "Prayer" | "MoreInfo" | "JoinGroup" | "Serve";
         ConsentDecision: {
             purpose: string;
             granted: boolean;
@@ -1278,6 +1530,16 @@ export interface components {
             email: null | string;
             mobile: null | string;
         };
+        CueDto: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            text: null | string;
+            /** Format: int32 */
+            order: number;
+            /** Format: date-time */
+            shownAt: null | string;
+        };
         DuplicateCandidateDto: {
             /** Format: uuid */
             id: string;
@@ -1307,6 +1569,9 @@ export interface components {
             expiresAt: null | string;
             reason: null | string;
             isActive: boolean;
+        };
+        HandleConnectCardRequest: {
+            note: null | string;
         };
         HouseholdDto: {
             /** Format: uuid */
@@ -1342,6 +1607,35 @@ export interface components {
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
         /** @enum {unknown} */
         LawfulBasis: "Consent" | "LegitimateInterest" | "LegalObligation" | "Contract";
+        LiveNowDto: {
+            state: components["schemas"]["LiveState"];
+            stream: null | components["schemas"]["PublicLivestreamDto"];
+        };
+        /** @enum {unknown} */
+        LiveState: "None" | "Upcoming" | "Live";
+        LivestreamAdminDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            scope: string;
+            /** Format: date-time */
+            scheduledStart: string;
+            status: components["schemas"]["LivestreamStatus"];
+            video: null | components["schemas"]["VideoDto"];
+            notes: null | string;
+            giveUrl: null | string;
+            /** Format: date-time */
+            startedAt: null | string;
+            /** Format: date-time */
+            endedAt: null | string;
+            /** Format: uuid */
+            currentCueId: null | string;
+            /** Format: uuid */
+            sermonId: null | string;
+            cues: components["schemas"]["CueDto"][];
+        };
+        /** @enum {unknown} */
+        LivestreamStatus: "Scheduled" | "Live" | "Ended" | "Cancelled";
         LogoutRequest: {
             refreshToken: string;
         };
@@ -1514,6 +1808,21 @@ export interface components {
         PreferencesRequest: {
             palette: string;
         };
+        PublicLivestreamDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            status: components["schemas"]["LivestreamStatus"];
+            /** Format: date-time */
+            scheduledStart: string;
+            /** Format: date-time */
+            startedAt: null | string;
+            youTubeId: null | string;
+            notes: null | string;
+            giveUrl: null | string;
+            onScreen: null | components["schemas"]["CueDto"];
+            shown: components["schemas"]["CueDto"][];
+        };
         RecordConsentRequest: {
             decisions: components["schemas"]["ConsentDecisionDto"][];
             policyVersion: string;
@@ -1557,6 +1866,15 @@ export interface components {
             description: null | string;
             isSystem: boolean;
             permissions: string[];
+        };
+        SaveLivestreamRequest: {
+            title: string;
+            /** Format: date-time */
+            scheduledStart: string;
+            videoUrl: null | string;
+            notes: null | string;
+            giveUrl: null | string;
+            scope: null | string;
         };
         SaveRoleRequest: {
             name: string;
@@ -1713,6 +2031,10 @@ export interface components {
             /** Format: uuid */
             assetId: null | string;
         };
+        ShowCueRequest: {
+            /** Format: uuid */
+            cueId: null | string;
+        };
         SignInResponse: {
             status: components["schemas"]["SignInStatus"];
             tokens: null | components["schemas"]["TokenPair"];
@@ -1853,6 +2175,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChurchOverviewDto"];
+                };
+            };
+        };
+    };
+    SubmitConnectCard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConnectCardRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectCardReceipt"];
                 };
             };
         };
@@ -2440,6 +2786,52 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HouseholdDto"];
                 };
+            };
+        };
+    };
+    ListConnectCards: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ConnectCardStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectCardDto"][];
+                };
+            };
+        };
+    };
+    HandleConnectCard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandleConnectCardRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3138,6 +3530,26 @@ export interface operations {
             };
         };
     };
+    LiveNow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveNowDto"];
+                };
+            };
+        };
+    };
     AdminListSermons: {
         parameters: {
             query?: {
@@ -3602,6 +4014,261 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SpeakerDto"];
+                };
+            };
+        };
+    };
+    ListLivestreams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"][];
+                };
+            };
+        };
+    };
+    CreateLivestream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveLivestreamRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    GetLivestream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    UpdateLivestream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveLivestreamRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    GoLive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    EndLivestream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    CancelLivestream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    AddScriptureCue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddCueRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    RemoveScriptureCue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                cueId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    ShowScriptureCue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShowCueRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LivestreamAdminDto"];
+                };
+            };
+        };
+    };
+    MakeSermonFromLivestream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
                 };
             };
         };

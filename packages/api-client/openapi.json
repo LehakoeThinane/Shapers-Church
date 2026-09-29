@@ -25,6 +25,36 @@
         }
       }
     },
+    "/api/connect": {
+      "post": {
+        "tags": [
+          "Connect"
+        ],
+        "operationId": "SubmitConnectCard",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectCardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectCardReceipt"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/podcast.xml": {
       "get": {
         "tags": [
@@ -896,6 +926,72 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/admin/connect-cards": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "ListConnectCards",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ConnectCardStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConnectCardDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/connect-cards/{id}/handled": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "HandleConnectCard",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandleConnectCardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
           }
         }
       }
@@ -1786,6 +1882,26 @@
         }
       }
     },
+    "/api/media/live": {
+      "get": {
+        "tags": [
+          "Sermons"
+        ],
+        "operationId": "LiveNow",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveNowDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/media/sermons": {
       "get": {
         "tags": [
@@ -2457,6 +2573,374 @@
         }
       }
     },
+    "/api/admin/media/livestreams": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ListLivestreams",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LivestreamAdminDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CreateLivestream",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLivestreamRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "GetLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "UpdateLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLivestreamRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/go-live": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "GoLive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/end": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "EndLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "CancelLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/cues": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "AddScriptureCue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/cues/{cueId}": {
+      "delete": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "RemoveScriptureCue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/on-screen": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ShowScriptureCue",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowCueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LivestreamAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/livestreams/{id}/make-sermon": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "MakeSermonFromLivestream",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/media/uploads": {
       "post": {
         "tags": [
@@ -2604,6 +3088,24 @@
           },
           "isPrimary": {
             "type": "boolean"
+          }
+        }
+      },
+      "AddCueRequest": {
+        "required": [
+          "reference",
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string"
+          },
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -2905,6 +3407,187 @@
             "format": "int32"
           }
         }
+      },
+      "ConnectCardDto": {
+        "required": [
+          "id",
+          "personId",
+          "personName",
+          "mobile",
+          "email",
+          "reasons",
+          "message",
+          "source",
+          "status",
+          "submittedAt",
+          "handledAt",
+          "handlerNote",
+          "isNewPerson"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personName": {
+            "type": "string"
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectReason"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConnectCardStatus"
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "handledAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "handlerNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isNewPerson": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ConnectCardReceipt": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ConnectCardRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "mobile",
+          "email",
+          "reasons",
+          "message",
+          "source",
+          "sourceId",
+          "consentToKeepDetails",
+          "policyVersion"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lastName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectReason"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "consentToKeepDetails": {
+            "type": "boolean"
+          },
+          "policyVersion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ConnectCardStatus": {
+        "enum": [
+          "New",
+          "Handled"
+        ]
+      },
+      "ConnectReason": {
+        "enum": [
+          "FirstTime",
+          "Decision",
+          "Prayer",
+          "MoreInfo",
+          "JoinGroup",
+          "Serve"
+        ]
       },
       "ConsentDecision": {
         "required": [
@@ -3235,6 +3918,42 @@
           }
         }
       },
+      "CueDto": {
+        "required": [
+          "id",
+          "reference",
+          "text",
+          "order",
+          "shownAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "shownAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "DuplicateCandidateDto": {
         "required": [
           "id",
@@ -3333,6 +4052,20 @@
           },
           "isActive": {
             "type": "boolean"
+          }
+        }
+      },
+      "HandleConnectCardRequest": {
+        "required": [
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -3453,6 +4186,136 @@
           "LegitimateInterest",
           "LegalObligation",
           "Contract"
+        ]
+      },
+      "LiveNowDto": {
+        "required": [
+          "state",
+          "stream"
+        ],
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/LiveState"
+          },
+          "stream": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PublicLivestreamDto"
+              }
+            ]
+          }
+        }
+      },
+      "LiveState": {
+        "enum": [
+          "None",
+          "Upcoming",
+          "Live"
+        ]
+      },
+      "LivestreamAdminDto": {
+        "required": [
+          "id",
+          "title",
+          "scope",
+          "scheduledStart",
+          "status",
+          "video",
+          "notes",
+          "giveUrl",
+          "startedAt",
+          "endedAt",
+          "currentCueId",
+          "sermonId",
+          "cues"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "scheduledStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LivestreamStatus"
+          },
+          "video": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VideoDto"
+              }
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "giveUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "currentCueId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "sermonId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "cues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CueDto"
+            }
+          }
+        }
+      },
+      "LivestreamStatus": {
+        "enum": [
+          "Scheduled",
+          "Live",
+          "Ended",
+          "Cancelled"
         ]
       },
       "LogoutRequest": {
@@ -4113,6 +4976,78 @@
           }
         }
       },
+      "PublicLivestreamDto": {
+        "required": [
+          "id",
+          "title",
+          "status",
+          "scheduledStart",
+          "startedAt",
+          "youTubeId",
+          "notes",
+          "giveUrl",
+          "onScreen",
+          "shown"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LivestreamStatus"
+          },
+          "scheduledStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "youTubeId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "giveUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "onScreen": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CueDto"
+              }
+            ]
+          },
+          "shown": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CueDto"
+            }
+          }
+        }
+      },
       "RecordConsentRequest": {
         "required": [
           "decisions",
@@ -4290,6 +5225,50 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "SaveLivestreamRequest": {
+        "required": [
+          "title",
+          "scheduledStart",
+          "videoUrl",
+          "notes",
+          "giveUrl",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "scheduledStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "videoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "giveUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -4968,6 +5947,21 @@
           }
         }
       },
+      "ShowCueRequest": {
+        "required": [
+          "cueId"
+        ],
+        "type": "object",
+        "properties": {
+          "cueId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
       "SignInResponse": {
         "required": [
           "status",
@@ -5422,6 +6416,9 @@
   "tags": [
     {
       "name": "Church"
+    },
+    {
+      "name": "Connect"
     },
     {
       "name": "Sermons"
