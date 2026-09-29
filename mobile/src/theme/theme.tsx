@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getPalette, resolvePalette, type Palette, type PaletteName, type PalettePreference } from '@shapers/tokens';
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import { Appearance, useColorScheme } from 'react-native';
+import { Appearance, Platform, useColorScheme } from 'react-native';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -40,6 +40,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const name = resolvePalette(preference, system === 'light' || system === 'dark' ? system : null);
 
   useEffect(() => {
+    // Not available in the browser preview, which has no system tab bar or glass to match.
+    if (Platform.OS === 'web' || typeof Appearance.setColorScheme !== 'function') return;
     Appearance.setColorScheme(preference === 'auto' ? 'unspecified' : getPalette(name).appearance);
   }, [preference, name]);
 
