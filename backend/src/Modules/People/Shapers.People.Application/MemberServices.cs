@@ -80,6 +80,17 @@ public sealed class PeopleDirectory(IPeopleDb db, TimeProvider clock) : IPeopleD
         return latest.Where(c => c.Granted).Select(c => c.PersonId).ToHashSet();
     }
 
+    public async Task<bool> IsMinorAsync(Guid personId, CancellationToken cancellationToken = default)
+    {
+        var person = await db.Persons.AsNoTracking().SingleOrDefaultAsync(p => p.Id == personId, cancellationToken);
+        if (person is not null && person.IsMinorOn(DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime)))
+        {
+            return true;
+        }
+
+        return await db.Households.AnyAsync(h => h.Members.Any(m => m.PersonId == personId && m.Role == HouseholdRole.Child), cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Guid>> UnverifiedGuestsCreatedBeforeAsync(DateTimeOffset cutoff, CancellationToken cancellationToken = default)
     {
         var inHousehold = db.Households.SelectMany(h => h.Members).Select(m => m.PersonId);

@@ -29,6 +29,7 @@ public static class SystemRoles
     public const string PrayerTeam = "Prayer team";
     public const string InformationOfficer = "Information Officer";
     public const string ContentTeam = "Content team";
+    public const string ChatModerator = "Chat moderator";
 
     /// <summary>Built-in roles. The church administrator always holds every permission in the catalogue.</summary>
     public static IReadOnlyDictionary<string, (string Description, IReadOnlyList<string> Permissions)> Definitions(PermissionCatalog catalog) =>
@@ -41,6 +42,7 @@ public static class SystemRoles
                 ChurchPermissions.MinistriesManage, IdentityPermissions.UsersView, IdentityPermissions.GrantsManage,
                 PrayerPermissions.RequestsView, PrayerPermissions.RequestsModerate,
                 CommunicationsPermissions.AnnouncementsSend, CommunicationsPermissions.AnnouncementsApprove,
+                MediaPermissions.ChatModerate,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [
@@ -61,10 +63,11 @@ public static class SystemRoles
             [
                 PrivacyPermissions.RequestsManage, PrivacyPermissions.BreachesManage, PlatformPermissions.AuditView,
             ]),
+            [ChatModerator] = ("Looks after the live chat during services: hides messages, times people out, sets slow mode.", [MediaPermissions.ChatModerate]),
             [PrayerTeam] = ("Reviews requests for the prayer wall. Pastors-only requests stay with the pastors.", [PrayerPermissions.RequestsModerate]),
             [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",
             [
-                MediaPermissions.SermonsEdit, MediaPermissions.SermonsPublish, MediaPermissions.SpeakersManage, MediaPermissions.LivestreamManage,
+                MediaPermissions.SermonsEdit, MediaPermissions.SermonsPublish, MediaPermissions.SpeakersManage, MediaPermissions.LivestreamManage, MediaPermissions.ChatModerate,
             ]),
         };
 }

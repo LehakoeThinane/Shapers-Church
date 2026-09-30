@@ -59,11 +59,17 @@ public static class MediaInfrastructure
         services.AddScoped<LivestreamService>();
         services.AddScoped<MediaDemoSeeder>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, MediaPersonalData>();
+        services.AddScoped<LiveChatService>();
+        services.AddScoped<ChatModerationService>();
+        services.AddScoped<ChatRetention>();
+        services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, ChatPersonalData>();
 
         services.AddSingleton(new RecurringJobDefinition("media-publish-scheduled", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<ScheduledPublisher>().PublishDueAsync(ct)));
         services.AddSingleton(new RecurringJobDefinition("media-playback-retention", "45 3 * * *", (sp, ct) =>
             sp.GetRequiredService<ScheduledPublisher>().PurgeOldPlaybackAsync(ct)));
+        services.AddSingleton(new RecurringJobDefinition("media-chat-retention", "50 3 * * *", (sp, ct) =>
+            sp.GetRequiredService<ChatRetention>().PurgeAsync(ct)));
         return services;
     }
 

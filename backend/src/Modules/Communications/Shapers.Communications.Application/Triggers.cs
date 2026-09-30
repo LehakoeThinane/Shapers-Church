@@ -1,5 +1,6 @@
 using Shapers.Communications.Domain;
 using Shapers.Events.Contracts;
+using Shapers.Identity.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Platform.Messaging;
 using Shapers.Prayer.Contracts;
@@ -13,6 +14,16 @@ public sealed class NotifyLivestreamStarted(Notifier notifier) : IIntegrationEve
 {
     public Task HandleAsync(LivestreamStartedIntegrationEvent e, CancellationToken cancellationToken) =>
         notifier.ToAppUsersAsync(e.Scope, new Notifier.Message(Topic.Live, "We're live", $"{e.Title} has started. Join us now.", "/live", $"live:{e.LivestreamId}", Urgent: true), cancellationToken);
+}
+
+/// <summary>A chat message was reported during a service: the moderators for that campus are told straight away.</summary>
+public sealed class NotifyChatReported(Notifier notifier, IUserDirectory users) : IIntegrationEventHandler<ChatMessageReportedIntegrationEvent>
+{
+    public async Task HandleAsync(ChatMessageReportedIntegrationEvent e, CancellationToken cancellationToken)
+    {
+        var moderators = await users.PeopleWithPermissionAsync(MediaPermissions.ChatModerate, e.Scope, cancellationToken);
+        await notifier.ToPeopleAsync(moderators, new Notifier.Message(Topic.Live, "Chat message reported", "Someone reported a message in the live chat. Please check the moderator console.", null, $"chat-report:{e.MessageId}", Urgent: true), cancellationToken);
+    }
 }
 
 public sealed class NotifySermonPublished(Notifier notifier) : IIntegrationEventHandler<SermonPublishedIntegrationEvent>

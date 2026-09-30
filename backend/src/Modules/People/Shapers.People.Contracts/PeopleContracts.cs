@@ -68,6 +68,9 @@ public interface IPeopleDirectory
     /// <summary>Active people whose record is in this scope or below it, e.g. everyone at a campus.</summary>
     Task<IReadOnlyList<PersonSummary>> InScopeAsync(string scope, CancellationToken cancellationToken = default);
 
+    /// <summary>Under 18 by date of birth, or recorded as a child in a household. Unknown age counts as an adult.</summary>
+    Task<bool> IsMinorAsync(Guid personId, CancellationToken cancellationToken = default);
+
     /// <summary>Which of these people currently consent to a purpose (their latest decision is "yes").</summary>
     Task<IReadOnlySet<Guid>> WithConsentAsync(IReadOnlyCollection<Guid> personIds, string purpose, CancellationToken cancellationToken = default);
 }

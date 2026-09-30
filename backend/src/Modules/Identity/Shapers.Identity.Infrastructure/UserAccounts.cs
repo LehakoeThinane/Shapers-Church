@@ -86,8 +86,27 @@ internal sealed class UserAccounts(UserManager<User> users, IdentityDbContext db
         new("identity.account_error", string.Join(" ", result.Errors.Select(e => e.Description)));
 }
 
-internal sealed class UserDirectory(IdentityDbContext db) : IUserDirectory
+internal sealed class UserDirectory(IdentityDbContext db, TimeProvider clock) : IUserDirectory
 {
+    public async Task<IReadOnlyList<Guid>> PeopleWithPermissionAsync(string permission, string scope, CancellationToken cancellationToken = default)
+    {
+        var roles = (await db.Roles.AsNoTracking().ToListAsync(cancellationToken))
+            .Where(r => r.PermissionKeys.Contains(permission))
+            .Select(r => r.Id)
+            .ToList();
+        var now = clock.GetUtcNow();
+        var grants = await db.Grants.AsNoTracking()
+            .Where(g => roles.Contains(g.RoleId) && g.RevokedAt == null && (g.ExpiresAt == null || g.ExpiresAt > now))
+            .Select(g => new { g.UserId, g.Scope })
+            .ToListAsync(cancellationToken);
+        var userIds = grants
+            .Where(g => scope == g.Scope || scope.StartsWith(g.Scope + ".", StringComparison.Ordinal))
+            .Select(g => g.UserId)
+            .Distinct()
+            .ToList();
+        return await db.Users.AsNoTracking().Where(u => userIds.Contains(u.Id)).Select(u => u.PersonId).ToListAsync(cancellationToken);
+    }
+
     public async Task<Guid?> GetUserIdForPersonAsync(Guid personId, CancellationToken cancellationToken = default) =>
         await db.Users.AsNoTracking().Where(u => u.PersonId == personId).Select(u => (Guid?)u.Id).SingleOrDefaultAsync(cancellationToken);
 

@@ -3175,6 +3175,383 @@
         }
       }
     },
+    "/api/media/live/{livestreamId}/chat": {
+      "get": {
+        "tags": [
+          "Live chat"
+        ],
+        "operationId": "GetLiveChat",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatRoomDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Live chat"
+        ],
+        "operationId": "PostLiveChat",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatMessageDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/media/live/{livestreamId}/chat/{messageId}/report": {
+      "post": {
+        "tags": [
+          "Live chat"
+        ],
+        "operationId": "ReportLiveChatMessage",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat": {
+      "get": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "ListChatStreams",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModChatStreamDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat/words": {
+      "get": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "GetChatWordList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WordListDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "SetChatWordList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WordListDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WordListDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat/sanctions/{sanctionId}/lift": {
+      "post": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "LiftChatSanction",
+        "parameters": [
+          {
+            "name": "sanctionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat/{livestreamId}": {
+      "get": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "ModerateChat",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModeratorRoomDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat/{livestreamId}/messages/{messageId}/hide": {
+      "post": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "HideChatMessage",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat/{livestreamId}/messages/{messageId}/show": {
+      "post": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "ShowChatMessage",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat/{livestreamId}/sanctions": {
+      "post": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "SanctionChatter",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SanctionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatSanctionDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/chat/{livestreamId}/rules": {
+      "put": {
+        "tags": [
+          "Live chat moderation"
+        ],
+        "operationId": "SetChatRules",
+        "parameters": [
+          {
+            "name": "livestreamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRulesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatRulesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/events": {
       "get": {
         "tags": [
@@ -6422,6 +6799,205 @@
           "Email"
         ]
       },
+      "ChatBlock": {
+        "enum": [
+          "SignIn",
+          "Closed",
+          "Under18",
+          "TimedOut",
+          "Banned",
+          null
+        ]
+      },
+      "ChatHoldReason": {
+        "enum": [
+          "Approval",
+          "WordList",
+          "Reports",
+          null
+        ]
+      },
+      "ChatMeDto": {
+        "required": [
+          "canPost",
+          "blocked",
+          "isModerator"
+        ],
+        "type": "object",
+        "properties": {
+          "canPost": {
+            "type": "boolean"
+          },
+          "blocked": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ChatBlock"
+              }
+            ]
+          },
+          "isModerator": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ChatMessageDto": {
+        "required": [
+          "id",
+          "author",
+          "fromTeam",
+          "text",
+          "sentAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "author": {
+            "type": "string"
+          },
+          "fromTeam": {
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "pending": {
+            "type": "boolean",
+            "default": false
+          },
+          "mine": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "ChatMessageStatus": {
+        "enum": [
+          "Visible",
+          "Held",
+          "Hidden"
+        ]
+      },
+      "ChatRoomDto": {
+        "required": [
+          "livestreamId",
+          "rules",
+          "messages",
+          "me"
+        ],
+        "type": "object",
+        "properties": {
+          "livestreamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/ChatRulesDto"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageDto"
+            }
+          },
+          "me": {
+            "$ref": "#/components/schemas/ChatMeDto"
+          }
+        }
+      },
+      "ChatRulesDto": {
+        "required": [
+          "open",
+          "slowSeconds",
+          "approvalRequired"
+        ],
+        "type": "object",
+        "properties": {
+          "open": {
+            "type": "boolean"
+          },
+          "slowSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "approvalRequired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ChatRulesRequest": {
+        "required": [
+          "slowSeconds",
+          "approvalRequired"
+        ],
+        "type": "object",
+        "properties": {
+          "slowSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "approvalRequired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ChatSanctionDto": {
+        "required": [
+          "id",
+          "personId",
+          "name",
+          "kind",
+          "reason",
+          "createdAt",
+          "livestreamId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ChatSanctionKind"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "livestreamId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ChatSanctionKind": {
+        "enum": [
+          "Timeout",
+          "Ban"
+        ]
+      },
       "CheckInOutcome": {
         "enum": [
           "CheckedIn",
@@ -8139,6 +8715,135 @@
           }
         }
       },
+      "ModChatMessageDto": {
+        "required": [
+          "id",
+          "personId",
+          "author",
+          "fromTeam",
+          "text",
+          "sentAt",
+          "status",
+          "holdReason",
+          "reports",
+          "moderatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "author": {
+            "type": "string"
+          },
+          "fromTeam": {
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ChatMessageStatus"
+          },
+          "holdReason": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ChatHoldReason"
+              }
+            ]
+          },
+          "reports": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "moderatedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "ModChatStreamDto": {
+        "required": [
+          "id",
+          "title",
+          "status",
+          "scheduledStart",
+          "chatOpen"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LivestreamStatus"
+          },
+          "scheduledStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "chatOpen": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ModeratorRoomDto": {
+        "required": [
+          "livestreamId",
+          "title",
+          "status",
+          "rules",
+          "messages",
+          "sanctions"
+        ],
+        "type": "object",
+        "properties": {
+          "livestreamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LivestreamStatus"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/ChatRulesDto"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModChatMessageDto"
+            }
+          },
+          "sanctions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatSanctionDto"
+            }
+          }
+        }
+      },
       "MoveCampusRequest": {
         "required": [
           "campusId"
@@ -9010,6 +9715,17 @@
           }
         }
       },
+      "PostChatRequest": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        }
+      },
       "PostDto": {
         "required": [
           "post",
@@ -9783,6 +10499,33 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "SanctionRequest": {
+        "required": [
+          "personId",
+          "kind",
+          "reason",
+          "hideMessages"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ChatSanctionKind"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hideMessages": {
+            "type": "boolean"
           }
         }
       },
@@ -11384,6 +12127,20 @@
         "enum": [
           "YouTube"
         ]
+      },
+      "WordListDto": {
+        "required": [
+          "terms"
+        ],
+        "type": "object",
+        "properties": {
+          "terms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       }
     }
   },
@@ -11426,6 +12183,12 @@
     },
     {
       "name": "Sermons admin"
+    },
+    {
+      "name": "Live chat"
+    },
+    {
+      "name": "Live chat moderation"
     },
     {
       "name": "Events admin"

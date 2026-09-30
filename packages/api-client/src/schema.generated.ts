@@ -1380,6 +1380,166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/media/live/{livestreamId}/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLiveChat"];
+        put?: never;
+        post: operations["PostLiveChat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/media/live/{livestreamId}/chat/{messageId}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportLiveChatMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListChatStreams"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/words": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetChatWordList"];
+        put: operations["SetChatWordList"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/sanctions/{sanctionId}/lift": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LiftChatSanction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ModerateChat"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/messages/{messageId}/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HideChatMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/messages/{messageId}/show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ShowChatMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/sanctions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SanctionChatter"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SetChatRules"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events": {
         parameters: {
             query?: never;
@@ -2718,6 +2878,63 @@ export interface components {
         /** @enum {unknown} */
         Channel: "Push" | "Email";
         /** @enum {unknown} */
+        ChatBlock: "SignIn" | "Closed" | "Under18" | "TimedOut" | "Banned" | null;
+        /** @enum {unknown} */
+        ChatHoldReason: "Approval" | "WordList" | "Reports" | null;
+        ChatMeDto: {
+            canPost: boolean;
+            blocked: null | components["schemas"]["ChatBlock"];
+            isModerator: boolean;
+        };
+        ChatMessageDto: {
+            /** Format: uuid */
+            id: string;
+            author: string;
+            fromTeam: boolean;
+            text: string;
+            /** Format: date-time */
+            sentAt: string;
+            /** @default false */
+            pending: boolean;
+            /** @default false */
+            mine: boolean;
+        };
+        /** @enum {unknown} */
+        ChatMessageStatus: "Visible" | "Held" | "Hidden";
+        ChatRoomDto: {
+            /** Format: uuid */
+            livestreamId: string;
+            rules: components["schemas"]["ChatRulesDto"];
+            messages: components["schemas"]["ChatMessageDto"][];
+            me: components["schemas"]["ChatMeDto"];
+        };
+        ChatRulesDto: {
+            open: boolean;
+            /** Format: int32 */
+            slowSeconds: number;
+            approvalRequired: boolean;
+        };
+        ChatRulesRequest: {
+            /** Format: int32 */
+            slowSeconds: number;
+            approvalRequired: boolean;
+        };
+        ChatSanctionDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            name: string;
+            kind: components["schemas"]["ChatSanctionKind"];
+            reason: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            livestreamId: string;
+        };
+        /** @enum {unknown} */
+        ChatSanctionKind: "Timeout" | "Ban";
+        /** @enum {unknown} */
         CheckInOutcome: "CheckedIn" | "AlreadyCheckedIn" | "NotConfirmed";
         CheckInRequest: {
             ticketCode: null | string;
@@ -3165,6 +3382,41 @@ export interface components {
             campusId: null | string;
             isActive: boolean;
         };
+        ModChatMessageDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            author: string;
+            fromTeam: boolean;
+            text: string;
+            /** Format: date-time */
+            sentAt: string;
+            status: components["schemas"]["ChatMessageStatus"];
+            holdReason: null | components["schemas"]["ChatHoldReason"];
+            /** Format: int32 */
+            reports: number;
+            /** Format: date-time */
+            moderatedAt: null | string;
+        };
+        ModChatStreamDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            status: components["schemas"]["LivestreamStatus"];
+            /** Format: date-time */
+            scheduledStart: string;
+            chatOpen: boolean;
+        };
+        ModeratorRoomDto: {
+            /** Format: uuid */
+            livestreamId: string;
+            title: string;
+            status: components["schemas"]["LivestreamStatus"];
+            rules: components["schemas"]["ChatRulesDto"];
+            messages: components["schemas"]["ModChatMessageDto"][];
+            sanctions: components["schemas"]["ChatSanctionDto"][];
+        };
         MoveCampusRequest: {
             /** Format: uuid */
             campusId: string;
@@ -3385,6 +3637,9 @@ export interface components {
             updatedAt: string;
             legacyPath: null | string;
         };
+        PostChatRequest: {
+            text: string;
+        };
         PostDto: {
             post: components["schemas"]["PostSummaryDto"];
             body: string;
@@ -3582,6 +3837,13 @@ export interface components {
             description: null | string;
             isSystem: boolean;
             permissions: string[];
+        };
+        SanctionRequest: {
+            /** Format: uuid */
+            personId: string;
+            kind: components["schemas"]["ChatSanctionKind"];
+            reason: null | string;
+            hideMessages: boolean;
         };
         SaveAnnouncementRequest: {
             title: string;
@@ -3963,6 +4225,9 @@ export interface components {
         };
         /** @enum {unknown} */
         VideoProvider: "YouTube";
+        WordListDto: {
+            terms: string[];
+        };
     };
     responses: never;
     parameters: never;
@@ -6263,6 +6528,275 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    GetLiveChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatRoomDto"];
+                };
+            };
+        };
+    };
+    PostLiveChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostChatRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatMessageDto"];
+                };
+            };
+        };
+    };
+    ReportLiveChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+                messageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ListChatStreams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModChatStreamDto"][];
+                };
+            };
+        };
+    };
+    GetChatWordList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WordListDto"];
+                };
+            };
+        };
+    };
+    SetChatWordList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WordListDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WordListDto"];
+                };
+            };
+        };
+    };
+    LiftChatSanction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sanctionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ModerateChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModeratorRoomDto"];
+                };
+            };
+        };
+    };
+    HideChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+                messageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ShowChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+                messageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SanctionChatter: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SanctionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatSanctionDto"];
+                };
+            };
+        };
+    };
+    SetChatRules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatRulesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatRulesDto"];
+                };
             };
         };
     };

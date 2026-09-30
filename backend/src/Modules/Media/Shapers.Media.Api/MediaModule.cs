@@ -17,8 +17,14 @@ public sealed class MediaModule : IModule
 {
     public string Name => "media";
 
-    public void AddServices(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment) =>
+    public void AddServices(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    {
         services.AddMediaInfrastructure(configuration, environment);
+
+        // One API instance holds every connection for now. Running several needs Azure SignalR Service (AddAzureSignalR).
+        services.AddSignalR();
+        services.AddSingleton<IChatBroadcaster, SignalRChatBroadcaster>();
+    }
 
     public Task InitialiseAsync(IServiceProvider services, CancellationToken cancellationToken) =>
         services.InitialiseMediaAsync(cancellationToken);
@@ -44,6 +50,56 @@ public sealed class MediaModule : IModule
             .WithName("PodcastFeed");
 
         endpoints.MapLocalStorage();
+        MapChat(endpoints);
+    }
+
+    private static void MapChat(IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapHub<LiveChatHub>(LiveChatHub.Path);
+
+        var chat = endpoints.MapGroup("/api/media/live/{livestreamId:guid}/chat").WithTags("Live chat");
+        chat.MapGet("/", async (Guid livestreamId, HttpContext http, LiveChatService service, CancellationToken ct) =>
+            {
+                http.Response.Headers.CacheControl = "no-store";
+                return (await service.RoomAsync(livestreamId, ct)).ToHttp();
+            })
+            .AllowAnonymous()
+            .WithName("GetLiveChat");
+        chat.MapPost("/", async (Guid livestreamId, PostChatRequest request, LiveChatService service, CancellationToken ct) =>
+                (await service.PostAsync(livestreamId, request, ct)).ToHttp())
+            .RequireAuthorization()
+            .WithName("PostLiveChat");
+        chat.MapPost("/{messageId:guid}/report", async (Guid livestreamId, Guid messageId, LiveChatService service, CancellationToken ct) =>
+                (await service.ReportAsync(livestreamId, messageId, ct)).ToHttp())
+            .RequireAuthorization()
+            .WithName("ReportLiveChatMessage");
+
+        var mod = endpoints.MapGroup("/api/admin/media/chat").WithTags("Live chat moderation").RequirePermission(MediaPermissions.ChatModerate);
+        mod.MapGet("/", (ChatModerationService service, CancellationToken ct) => service.StreamsAsync(ct)).WithName("ListChatStreams");
+        mod.MapGet("/words", (ChatModerationService service, CancellationToken ct) => service.WordsAsync(ct)).WithName("GetChatWordList");
+        mod.MapPut("/words", async (WordListDto request, ChatModerationService service, CancellationToken ct) => (await service.SetWordsAsync(request, ct)).ToHttp())
+            .WithName("SetChatWordList");
+        mod.MapPost("/sanctions/{sanctionId:guid}/lift", async (Guid sanctionId, ChatModerationService service, CancellationToken ct) =>
+                (await service.LiftAsync(sanctionId, ct)).ToHttp())
+            .WithName("LiftChatSanction");
+        mod.MapGet("/{livestreamId:guid}", async (Guid livestreamId, HttpContext http, ChatModerationService service, CancellationToken ct) =>
+            {
+                http.Response.Headers.CacheControl = "no-store";
+                return (await service.RoomAsync(livestreamId, ct)).ToHttp();
+            })
+            .WithName("ModerateChat");
+        mod.MapPost("/{livestreamId:guid}/messages/{messageId:guid}/hide", async (Guid livestreamId, Guid messageId, ChatModerationService service, CancellationToken ct) =>
+                (await service.HideAsync(livestreamId, messageId, ct)).ToHttp())
+            .WithName("HideChatMessage");
+        mod.MapPost("/{livestreamId:guid}/messages/{messageId:guid}/show", async (Guid livestreamId, Guid messageId, ChatModerationService service, CancellationToken ct) =>
+                (await service.ShowAsync(livestreamId, messageId, ct)).ToHttp())
+            .WithName("ShowChatMessage");
+        mod.MapPost("/{livestreamId:guid}/sanctions", async (Guid livestreamId, SanctionRequest request, ChatModerationService service, CancellationToken ct) =>
+                (await service.SanctionAsync(livestreamId, request, ct)).ToHttp())
+            .WithName("SanctionChatter");
+        mod.MapPut("/{livestreamId:guid}/rules", async (Guid livestreamId, ChatRulesRequest request, ChatModerationService service, CancellationToken ct) =>
+                (await service.SetRulesAsync(livestreamId, request, ct)).ToHttp())
+            .WithName("SetChatRules");
     }
 
     private static void MapPublic(RouteGroupBuilder media)

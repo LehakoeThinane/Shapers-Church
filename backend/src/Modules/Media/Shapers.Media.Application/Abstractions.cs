@@ -19,6 +19,12 @@ public interface IMediaDb
 
     DbSet<Livestream> Livestreams { get; }
 
+    DbSet<ChatMessage> ChatMessages { get; }
+
+    DbSet<ChatSanction> ChatSanctions { get; }
+
+    DbSet<ChatBlockedTerm> ChatBlockedTerms { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
@@ -98,5 +104,16 @@ public sealed class MediaPermissionProvider : IPermissionProvider
         new(MediaPermissions.SermonsPublish, "media", "Publish, schedule and archive sermons"),
         new(MediaPermissions.SpeakersManage, "media", "Add and edit speakers"),
         new(MediaPermissions.LivestreamManage, "media", "Schedule livestreams, go live and show scripture"),
+        new(MediaPermissions.ChatModerate, "media", "Moderate livestream chat: hide messages, time out and ban, slow mode, word list"),
     ];
+}
+
+/// <summary>Pushes chat changes to everyone watching a livestream. The API implements it with SignalR.</summary>
+public interface IChatBroadcaster
+{
+    Task MessageAsync(Guid livestreamId, ChatMessageDto message, CancellationToken cancellationToken);
+
+    Task RemovedAsync(Guid livestreamId, Guid messageId, CancellationToken cancellationToken);
+
+    Task RulesAsync(Guid livestreamId, ChatRulesDto rules, CancellationToken cancellationToken);
 }
