@@ -108,6 +108,29 @@
         }
       }
     },
+    "/api/admin/communications/deliveries": {
+      "get": {
+        "tags": [
+          "Notifications admin"
+        ],
+        "operationId": "DeliveryLog",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeliveryLogDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/audit": {
       "get": {
         "tags": [
@@ -4159,6 +4182,163 @@
           }
         }
       }
+    },
+    "/api/me/devices": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "RegisterDevice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/devices/unregister": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "UnregisterDevice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterDeviceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/notifications": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MyNotifications",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/notifications/{id}/read": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MarkNotificationRead",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/notifications/read-all": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MarkAllNotificationsRead",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/notification-preferences": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MyNotificationPreferences",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PreferenceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "SetNotificationPreference",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPreferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4614,6 +4794,12 @@
             "format": "date"
           }
         }
+      },
+      "Channel": {
+        "enum": [
+          "Push",
+          "Email"
+        ]
       },
       "CheckInOutcome": {
         "enum": [
@@ -5250,6 +5436,72 @@
           }
         }
       },
+      "DeliveryLogDto": {
+        "required": [
+          "notificationId",
+          "personId",
+          "topic",
+          "title",
+          "channel",
+          "status",
+          "attempts",
+          "createdAt",
+          "sentAt",
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "title": {
+            "type": "string"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/Channel"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DeliveryStatus"
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sentAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "DeliveryStatus": {
+        "enum": [
+          "Pending",
+          "Sent",
+          "Failed",
+          "Skipped"
+        ]
+      },
       "DuplicateCandidateDto": {
         "required": [
           "id",
@@ -5776,6 +6028,25 @@
           }
         }
       },
+      "InboxDto": {
+        "required": [
+          "items",
+          "unread"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationDto"
+            }
+          },
+          "unread": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "JourneyStage": {
         "enum": [
           "Visitor",
@@ -6204,6 +6475,46 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "NotificationDto": {
+        "required": [
+          "id",
+          "topic",
+          "title",
+          "body",
+          "link",
+          "createdAt",
+          "read"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "read": {
+            "type": "boolean"
           }
         }
       },
@@ -6842,6 +7153,29 @@
           }
         }
       },
+      "PreferenceDto": {
+        "required": [
+          "topic",
+          "channel",
+          "enabled",
+          "consentGiven"
+        ],
+        "type": "object",
+        "properties": {
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/Channel"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "consentGiven": {
+            "type": "boolean"
+          }
+        }
+      },
       "PreferencesRequest": {
         "required": [
           "palette"
@@ -7018,6 +7352,28 @@
             "type": "string"
           },
           "device": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RegisterDeviceRequest": {
+        "required": [
+          "token",
+          "platform",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "name": {
             "type": [
               "null",
               "string"
@@ -8060,6 +8416,25 @@
           }
         }
       },
+      "SetPreferenceRequest": {
+        "required": [
+          "topic",
+          "channel",
+          "enabled"
+        ],
+        "type": "object",
+        "properties": {
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/Channel"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
       "SetSermonAssetRequest": {
         "required": [
           "assetId"
@@ -8399,6 +8774,15 @@
           }
         }
       },
+      "Topic": {
+        "enum": [
+          "Live",
+          "Sermons",
+          "Events",
+          "Prayer",
+          "Announcements"
+        ]
+      },
       "TwoFactorStatus": {
         "required": [
           "enabled",
@@ -8412,6 +8796,17 @@
           "recoveryCodesLeft": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "UnregisterDeviceRequest": {
+        "required": [
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
           }
         }
       },
@@ -8606,6 +9001,9 @@
       "name": "Events"
     },
     {
+      "name": "Notifications admin"
+    },
+    {
       "name": "Audit"
     },
     {
@@ -8634,6 +9032,9 @@
     },
     {
       "name": "Prayer admin"
+    },
+    {
+      "name": "Notifications"
     }
   ]
 }

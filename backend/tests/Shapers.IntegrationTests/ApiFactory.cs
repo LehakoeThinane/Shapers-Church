@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Shapers.Communications.Application;
 using Shapers.Identity.Application;
 using Shapers.Media.Application;
 using Shapers.Platform.Email;
@@ -28,6 +29,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public CapturingSmsSender Sms { get; } = new();
 
     public CapturingEmailSender Email { get; } = new();
+
+    public CapturingPushSender Push { get; } = new();
 
     protected virtual bool RequireMfa => false;
 
@@ -62,6 +65,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         {
             services.AddSingleton<ISmsSender>(Sms);
             services.AddSingleton<IEmailSender>(Email);
+            services.AddSingleton<IPushSender>(Push);
             services.AddSingleton<IYouTubeClient, FakeYouTubeClient>();
         });
     }
@@ -117,6 +121,33 @@ public sealed class CapturingEmailSender : IEmailSender
 
     /// <summary>Verification emails start with the code: "123456 is your Shapers Church code".</summary>
     public string LastCodeFor(string email) => _sent.Last(m => m.To == email && m.Subject.EndsWith("is your Shapers Church code", StringComparison.Ordinal)).Subject[..6];
+}
+
+/// <summary>Records pushes instead of sending them. Tokens containing "gone" behave like an uninstalled app.</summary>
+public sealed class CapturingPushSender : IPushSender
+{
+    private readonly ConcurrentQueue<PushMessage> _sent = new();
+
+    public IReadOnlyList<PushMessage> Sent => [.. _sent];
+
+    public Task<IReadOnlyList<PushResult>> SendAsync(IReadOnlyList<PushMessage> messages, CancellationToken cancellationToken)
+    {
+        var results = new List<PushResult>();
+        foreach (var m in messages)
+        {
+            if (m.Token.Contains("gone", StringComparison.Ordinal))
+            {
+                results.Add(new PushResult(false, null, true, "DeviceNotRegistered"));
+            }
+            else
+            {
+                _sent.Enqueue(m);
+                results.Add(new PushResult(true, $"ticket-{Guid.NewGuid():N}", false, null));
+            }
+        }
+
+        return Task.FromResult<IReadOnlyList<PushResult>>(results);
+    }
 }
 
 internal static class HttpExtensions

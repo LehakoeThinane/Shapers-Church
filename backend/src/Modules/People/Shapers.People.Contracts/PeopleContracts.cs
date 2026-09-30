@@ -55,6 +55,18 @@ public interface IPeopleDirectory
 
     /// <summary>Everyone who shares a household with this person, excluding them.</summary>
     Task<IReadOnlyList<HouseholdMemberSummary>> GetHouseholdMembersAsync(Guid personId, CancellationToken cancellationToken = default);
+
+    /// <summary>Which of these people currently consent to a purpose (their latest decision is "yes").</summary>
+    Task<IReadOnlySet<Guid>> WithConsentAsync(IReadOnlyCollection<Guid> personIds, string purpose, CancellationToken cancellationToken = default);
+}
+
+/// <summary>Consent purposes other modules check before contacting someone. Must match the People domain's purposes.</summary>
+public static class CommunicationConsents
+{
+    public const string Email = "communications.email";
+    public const string Sms = "communications.sms";
+    public const string WhatsApp = "communications.whatsapp";
+    public const string Push = "communications.push";
 }
 
 public enum GuestOrigin

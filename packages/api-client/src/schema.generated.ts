@@ -68,6 +68,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/communications/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DeliveryLog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/audit": {
         parameters: {
             query?: never;
@@ -1828,6 +1844,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RegisterDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/devices/unregister": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnregisterDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyNotifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkNotificationRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkAllNotificationsRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notification-preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyNotificationPreferences"];
+        put: operations["SetNotificationPreference"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1947,6 +2059,8 @@ export interface components {
             /** Format: date */
             effectiveDate: null | string;
         };
+        /** @enum {unknown} */
+        Channel: "Push" | "Email";
         /** @enum {unknown} */
         CheckInOutcome: "CheckedIn" | "AlreadyCheckedIn" | "NotConfirmed";
         CheckInRequest: {
@@ -2102,6 +2216,25 @@ export interface components {
             /** Format: date-time */
             shownAt: null | string;
         };
+        DeliveryLogDto: {
+            /** Format: uuid */
+            notificationId: string;
+            /** Format: uuid */
+            personId: string;
+            topic: components["schemas"]["Topic"];
+            title: string;
+            channel: components["schemas"]["Channel"];
+            status: components["schemas"]["DeliveryStatus"];
+            /** Format: int32 */
+            attempts: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            sentAt: null | string;
+            error: null | string;
+        };
+        /** @enum {unknown} */
+        DeliveryStatus: "Pending" | "Sent" | "Failed" | "Skipped";
         DuplicateCandidateDto: {
             /** Format: uuid */
             id: string;
@@ -2245,6 +2378,11 @@ export interface components {
             alreadyImported: number;
             createdTitles: string[];
         };
+        InboxDto: {
+            items: components["schemas"]["NotificationDto"][];
+            /** Format: int32 */
+            unread: number;
+        };
         /** @enum {unknown} */
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
         /** @enum {unknown} */
@@ -2355,6 +2493,17 @@ export interface components {
             /** Format: date-time */
             answeredAt: null | string;
             answerNote: null | string;
+        };
+        NotificationDto: {
+            /** Format: uuid */
+            id: string;
+            topic: components["schemas"]["Topic"];
+            title: string;
+            body: string;
+            link: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            read: boolean;
         };
         OrganisationDto: {
             /** Format: uuid */
@@ -2519,6 +2668,12 @@ export interface components {
             isMine: boolean;
             answered: boolean;
         };
+        PreferenceDto: {
+            topic: components["schemas"]["Topic"];
+            channel: components["schemas"]["Channel"];
+            enabled: boolean;
+            consentGiven: boolean;
+        };
         PreferencesRequest: {
             palette: string;
         };
@@ -2561,6 +2716,11 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
             device: null | string;
+        };
+        RegisterDeviceRequest: {
+            token: string;
+            platform: string;
+            name: null | string;
         };
         RegisterRequest: {
             /** Format: uuid */
@@ -2802,6 +2962,11 @@ export interface components {
             token: string;
             password: string;
         };
+        SetPreferenceRequest: {
+            topic: components["schemas"]["Topic"];
+            channel: components["schemas"]["Channel"];
+            enabled: boolean;
+        };
         SetSermonAssetRequest: {
             /** Format: uuid */
             assetId: null | string;
@@ -2891,10 +3056,15 @@ export interface components {
             /** Format: date-time */
             refreshTokenExpiresAt: string;
         };
+        /** @enum {unknown} */
+        Topic: "Live" | "Sermons" | "Events" | "Prayer" | "Announcements";
         TwoFactorStatus: {
             enabled: boolean;
             /** Format: int32 */
             recoveryCodesLeft: number;
+        };
+        UnregisterDeviceRequest: {
+            token: string;
         };
         UpdateCampusRequest: {
             name: string;
@@ -3032,6 +3202,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RegistrationDto"];
+                };
+            };
+        };
+    };
+    DeliveryLog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliveryLogDto"][];
                 };
             };
         };
@@ -5927,6 +6117,152 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PrayerAdminDto"];
                 };
+            };
+        };
+    };
+    RegisterDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDeviceRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UnregisterDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnregisterDeviceRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MyNotifications: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InboxDto"];
+                };
+            };
+        };
+    };
+    MarkNotificationRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MarkAllNotificationsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MyNotificationPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferenceDto"][];
+                };
+            };
+        };
+    };
+    SetNotificationPreference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetPreferenceRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

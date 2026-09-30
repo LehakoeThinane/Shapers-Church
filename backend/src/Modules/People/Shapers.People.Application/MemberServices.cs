@@ -70,6 +70,16 @@ public sealed class PeopleDirectory(IPeopleDb db, TimeProvider clock) : IPeopleD
 {
     private const int MaxMergeHops = 10;
 
+    public async Task<IReadOnlySet<Guid>> WithConsentAsync(IReadOnlyCollection<Guid> personIds, string purpose, CancellationToken cancellationToken = default)
+    {
+        var latest = await db.ConsentRecords.AsNoTracking()
+            .Where(c => personIds.Contains(c.PersonId) && c.Purpose == purpose)
+            .GroupBy(c => c.PersonId)
+            .Select(g => g.OrderByDescending(c => c.RecordedAt).ThenByDescending(c => c.Id).First())
+            .ToListAsync(cancellationToken);
+        return latest.Where(c => c.Granted).Select(c => c.PersonId).ToHashSet();
+    }
+
     public async Task<IReadOnlyDictionary<Guid, PersonSummary>> GetManyAsync(IReadOnlyCollection<Guid> personIds, CancellationToken cancellationToken = default) =>
         await db.Persons.AsNoTracking()
             .Where(p => personIds.Contains(p.Id))
