@@ -145,6 +145,10 @@ public sealed class PeopleModule : IModule
                 (await service.UpdateAsync(request, ct)).ToHttp())
             .WithName("UpdateMyProfile");
 
+        me.MapGet("/household", async (ICurrentUser user, IPeopleDirectory directory, CancellationToken ct) =>
+                user.PersonId is { } id ? await directory.GetHouseholdMembersAsync(id, ct) : [])
+            .WithName("MyHousehold");
+
         me.MapPost("/consents", async (RecordConsentRequest request, MyProfileService service, CancellationToken ct) =>
                 (await service.RecordConsentAsync(request.Decisions, request.PolicyVersion, request.Source, ct)).ToHttp())
             .WithName("RecordMyConsent");

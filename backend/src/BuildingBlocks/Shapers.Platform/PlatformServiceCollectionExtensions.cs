@@ -8,6 +8,7 @@ using Shapers.Platform.Authorization;
 using Shapers.Platform.Jobs;
 using Shapers.Platform.Messaging;
 using Shapers.Platform.Persistence;
+using Shapers.Platform.Security;
 
 namespace Shapers.Platform;
 
@@ -31,6 +32,7 @@ public static class PlatformServiceCollectionExtensions
         services.AddSingleton<IntegrationEventTypeRegistry>();
         services.AddSingleton<IntegrationEventDispatcher>();
         services.AddSingleton<RecurringJobRunner>();
+        services.AddSingleton<IKeyedHasher, KeyedHasher>();
 
         services.AddSingleton(new RecurringJobDefinition("platform-inbox-cleanup", "30 3 * * *", (sp, ct) =>
         {

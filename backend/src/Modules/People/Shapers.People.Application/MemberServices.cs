@@ -66,9 +66,62 @@ public sealed class MyProfileService(IPeopleDb db, ICurrentUser currentUser, Per
     }
 }
 
-public sealed class PeopleDirectory(IPeopleDb db) : IPeopleDirectory
+public sealed class PeopleDirectory(IPeopleDb db, TimeProvider clock) : IPeopleDirectory
 {
     private const int MaxMergeHops = 10;
+
+    public async Task<IReadOnlySet<Guid>> WithConsentAsync(IReadOnlyCollection<Guid> personIds, string purpose, CancellationToken cancellationToken = default)
+    {
+        var latest = await db.ConsentRecords.AsNoTracking()
+            .Where(c => personIds.Contains(c.PersonId) && c.Purpose == purpose)
+            .GroupBy(c => c.PersonId)
+            .Select(g => g.OrderByDescending(c => c.RecordedAt).ThenByDescending(c => c.Id).First())
+            .ToListAsync(cancellationToken);
+        return latest.Where(c => c.Granted).Select(c => c.PersonId).ToHashSet();
+    }
+
+    public async Task<IReadOnlyList<PersonSummary>> InScopeAsync(string scope, CancellationToken cancellationToken = default)
+    {
+        var below = LikePattern.Escape(scope) + ".%";
+        return await db.Persons.AsNoTracking()
+            .Where(p => p.Status == PersonStatus.Active && (p.Scope == scope || EF.Functions.Like(p.Scope, below)))
+            .Select(p => new PersonSummary(
+                p.Id,
+                (p.PreferredName ?? p.FirstName) + " " + p.LastName,
+                p.Scope,
+                p.Status.ToString(),
+                p.MergedIntoId,
+                p.Contacts.Where(c => c.Type == ContactType.Email).OrderByDescending(c => c.IsPrimary).Select(c => c.Value).FirstOrDefault()))
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyDictionary<Guid, PersonSummary>> GetManyAsync(IReadOnlyCollection<Guid> personIds, CancellationToken cancellationToken = default) =>
+        await db.Persons.AsNoTracking()
+            .Where(p => personIds.Contains(p.Id))
+            .Select(p => new PersonSummary(
+                p.Id,
+                (p.PreferredName ?? p.FirstName) + " " + p.LastName,
+                p.Scope,
+                p.Status.ToString(),
+                p.MergedIntoId,
+                p.Contacts.Where(c => c.Type == ContactType.Email).OrderByDescending(c => c.IsPrimary).Select(c => c.Value).FirstOrDefault()))
+            .ToDictionaryAsync(p => p.Id, cancellationToken);
+
+    public async Task<IReadOnlyList<HouseholdMemberSummary>> GetHouseholdMembersAsync(Guid personId, CancellationToken cancellationToken = default)
+    {
+        var households = await db.Households.AsNoTracking().Where(h => h.Members.Any(m => m.PersonId == personId)).ToListAsync(cancellationToken);
+        var members = households.SelectMany(h => h.Members).Where(m => m.PersonId != personId).DistinctBy(m => m.PersonId).ToList();
+        var ids = members.Select(m => m.PersonId).ToList();
+        var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+        var people = await db.Persons.AsNoTracking()
+            .Where(p => ids.Contains(p.Id) && p.Status == PersonStatus.Active)
+            .ToDictionaryAsync(p => p.Id, cancellationToken);
+        return members
+            .Where(m => people.ContainsKey(m.PersonId))
+            .Select(m => new HouseholdMemberSummary(m.PersonId, people[m.PersonId].DisplayName, m.Role == HouseholdRole.Child || people[m.PersonId].IsMinorOn(today)))
+            .OrderBy(m => m.IsChild).ThenBy(m => m.DisplayName)
+            .ToList();
+    }
 
     public async Task<PersonSummary?> GetAsync(Guid personId, CancellationToken cancellationToken = default)
     {
@@ -83,7 +136,7 @@ public sealed class PeopleDirectory(IPeopleDb db) : IPeopleDirectory
 
             if (person.MergedIntoId is not { } next)
             {
-                return new PersonSummary(person.Id, person.DisplayName, person.Scope, person.Status.ToString(), null);
+                return new PersonSummary(person.Id, person.DisplayName, person.Scope, person.Status.ToString(), null, person.PrimaryContact(ContactType.Email)?.Value);
             }
 
             id = next;

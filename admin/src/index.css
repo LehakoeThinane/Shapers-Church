@@ -552,3 +552,27 @@ progress {
   border-left: 3px solid var(--color-interactive);
   white-space: pre-wrap;
 }
+
+.scanner {
+  width: 100%;
+  max-height: 360px;
+  border-radius: var(--radius-md);
+  background: var(--color-glass-fill);
+  object-fit: cover;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.review-item {
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-glass-edge);
+}
+
+.review-item:last-child {
+  border-bottom: 0;
+}

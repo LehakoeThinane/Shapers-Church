@@ -7,6 +7,7 @@ import { Glass, PrimaryButton } from '@/components/glass';
 import { GlowBackground } from '@/components/glow-background';
 import { AppText } from '@/components/text';
 import { api, signOut, unwrap, useSession } from '@/lib/api';
+import { enablePush, pushSupported, releasePush, topicLabels, usePreferences, usePushPermission, useSetPreference } from '@/lib/notifications';
 import { formatMinutes, useDownloads, useMediaSettings } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
 import { text } from '@/theme/type';
@@ -79,6 +80,8 @@ export default function ProfileScreen() {
           </Glass>
         </View>
 
+        {status === 'signedIn' && <NotificationSettings />}
+
         <View style={styles.section}>
           <AppText style={text.title}>Data</AppText>
           <Glass style={styles.card}>
@@ -128,6 +131,7 @@ export default function ProfileScreen() {
           <Pressable
             accessibilityRole="button"
             onPress={async () => {
+              await releasePush();
               await signOut();
               queryClient.removeQueries({ queryKey: ['me'] });
               router.back();
@@ -138,6 +142,60 @@ export default function ProfileScreen() {
           </Pressable>
         )}
       </ScrollView>
+    </View>
+  );
+}
+
+function NotificationSettings() {
+  const { palette } = useTheme();
+  const permission = usePushPermission();
+  const preferences = usePreferences();
+  const setPreference = useSetPreference();
+  const push = (preferences.data ?? []).filter((p) => p.channel === 'Push');
+  const allowed = permission.data === 'granted' && push.some((p) => p.consentGiven);
+
+  return (
+    <View style={styles.section}>
+      <AppText style={text.title}>Notifications</AppText>
+      <Glass style={styles.card}>
+        {!pushSupported ? (
+          <AppText tone="secondary">
+            Notifications need the Shapers Church app from the store. You'll still find everything in the notifications inbox on Home.
+          </AppText>
+        ) : !allowed ? (
+          <>
+            <AppText tone="secondary">
+              {permission.data === 'denied'
+                ? "Notifications are turned off for this app in your phone's settings."
+                : 'Get a notification when a service goes live, a sermon is published, or your booking changes.'}
+            </AppText>
+            {permission.data !== 'denied' && (
+              <Pressable accessibilityRole="button" onPress={() => void enablePush().finally(() => void permission.refetch().then(() => preferences.refetch()))}>
+                <AppText tone="interactive" style={text.headline}>
+                  Turn on notifications
+                </AppText>
+              </Pressable>
+            )}
+          </>
+        ) : (
+          push.map((p) => (
+            <View key={p.topic} style={styles.switchRow}>
+              <View style={styles.flex}>
+                <AppText style={text.headline}>{topicLabels[p.topic].title}</AppText>
+                <AppText tone="tertiary" style={text.caption}>
+                  {topicLabels[p.topic].hint}
+                </AppText>
+              </View>
+              <Switch
+                value={p.enabled}
+                onValueChange={(enabled) => setPreference.mutate({ topic: p.topic, channel: 'Push', enabled })}
+                trackColor={{ true: palette.color.accent }}
+                accessibilityLabel={topicLabels[p.topic].title}
+              />
+            </View>
+          ))
+        )}
+      </Glass>
     </View>
   );
 }

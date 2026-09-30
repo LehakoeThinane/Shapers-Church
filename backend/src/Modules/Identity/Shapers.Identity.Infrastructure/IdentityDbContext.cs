@@ -49,6 +49,8 @@ public sealed class IdentityDbContext(DbContextOptions<IdentityDbContext> option
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder) => configurationBuilder.UseUtcTimestamps();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

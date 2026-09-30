@@ -4,14 +4,17 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Glass } from '@/components/glass';
 import { Screen } from '@/components/screen';
+import { EventRow } from '@/components/event-bits';
 import { Artwork, SeriesTile, SermonRow } from '@/components/sermon-bits';
 import { AppText } from '@/components/text';
+import { useUpcomingEvents } from '@/lib/events';
 import { formatDay, useSeriesList, useSermons } from '@/lib/media';
 import { serif, text } from '@/theme/type';
 
 export default function DiscoverScreen() {
   const sermons = useSermons({ pageSize: 12 });
   const series = useSeriesList();
+  const events = useUpcomingEvents().data ?? [];
   const [latest, ...rest] = sermons.data?.items ?? [];
 
   return (
@@ -45,6 +48,15 @@ export default function DiscoverScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tiles}>
             {series.data?.map((s) => <SeriesTile key={s.id} series={s} />)}
           </ScrollView>
+        </View>
+      )}
+
+      {events.length > 0 && (
+        <View style={styles.section}>
+          <AppText style={text.title}>Events</AppText>
+          {events.map((e) => (
+            <EventRow key={e.id} event={e} />
+          ))}
         </View>
       )}
 

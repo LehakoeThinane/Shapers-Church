@@ -46,6 +46,13 @@
           "recordAudioAndroid": false,
           "enableBackgroundPlayback": true
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/android-icon-monochrome.png",
+          "color": "#D4B26F"
+        }
       ]
     ],
     "experiments": {

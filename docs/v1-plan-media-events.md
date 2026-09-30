@@ -1,6 +1,6 @@
 # V1 Plan: Sermons and Media, Livestream, Events
 
-Status: **Approved (2026-09-29).** Decisions are recorded at the end; building starts with slice A.
+Status: **Approved (2026-09-29).** Decisions are recorded at the end. Slices A, B and C are built. Slice C sends its own transactional emails (guest codes, confirmations, waitlist, cancellations and reminders) because guest registration needs email codes; see [ADR 0010](decisions/0010-event-registration.md). Other member notifications still wait for slice D.
 
 This is the first part of V1. It adds two modules, **Media** (sermons, series, speakers, audio, podcast, livestream) and **Events** (events, registration, waiting lists, tickets, check-in), and the screens that use them in the admin portal and the member app. Giving, Prayer and Notifications get their own plans.
 

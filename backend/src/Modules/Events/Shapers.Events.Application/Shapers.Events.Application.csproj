@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Shapers.Events.Domain/Shapers.Events.Domain.csproj" />
+    <ProjectReference Include="../Shapers.Events.Contracts/Shapers.Events.Contracts.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/Shapers.Platform/Shapers.Platform.csproj" />
+    <ProjectReference Include="../../Church/Shapers.Church.Contracts/Shapers.Church.Contracts.csproj" />
+    <ProjectReference Include="../../People/Shapers.People.Contracts/Shapers.People.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shapers.Events.Tests" />
+  </ItemGroup>
+</Project>

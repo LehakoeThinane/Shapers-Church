@@ -1,0 +1,34 @@
+using Shapers.Communications.Domain;
+using Shapers.Events.Contracts;
+using Shapers.Media.Contracts;
+using Shapers.Platform.Messaging;
+using Shapers.Prayer.Contracts;
+
+namespace Shapers.Communications.Application;
+
+// What other modules announce, turned into notifications. Wording lives here so the tone stays consistent.
+// Prayer text and other personal details are never put in a notification: phones show them on the lock screen.
+
+public sealed class NotifyLivestreamStarted(Notifier notifier) : IIntegrationEventHandler<LivestreamStartedIntegrationEvent>
+{
+    public Task HandleAsync(LivestreamStartedIntegrationEvent e, CancellationToken cancellationToken) =>
+        notifier.ToAppUsersAsync(e.Scope, new Notifier.Message(Topic.Live, "We're live", $"{e.Title} has started. Join us now.", "/live", $"live:{e.LivestreamId}", Urgent: true), cancellationToken);
+}
+
+public sealed class NotifySermonPublished(Notifier notifier) : IIntegrationEventHandler<SermonPublishedIntegrationEvent>
+{
+    public Task HandleAsync(SermonPublishedIntegrationEvent e, CancellationToken cancellationToken) =>
+        notifier.ToAppUsersAsync(e.Scope, new Notifier.Message(Topic.Sermons, "New sermon", e.Title, $"/sermon/{e.Slug}", $"sermon:{e.SermonId}"), cancellationToken);
+}
+
+public sealed class NotifyWaitlistPromoted(Notifier notifier) : IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>
+{
+    public Task HandleAsync(WaitlistPromotedIntegrationEvent e, CancellationToken cancellationToken) =>
+        notifier.ToPeopleAsync([e.PersonId], new Notifier.Message(Topic.Events, "You're in!", "A seat opened up for an event you were waiting for. Your tickets are ready.", "/tickets", $"waitlist:{e.RegistrationId}"), cancellationToken);
+}
+
+public sealed class NotifyPrayerApproved(Notifier notifier) : IIntegrationEventHandler<PrayerRequestApprovedIntegrationEvent>
+{
+    public Task HandleAsync(PrayerRequestApprovedIntegrationEvent e, CancellationToken cancellationToken) =>
+        notifier.ToPeopleAsync([e.PersonId], new Notifier.Message(Topic.Prayer, "Your request is on the prayer wall", "The church family can now pray with you.", "/prayer", $"prayer-approved:{e.RequestId}"), cancellationToken);
+}

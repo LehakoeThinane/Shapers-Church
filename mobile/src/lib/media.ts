@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Directory, File, Paths } from 'expo-file-system';
+import { Platform } from 'react-native';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -79,6 +80,9 @@ export const useMediaSettings = create<MediaSettings>()(
 
 // ---------- Offline downloads ----------
 
+/** Downloads need the phone's file system; the browser preview has none. */
+export const canDownload = Platform.OS !== 'web';
+
 export interface DownloadedSermon {
   id: string;
   slug: string;
@@ -110,7 +114,7 @@ export const useDownloads = create<DownloadState>()(
       items: {},
       progress: {},
       download: async (sermon) => {
-        if (!sermon.audio || get().items[sermon.id] || get().progress[sermon.id] !== undefined) return;
+        if (!canDownload || !sermon.audio || get().items[sermon.id] || get().progress[sermon.id] !== undefined) return;
         set((s) => ({ progress: { ...s.progress, [sermon.id]: 0 } }));
         try {
           const extension = sermon.audio.contentType.includes('mp4') || sermon.audio.contentType.includes('m4a') ? 'm4a' : 'mp3';

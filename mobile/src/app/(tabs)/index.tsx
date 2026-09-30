@@ -6,8 +6,11 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Glass } from '@/components/glass';
 import { Screen } from '@/components/screen';
 import { AppText, Icon } from '@/components/text';
+import { EventRow } from '@/components/event-bits';
 import { SermonRow } from '@/components/sermon-bits';
 import { api, unwrap, useSession } from '@/lib/api';
+import { eventWhen, useMyRegistrations, useUpcomingEvents } from '@/lib/events';
+import { enablePush, pushSupported, useInbox, usePushPermission, usePushStore } from '@/lib/notifications';
 import { startsIn, useLiveNow } from '@/lib/live';
 import { useContinueListening, useSermons } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
@@ -20,7 +23,7 @@ function greeting(date = new Date()) {
 
 const quickActions = [
   { label: 'Give', icon: { ios: 'heart', android: 'volunteer_activism' }, href: '/give' },
-  { label: 'Prayer', icon: { ios: 'hands.sparkles', android: 'self_improvement' }, href: '/community' },
+  { label: 'Prayer', icon: { ios: 'hands.sparkles', android: 'self_improvement' }, href: '/prayer' },
   { label: 'Groups', icon: { ios: 'person.3', android: 'groups' }, href: '/community' },
   { label: 'Serve', icon: { ios: 'hand.raised', android: 'front_hand' }, href: '/community' },
 ] as const;
@@ -39,6 +42,12 @@ export default function HomeScreen() {
   const live = useLiveNow().data;
   const isLive = live?.state === 'Live';
   const stream = live?.stream;
+  const events = useUpcomingEvents().data ?? [];
+  const myNext = useMyRegistrations().upcoming[0];
+  const unread = useInbox().data?.unread ?? 0;
+  const permission = usePushPermission();
+  const { dismissed, dismiss } = usePushStore();
+  const askForPush = status === 'signedIn' && pushSupported && permission.data === 'undetermined' && !dismissed;
 
   const firstName = profile.data?.preferredName ?? profile.data?.firstName;
   const initials = profile.data ? `${profile.data.firstName[0] ?? ''}${profile.data.lastName[0] ?? ''}` : '';
@@ -52,18 +61,53 @@ export default function HomeScreen() {
           </AppText>
           <AppText style={text.largeTitle}>{firstName ?? 'Welcome'}</AppText>
         </View>
-        <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => router.push('/profile')}>
-          <Glass cornerRadius={21} style={styles.avatar}>
-            {initials ? (
-              <AppText tone="interactive" style={text.headline}>
-                {initials}
-              </AppText>
-            ) : (
-              <Icon name={{ ios: 'person.fill', android: 'person' }} size={20} />
-            )}
-          </Glass>
-        </Pressable>
+        <View style={styles.topActions}>
+          {status === 'signedIn' && (
+            <Pressable accessibilityRole="button" accessibilityLabel={unread ? `Notifications, ${unread} unread` : 'Notifications'} onPress={() => router.push('/inbox')}>
+              <Glass cornerRadius={21} style={styles.avatar}>
+                <Icon name={{ ios: 'bell', android: 'notifications' }} size={20} />
+                {unread > 0 && (
+                  <View style={[styles.badge, { backgroundColor: palette.color.accent }]}>
+                    <AppText style={[text.label, { color: palette.color.text.onAccent }]}>{unread > 9 ? '9+' : unread}</AppText>
+                  </View>
+                )}
+              </Glass>
+            </Pressable>
+          )}
+          <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => router.push('/profile')}>
+            <Glass cornerRadius={21} style={styles.avatar}>
+              {initials ? (
+                <AppText tone="interactive" style={text.headline}>
+                  {initials}
+                </AppText>
+              ) : (
+                <Icon name={{ ios: 'person.fill', android: 'person' }} size={20} />
+              )}
+            </Glass>
+          </Pressable>
+        </View>
       </View>
+
+      {askForPush && (
+        <Glass style={styles.card}>
+          <AppText style={text.headline}>Know when we go live</AppText>
+          <AppText tone="secondary">
+            Get a notification when a service starts, a new sermon is published, or your event booking changes. You choose which in your profile.
+          </AppText>
+          <View style={styles.promptActions}>
+            <Pressable accessibilityRole="button" onPress={() => void enablePush().finally(() => void permission.refetch())}>
+              <AppText tone="interactive" style={text.headline}>
+                Turn on
+              </AppText>
+            </Pressable>
+            <Pressable accessibilityRole="button" onPress={dismiss}>
+              <AppText tone="tertiary" style={text.callout}>
+                Not now
+              </AppText>
+            </Pressable>
+          </View>
+        </Glass>
+      )}
 
       <Glass cornerRadius={radius.card} style={styles.live}>
         <View style={[styles.video, { backgroundColor: palette.color.video.middle }]}>
@@ -118,10 +162,35 @@ export default function HomeScreen() {
         )
       )}
 
+      {myNext && (
+        <Link href="/tickets" asChild>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Your ticket for ${myNext.eventTitle}`}>
+            <Glass style={styles.ticket}>
+              <Icon name={{ ios: 'ticket', android: 'confirmation_number' }} />
+              <View style={styles.flex}>
+                <AppText style={text.headline} numberOfLines={1}>
+                  {myNext.eventTitle}
+                </AppText>
+                <AppText tone="tertiary" style={text.caption}>
+                  {myNext.status === 'Waitlisted' ? 'Waiting list' : eventWhen(myNext.startsAt)}
+                </AppText>
+              </View>
+              <AppText tone="interactive" style={text.callout}>
+                My tickets
+              </AppText>
+            </Glass>
+          </Pressable>
+        </Link>
+      )}
+
       <Section title="Upcoming">
-        <Glass style={styles.card}>
-          <AppText tone="secondary">Events and registrations will appear here.</AppText>
-        </Glass>
+        {events.length > 0 ? (
+          events.slice(0, 3).map((e) => <EventRow key={e.id} event={e} />)
+        ) : (
+          <Glass style={styles.card}>
+            <AppText tone="secondary">No events coming up right now.</AppText>
+          </Glass>
+        )}
       </Section>
 
       <Section title="My church">
@@ -160,6 +229,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: space.xxs },
   avatar: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
+  topActions: { flexDirection: 'row', gap: space.sm },
+  badge: { position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center' },
+  promptActions: { flexDirection: 'row', alignItems: 'center', gap: space.lg, marginTop: space.xs },
   live: { padding: space.sm },
   video: { height: 168, borderRadius: 22, overflow: 'hidden', justifyContent: 'space-between', padding: 12 },
   pill: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill },
@@ -171,4 +243,5 @@ const styles = StyleSheet.create({
   quickIcon: { width: 58, height: 58, alignItems: 'center', justifyContent: 'center' },
   section: { gap: space.sm },
   card: { padding: space.lg, gap: space.xxs },
+  ticket: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md },
 });

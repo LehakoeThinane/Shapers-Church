@@ -57,6 +57,44 @@ pnpm mobile    # Expo dev server
 
 In Development, sign-in codes for the app are written to the API console instead of being sent by SMS.
 
+### Try the app on your phone (Expo Go, quick look)
+
+1. Install **Expo Go** from the App Store or Play Store. Phone and PC must be on the same Wi-Fi.
+2. Let the phone reach the API (once, in an **administrator** PowerShell):
+   ```powershell
+   New-NetFirewallRule -DisplayName "Shapers API (dev)" -Direction Inbound -Protocol TCP -LocalPort 5080 -Action Allow -Profile Private
+   ```
+   The Wi-Fi network must be set to *Private* in Windows settings.
+3. Run the API on the network: `dotnet run --project backend/src/Host/Shapers.Api --launch-profile lan`
+4. Tell the app where the API is: copy `mobile/.env.example` to `mobile/.env.local` and set your PC's Wi-Fi address (`ipconfig`).
+5. Start Expo: `pnpm mobile:go`, then scan the QR code (Camera app on iPhone, Expo Go on Android).
+
+Development builds include demo content (two sermons from the church's site and a Sunday livestream) when the sermon library is empty. Sign in on the phone with any mobile number: the code appears in the API console.
+
+### Development build (push notifications, and what we ship)
+
+Expo Go can't receive push notifications on Android, so the app also has its own development build. It is built on Expo's servers (EAS), so no Android Studio or Mac is needed. Accounts should belong to the church, not to one person.
+
+One-time setup:
+
+1. **Expo account.** Create a free account at expo.dev with a church email, then from `mobile/`:
+   ```powershell
+   npx eas-cli login
+   npx eas-cli init          # links the project and adds its ID to app.json; commit that change
+   ```
+2. **Firebase (Android push).** In the church's Google account, create a Firebase project at console.firebase.google.com and add an Android app with the package name `com.shaperschurch.app`. Download `google-services.json`, keep a copy in `mobile/` for local builds (it is git-ignored) and give it to EAS:
+   ```powershell
+   npx eas-cli env:create --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json --visibility secret --environment development --environment preview --environment production
+   ```
+3. **Push credentials.** In Firebase: Project settings → Service accounts → Generate new private key. Upload it with `npx eas-cli credentials` → Android → Google Service Account → *FCM V1*. Delete the downloaded key afterwards; never commit it.
+4. **API address for test builds.** `npx eas-cli env:create --name EXPO_PUBLIC_API_URL --value http://<your-PC-IP>:5080 --environment development --environment preview`
+
+Build and install:
+
+- `npx eas-cli build --profile development --platform android` builds an APK. Open the link it prints on the phone to install it. Start the dev server with `pnpm mobile` and open the project from the installed app.
+- `npx eas-cli build --profile preview --platform android` builds a stand-alone APK with the app code inside. Use it when the Wi-Fi is too unreliable to load the code from your PC: only the small API calls travel over the network.
+- iPhone builds need an Apple Developer account (paid) and registering the test devices (`npx eas-cli device:create`).
+
 ## Everyday commands
 
 | Command | Does |

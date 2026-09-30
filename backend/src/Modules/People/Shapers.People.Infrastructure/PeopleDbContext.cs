@@ -158,7 +158,7 @@ public sealed class PeopleDbContext(DbContextOptions<PeopleDbContext> options) :
         PersonMerged e => [new PeopleMergedIntegrationEvent(e.SurvivorId, e.MergedId)],
         MembershipStatusChanged e => [new MembershipStatusChangedIntegrationEvent(e.PersonId, e.ToStage.ToString())],
         PersonMovedCampus e => [new PersonMovedCampusIntegrationEvent(e.PersonId, e.FromScope, e.ToScope)],
-        ConnectCardSubmitted e => [new ConnectCardSubmittedIntegrationEvent(e.CardId, e.PersonId, e.Scope, e.Reasons.Select(r => r.ToString()).ToList())],
+        ConnectCardSubmitted e => [new ConnectCardSubmittedIntegrationEvent(e.CardId, e.PersonId, e.Scope, e.Reasons.Select(r => r.ToString()).ToList(), e.PrayerText)],
         _ => [],
     };
 }

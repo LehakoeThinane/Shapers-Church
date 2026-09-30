@@ -5,7 +5,10 @@ using Microsoft.Extensions.Logging;
 using Shapers.Church.Contracts;
 using Shapers.Identity.Contracts;
 using Shapers.Identity.Domain;
+using Shapers.Events.Contracts;
 using Shapers.Media.Contracts;
+using Shapers.Communications.Contracts;
+using Shapers.Prayer.Contracts;
 using Shapers.People.Contracts;
 using Shapers.Platform.Authorization;
 using Shapers.Platform.Messaging;
@@ -19,6 +22,9 @@ public static class SystemRoles
     public const string CampusAdministrator = "Campus administrator";
     public const string MinistryLeader = "Ministry leader";
     public const string MediaTeam = "Media team";
+    public const string EventsTeam = "Events team";
+    public const string DoorVolunteer = "Door volunteer";
+    public const string PrayerTeam = "Prayer team";
 
     /// <summary>Built-in roles. The church administrator always holds every permission in the catalogue.</summary>
     public static IReadOnlyDictionary<string, (string Description, IReadOnlyList<string> Permissions)> Definitions(PermissionCatalog catalog) =>
@@ -29,12 +35,24 @@ public static class SystemRoles
             [
                 PeoplePermissions.ProfilesView, PeoplePermissions.ProfilesEdit, PeoplePermissions.ProfilesMerge,
                 ChurchPermissions.MinistriesManage, IdentityPermissions.UsersView, IdentityPermissions.GrantsManage,
+                PrayerPermissions.RequestsView, PrayerPermissions.RequestsModerate,
+                CommunicationsPermissions.AnnouncementsSend, CommunicationsPermissions.AnnouncementsApprove,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [
                 PeoplePermissions.ProfilesView, PeoplePermissions.ProfilesEdit, ChurchPermissions.MinistriesManage,
+                CommunicationsPermissions.AnnouncementsSend,
             ]),
-            [MinistryLeader] = ("Leads a ministry; can see the people in it.", [PeoplePermissions.ProfilesView]),
+            [MinistryLeader] = ("Leads a ministry; can see the people in it and send it announcements.",
+            [
+                PeoplePermissions.ProfilesView, CommunicationsPermissions.AnnouncementsSend,
+            ]),
+            [EventsTeam] = ("Plans events, manages registrations and runs the door.",
+            [
+                EventsPermissions.Edit, EventsPermissions.Publish, EventsPermissions.RegistrationsView, EventsPermissions.RegistrationsManage, EventsPermissions.CheckIn,
+            ]),
+            [DoorVolunteer] = ("Checks people in at events. Sees names only.", [EventsPermissions.CheckIn]),
+            [PrayerTeam] = ("Reviews requests for the prayer wall. Pastors-only requests stay with the pastors.", [PrayerPermissions.RequestsModerate]),
             [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",
             [
                 MediaPermissions.SermonsEdit, MediaPermissions.SermonsPublish, MediaPermissions.SpeakersManage, MediaPermissions.LivestreamManage,

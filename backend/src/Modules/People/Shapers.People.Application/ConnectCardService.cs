@@ -1,10 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Shapers.Church.Contracts;
 using Shapers.People.Contracts;
 using Shapers.People.Domain;
 using Shapers.Platform.Auditing;
 using Shapers.Platform.Authorization;
-using Shapers.Platform.Text;
 
 namespace Shapers.People.Application;
 
@@ -43,8 +41,7 @@ public sealed class ConnectCardService(
     IPeopleDb db,
     ICurrentUser currentUser,
     IAuthorizer authorizer,
-    IChurchDirectory church,
-    DuplicateDetector duplicates,
+    IGuestRecords guests,
     IAuditLog audit,
     TimeProvider clock)
 {
@@ -61,27 +58,23 @@ public sealed class ConnectCardService(
             person = await db.Persons.SingleOrDefaultAsync(p => p.Id == personId && p.Status != PersonStatus.Merged, cancellationToken);
         }
 
-        var created = false;
         if (person is null)
         {
-            var guest = await CreateGuestAsync(request, now, cancellationToken);
+            var guest = await guests.CreateAsync(
+                new GuestDetails(request.FirstName, request.LastName, request.Mobile, request.Email, EmailVerified: false, request.ConsentToKeepDetails,
+                    GuestOrigin.ConnectCard, FromWebsite: request.Source == "website", request.PolicyVersion),
+                cancellationToken);
             if (guest.IsFailure)
             {
                 return guest.Error!;
             }
 
-            person = guest.Value;
-            created = true;
+            person = await db.Persons.SingleAsync(p => p.Id == guest.Value, cancellationToken);
         }
 
         var card = ConnectCard.Submit(person.Id, ScopePath.Parse(person.Scope), request.Reasons, request.Message, request.Source, request.SourceId, now);
         db.ConnectCards.Add(card);
         await db.SaveChangesAsync(cancellationToken);
-        if (created)
-        {
-            await duplicates.DetectAsync(person, cancellationToken);
-        }
-
         return new ConnectCardReceipt(card.Id);
     }
 
@@ -133,63 +126,5 @@ public sealed class ConnectCardService(
         await db.SaveChangesAsync(cancellationToken);
         await audit.RecordAsync(new AuditRecord("people.connect_card.handled", "connect_card", id.ToString(), ScopePath.Parse(card.Scope)), cancellationToken);
         return Result.Success();
-    }
-
-    private async Task<Result<Person>> CreateGuestAsync(ConnectCardRequest request, DateTimeOffset now, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrWhiteSpace(request.FirstName) || string.IsNullOrWhiteSpace(request.LastName))
-        {
-            return new Error("people.name_required", "Please tell us your first and last name.");
-        }
-
-        string? mobile = null;
-        if (!string.IsNullOrWhiteSpace(request.Mobile) && !ContactNormaliser.TryNormalisePhone(request.Mobile, out mobile))
-        {
-            return new Error("people.mobile_invalid", "That mobile number doesn't look right.");
-        }
-
-        string? email = null;
-        if (!string.IsNullOrWhiteSpace(request.Email) && !ContactNormaliser.TryNormaliseEmail(request.Email, out email))
-        {
-            return new Error("people.email_invalid", "That email address doesn't look right.");
-        }
-
-        if (mobile is null && email is null)
-        {
-            return new Error("people.contact_required", "Give us a mobile number or email so we can get back to you.");
-        }
-
-        if (!request.ConsentToKeepDetails)
-        {
-            return new Error("people.consent_required", "We need your permission to keep your details so the church can contact you.");
-        }
-
-        var campuses = await church.GetCampusesAsync(cancellationToken);
-        var campus = campuses.FirstOrDefault(c => c.IsPrimary) ?? (campuses.Count > 0 ? campuses[0] : null);
-        var scope = ScopePath.Parse(campus?.Scope ?? (await church.GetRootScopeAsync(cancellationToken)).Path);
-        var status = await db.MembershipStatuses.SingleAsync(s => s.IsDefault, cancellationToken);
-
-        var person = Person.Create(scope, request.FirstName, request.LastName, status, PersonSource.VisitorCard, now);
-        if (mobile is not null)
-        {
-            person.AddContact(ContactType.Mobile, mobile, isPrimary: true, isVerified: false, now);
-        }
-
-        if (email is not null)
-        {
-            person.AddContact(ContactType.Email, email, isPrimary: true, isVerified: false, now);
-        }
-
-        db.Persons.Add(person);
-        db.ConsentRecords.Add(ConsentRecord.Record(
-            person.Id,
-            ConsentPurposes.ChurchRecord,
-            granted: true,
-            LawfulBasis.Consent,
-            string.IsNullOrWhiteSpace(request.PolicyVersion) ? "2026-09" : request.PolicyVersion,
-            request.Source == "website" ? ConsentSource.Website : ConsentSource.MobileApp,
-            now,
-            recordedBy: null));
-        return person;
     }
 }

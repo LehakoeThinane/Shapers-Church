@@ -17,11 +17,11 @@ public enum ConnectCardStatus
     Handled,
 }
 
-public sealed record ConnectCardSubmitted(Guid CardId, Guid PersonId, string Scope, IReadOnlyList<ConnectReason> Reasons) : IDomainEvent;
+public sealed record ConnectCardSubmitted(Guid CardId, Guid PersonId, string Scope, IReadOnlyList<ConnectReason> Reasons, string? PrayerText) : IDomainEvent;
 
 /// <summary>
 /// "I'm new", "I made a decision", "please pray for me": a hand raised during a service or on the website.
-/// Staff follow up and mark it handled. Prayer requests move to the Prayer module when it exists.
+/// Staff follow up and mark it handled. Prayer requests are also filed with the pastors in the Prayer module.
 /// </summary>
 public sealed class ConnectCard : AggregateRoot<Guid>
 {
@@ -79,7 +79,7 @@ public sealed class ConnectCard : AggregateRoot<Guid>
             Status = ConnectCardStatus.New,
             SubmittedAt = now,
         };
-        card.Raise(new ConnectCardSubmitted(card.Id, personId, card.Scope, distinct));
+        card.Raise(new ConnectCardSubmitted(card.Id, personId, card.Scope, distinct, distinct.Contains(ConnectReason.Prayer) ? card.Message : null));
         return card;
     }
 

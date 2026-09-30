@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 
 import { api, ApiError, restoreSession, unwrap, useSession } from '@/lib/api';
+import { usePushLifecycle } from '@/lib/notifications';
 import { ThemeProvider, usePaletteStore, useTheme } from '@/theme/theme';
 
 void SplashScreen.preventAutoHideAsync();
@@ -64,6 +65,7 @@ export default function RootLayout() {
 
 function Navigator() {
   const { palette } = useTheme();
+  usePushLifecycle();
   return (
     <>
       <StatusBar style={palette.appearance === 'dark' ? 'light' : 'dark'} />
@@ -71,6 +73,10 @@ function Navigator() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="sermon/[slug]" options={{ headerShown: true, headerTransparent: true, headerTitle: '', headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="series/[slug]" options={{ headerShown: true, headerTransparent: true, headerTitle: '', headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="event/[slug]" options={{ headerShown: true, headerTransparent: true, headerTitle: '', headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="inbox" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="prayer" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="tickets" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="profile" options={{ presentation: 'modal' }} />
         <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />
       </Stack>

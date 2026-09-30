@@ -68,6 +68,69 @@
         }
       }
     },
+    "/api/events/{slug}/register": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "RegisterForEvent",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberRegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/communications/deliveries": {
+      "get": {
+        "tags": [
+          "Notifications admin"
+        ],
+        "operationId": "DeliveryLog",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeliveryLogDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/audit": {
       "get": {
         "tags": [
@@ -1088,6 +1151,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PersonDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/household": {
+      "get": {
+        "tags": [
+          "My profile"
+        ],
+        "operationId": "MyHousehold",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HouseholdMemberSummary"
+                  }
                 }
               }
             }
@@ -3068,6 +3154,1446 @@
           }
         }
       }
+    },
+    "/api/events": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "ListEvents",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{slug}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "GetEvent",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{slug}/guest-code": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "SendGuestCode",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuestCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuestCodeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{slug}/register-guest": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "RegisterGuest",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuestRegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuestRegistrationReceipt"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/registrations/{id}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "GetGuestRegistration",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/registrations/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "CancelGuestRegistration",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/registrations": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "MyRegistrations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RegistrationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/registrations/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "CancelMyRegistration",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/events": {
+      "get": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "AdminListEvents",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventAdminDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "CreateEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}": {
+      "get": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "AdminGetEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAdminDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "UpdateEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/publish": {
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "PublishEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/unpublish": {
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "UnpublishEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "CancelEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/attendees": {
+      "get": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "ListAttendees",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AttendeeRowDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/attendees.csv": {
+      "get": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "ExportAttendees",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/registrations": {
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "RegisterByStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/registrations/{registrationId}/cancel": {
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "CancelByStaff",
+        "parameters": [
+          {
+            "name": "registrationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/check-in": {
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "CheckIn",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/events/{id}/door-list": {
+      "get": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "DoorList",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TicketDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prayer/wall": {
+      "get": {
+        "tags": [
+          "Prayer"
+        ],
+        "operationId": "PrayerWall",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PrayerWallItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prayer/requests": {
+      "post": {
+        "tags": [
+          "Prayer"
+        ],
+        "operationId": "SubmitPrayerRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitPrayerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyPrayerRequestDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prayer/requests/{id}/prayed": {
+      "post": {
+        "tags": [
+          "Prayer"
+        ],
+        "operationId": "IPrayed",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/prayer-requests": {
+      "get": {
+        "tags": [
+          "Prayer"
+        ],
+        "operationId": "MyPrayerRequests",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyPrayerRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/prayer-requests/{id}/answered": {
+      "post": {
+        "tags": [
+          "Prayer"
+        ],
+        "operationId": "MarkPrayerAnswered",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyPrayerRequestDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/prayer-requests/{id}/withdraw": {
+      "post": {
+        "tags": [
+          "Prayer"
+        ],
+        "operationId": "WithdrawPrayerRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyPrayerRequestDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/prayer/review": {
+      "get": {
+        "tags": [
+          "Prayer admin"
+        ],
+        "operationId": "PrayerReviewQueue",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PrayerAdminDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/prayer": {
+      "get": {
+        "tags": [
+          "Prayer admin"
+        ],
+        "operationId": "ListPrayerRequests",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/PrayerStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PrayerAdminDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/prayer/{id}/approve": {
+      "post": {
+        "tags": [
+          "Prayer admin"
+        ],
+        "operationId": "ApprovePrayerRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrayerAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/prayer/{id}/keep-with-pastors": {
+      "post": {
+        "tags": [
+          "Prayer admin"
+        ],
+        "operationId": "KeepPrayerWithPastors",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrayerAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/prayer/{id}/take-down": {
+      "post": {
+        "tags": [
+          "Prayer admin"
+        ],
+        "operationId": "TakeDownPrayerRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrayerAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/devices": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "RegisterDevice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/devices/unregister": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "UnregisterDevice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnregisterDeviceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/notifications": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MyNotifications",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/notifications/{id}/read": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MarkNotificationRead",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/notifications/read-all": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MarkAllNotificationsRead",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/me/notification-preferences": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MyNotificationPreferences",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PreferenceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "SetNotificationPreference",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetPreferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/announcements": {
+      "get": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "ListAnnouncements",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnnouncementDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "CreateAnnouncement",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}": {
+      "get": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "GetAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "UpdateAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/submit": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "SubmitAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/approve": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "ApproveAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/return": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "ReturnAnnouncementToDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "CancelAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3150,6 +4676,206 @@
           }
         }
       },
+      "AdminRegisterRequest": {
+        "required": [
+          "personId",
+          "firstName",
+          "lastName",
+          "mobile",
+          "email",
+          "consentGivenVerbally",
+          "otherAttendeeNames",
+          "answers"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lastName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "consentGivenVerbally": {
+            "type": "boolean"
+          },
+          "otherAttendeeNames": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "answers": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "AnnouncementDto": {
+        "required": [
+          "id",
+          "title",
+          "body",
+          "link",
+          "scope",
+          "sendEmail",
+          "sendAt",
+          "status",
+          "needsApproval",
+          "createdByMe",
+          "createdAt",
+          "updatedAt",
+          "approvedAt",
+          "returnNote",
+          "sentAt",
+          "audience",
+          "delivered"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "sendEmail": {
+            "type": "boolean"
+          },
+          "sendAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnnouncementStatus"
+          },
+          "needsApproval": {
+            "type": "boolean"
+          },
+          "createdByMe": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "approvedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "returnNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "sentAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "audience": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudienceDto"
+              }
+            ]
+          },
+          "delivered": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DeliveryCountsDto"
+              }
+            ]
+          }
+        }
+      },
+      "AnnouncementStatus": {
+        "enum": [
+          "Draft",
+          "AwaitingApproval",
+          "Queued",
+          "Sent",
+          "Cancelled"
+        ]
+      },
+      "AnswerRequest": {
+        "required": [
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "AssetDto": {
         "required": [
           "id",
@@ -3188,6 +4914,96 @@
           },
           "status": {
             "$ref": "#/components/schemas/MediaAssetStatus"
+          }
+        }
+      },
+      "AttendeeRowDto": {
+        "required": [
+          "registrationId",
+          "attendeeId",
+          "name",
+          "personId",
+          "registrantName",
+          "registrantEmail",
+          "status",
+          "source",
+          "registeredAt",
+          "checkedInAt",
+          "answers"
+        ],
+        "type": "object",
+        "properties": {
+          "registrationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "attendeeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "registrantName": {
+            "type": "string"
+          },
+          "registrantEmail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/RegistrationStatus"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RegistrationSource"
+          },
+          "registeredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "checkedInAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "AudienceDto": {
+        "required": [
+          "people",
+          "withApp",
+          "byEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "people": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "withApp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "byEmail": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -3372,6 +5188,68 @@
               "string"
             ],
             "format": "date"
+          }
+        }
+      },
+      "Channel": {
+        "enum": [
+          "Push",
+          "Email"
+        ]
+      },
+      "CheckInOutcome": {
+        "enum": [
+          "CheckedIn",
+          "AlreadyCheckedIn",
+          "NotConfirmed"
+        ]
+      },
+      "CheckInRequest": {
+        "required": [
+          "ticketCode",
+          "attendeeId"
+        ],
+        "type": "object",
+        "properties": {
+          "ticketCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "attendeeId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "CheckInResultDto": {
+        "required": [
+          "outcome",
+          "name",
+          "checkedInAt",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/CheckInOutcome"
+          },
+          "name": {
+            "type": "string"
+          },
+          "checkedInAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string"
           }
         }
       },
@@ -3954,6 +5832,99 @@
           }
         }
       },
+      "DeliveryCountsDto": {
+        "required": [
+          "inbox",
+          "pushed",
+          "emailed",
+          "failed"
+        ],
+        "type": "object",
+        "properties": {
+          "inbox": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pushed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emailed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "failed": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DeliveryLogDto": {
+        "required": [
+          "notificationId",
+          "personId",
+          "topic",
+          "title",
+          "channel",
+          "status",
+          "attempts",
+          "createdAt",
+          "sentAt",
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "title": {
+            "type": "string"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/Channel"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DeliveryStatus"
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sentAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "DeliveryStatus": {
+        "enum": [
+          "Pending",
+          "Sent",
+          "Failed",
+          "Skipped"
+        ]
+      },
       "DuplicateCandidateDto": {
         "required": [
           "id",
@@ -3998,6 +5969,186 @@
             "type": "string"
           }
         }
+      },
+      "EventAdminDto": {
+        "required": [
+          "event",
+          "status",
+          "scope",
+          "registrationOpensAt",
+          "registrationClosesAt",
+          "capacity",
+          "waitlistEnabled",
+          "confirmed",
+          "waitlisted",
+          "checkedIn"
+        ],
+        "type": "object",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/EventDto"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatus"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "registrationOpensAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "registrationClosesAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "capacity": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "waitlistEnabled": {
+            "type": "boolean"
+          },
+          "confirmed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "waitlisted": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "checkedIn": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "EventDto": {
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "summary",
+          "description",
+          "startsAt",
+          "endsAt",
+          "location",
+          "imageUrl",
+          "visibility",
+          "registrationRequired",
+          "registrationOpen",
+          "registrationClosedReason",
+          "seatsLeft",
+          "waitlistOnly",
+          "maxPerRegistration",
+          "questions"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "location": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LocationDto"
+              }
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/EventVisibility"
+          },
+          "registrationRequired": {
+            "type": "boolean"
+          },
+          "registrationOpen": {
+            "type": "boolean"
+          },
+          "registrationClosedReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "seatsLeft": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "waitlistOnly": {
+            "type": "boolean"
+          },
+          "maxPerRegistration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionDto"
+            }
+          }
+        }
+      },
+      "EventStatus": {
+        "enum": [
+          "Draft",
+          "Published",
+          "Cancelled"
+        ]
+      },
+      "EventVisibility": {
+        "enum": [
+          "Public",
+          "Members"
+        ]
       },
       "Gender": {
         "enum": [
@@ -4052,6 +6203,115 @@
           },
           "isActive": {
             "type": "boolean"
+          }
+        }
+      },
+      "GuestCodeRequest": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "GuestCodeResponse": {
+        "required": [
+          "verificationId",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GuestRegisterRequest": {
+        "required": [
+          "verificationId",
+          "code",
+          "firstName",
+          "lastName",
+          "email",
+          "mobile",
+          "otherAttendeeNames",
+          "answers",
+          "consentToKeepDetails",
+          "policyVersion"
+        ],
+        "type": "object",
+        "properties": {
+          "verificationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "otherAttendeeNames": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "answers": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "consentToKeepDetails": {
+            "type": "boolean"
+          },
+          "policyVersion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "GuestRegistrationReceipt": {
+        "required": [
+          "registration",
+          "accessKey"
+        ],
+        "type": "object",
+        "properties": {
+          "registration": {
+            "$ref": "#/components/schemas/RegistrationDto"
+          },
+          "accessKey": {
+            "type": "string"
           }
         }
       },
@@ -4136,6 +6396,26 @@
           }
         }
       },
+      "HouseholdMemberSummary": {
+        "required": [
+          "personId",
+          "displayName",
+          "isChild"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "isChild": {
+            "type": "boolean"
+          }
+        }
+      },
       "HouseholdRole": {
         "enum": [
           "Adult",
@@ -4168,6 +6448,25 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "InboxDto": {
+        "required": [
+          "items",
+          "unread"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationDto"
+            }
+          },
+          "unread": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -4318,6 +6617,24 @@
           "Cancelled"
         ]
       },
+      "LocationDto": {
+        "required": [
+          "name",
+          "address"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "LogoutRequest": {
         "required": [
           "refreshToken"
@@ -4341,6 +6658,31 @@
           "NotesPdf",
           "Image"
         ]
+      },
+      "MemberRegisterRequest": {
+        "required": [
+          "attendeePersonIds",
+          "answers"
+        ],
+        "type": "object",
+        "properties": {
+          "attendeePersonIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "answers": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
       },
       "MembershipStatusDto": {
         "required": [
@@ -4481,6 +6823,121 @@
             "items": {
               "$ref": "#/components/schemas/PermissionScopesDto"
             }
+          }
+        }
+      },
+      "MyPrayerRequestDto": {
+        "required": [
+          "id",
+          "text",
+          "wallText",
+          "visibility",
+          "anonymous",
+          "status",
+          "reviewNote",
+          "prayedCount",
+          "createdAt",
+          "wallUntil",
+          "answeredAt",
+          "answerNote"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          },
+          "wallText": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/PrayerVisibility"
+          },
+          "anonymous": {
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PrayerStatus"
+          },
+          "reviewNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "prayedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "wallUntil": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "answeredAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "answerNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "NotificationDto": {
+        "required": [
+          "id",
+          "topic",
+          "title",
+          "body",
+          "link",
+          "createdAt",
+          "read"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "read": {
+            "type": "boolean"
           }
         }
       },
@@ -4965,6 +7422,183 @@
           }
         }
       },
+      "PrayerAdminDto": {
+        "required": [
+          "id",
+          "personId",
+          "personName",
+          "text",
+          "wallText",
+          "visibility",
+          "anonymous",
+          "status",
+          "source",
+          "scope",
+          "prayedCount",
+          "createdAt",
+          "reviewedAt",
+          "reviewNote",
+          "answeredAt",
+          "answerNote"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personName": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "wallText": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/PrayerVisibility"
+          },
+          "anonymous": {
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PrayerStatus"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PrayerSource"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "prayedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "reviewNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "answeredAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "answerNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "PrayerSource": {
+        "enum": [
+          "App",
+          "ConnectCard"
+        ]
+      },
+      "PrayerStatus": {
+        "enum": [
+          "AwaitingReview",
+          "OnWall",
+          "WithPastors",
+          "Closed"
+        ]
+      },
+      "PrayerVisibility": {
+        "enum": [
+          "Wall",
+          "PastorsOnly"
+        ]
+      },
+      "PrayerWallItemDto": {
+        "required": [
+          "id",
+          "name",
+          "text",
+          "sharedAt",
+          "prayedCount",
+          "iPrayed",
+          "isMine",
+          "answered"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "sharedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "prayedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "iPrayed": {
+            "type": "boolean"
+          },
+          "isMine": {
+            "type": "boolean"
+          },
+          "answered": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PreferenceDto": {
+        "required": [
+          "topic",
+          "channel",
+          "enabled",
+          "consentGiven"
+        ],
+        "type": "object",
+        "properties": {
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/Channel"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "consentGiven": {
+            "type": "boolean"
+          }
+        }
+      },
       "PreferencesRequest": {
         "required": [
           "palette"
@@ -5048,6 +7682,49 @@
           }
         }
       },
+      "QuestionDto": {
+        "required": [
+          "id",
+          "label",
+          "required"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "QuestionInput": {
+        "required": [
+          "id",
+          "label",
+          "required"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
       "RecordConsentRequest": {
         "required": [
           "decisions",
@@ -5098,6 +7775,28 @@
             "type": "string"
           },
           "device": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RegisterDeviceRequest": {
+        "required": [
+          "token",
+          "platform",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "name": {
             "type": [
               "null",
               "string"
@@ -5162,6 +7861,85 @@
           }
         }
       },
+      "RegistrationDto": {
+        "required": [
+          "id",
+          "eventId",
+          "eventTitle",
+          "eventSlug",
+          "startsAt",
+          "location",
+          "status",
+          "waitlistPosition",
+          "tickets",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventTitle": {
+            "type": "string"
+          },
+          "eventSlug": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "location": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LocationDto"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/RegistrationStatus"
+          },
+          "waitlistPosition": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "tickets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TicketDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RegistrationSource": {
+        "enum": [
+          "App",
+          "Web",
+          "Admin"
+        ]
+      },
+      "RegistrationStatus": {
+        "enum": [
+          "Confirmed",
+          "Waitlisted",
+          "Cancelled"
+        ]
+      },
       "RequestCodeRequest": {
         "required": [
           "phone"
@@ -5191,6 +7969,41 @@
           },
           "maskedPhone": {
             "type": "string"
+          }
+        }
+      },
+      "ReturnAnnouncementRequest": {
+        "required": [
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ReviewRequest": {
+        "required": [
+          "wallText",
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "wallText": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -5225,6 +8038,152 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "SaveAnnouncementRequest": {
+        "required": [
+          "title",
+          "body",
+          "link",
+          "scope",
+          "sendEmail",
+          "sendAt"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "sendEmail": {
+            "type": "boolean"
+          },
+          "sendAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "SaveEventRequest": {
+        "required": [
+          "title",
+          "summary",
+          "description",
+          "startsAt",
+          "endsAt",
+          "location",
+          "imageUrl",
+          "visibility",
+          "registrationRequired",
+          "registrationOpensAt",
+          "registrationClosesAt",
+          "capacity",
+          "waitlistEnabled",
+          "maxPerRegistration",
+          "questions",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "location": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LocationDto"
+              }
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/EventVisibility"
+          },
+          "registrationRequired": {
+            "type": "boolean"
+          },
+          "registrationOpensAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "registrationClosesAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "capacity": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "waitlistEnabled": {
+            "type": "boolean"
+          },
+          "maxPerRegistration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionInput"
+            }
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -5932,6 +8891,25 @@
           }
         }
       },
+      "SetPreferenceRequest": {
+        "required": [
+          "topic",
+          "channel",
+          "enabled"
+        ],
+        "type": "object",
+        "properties": {
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/Channel"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
       "SetSermonAssetRequest": {
         "required": [
           "assetId"
@@ -6195,6 +9173,57 @@
           }
         }
       },
+      "SubmitPrayerRequest": {
+        "required": [
+          "text",
+          "shareOnWall",
+          "anonymous",
+          "consent"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "shareOnWall": {
+            "type": "boolean"
+          },
+          "anonymous": {
+            "type": "boolean"
+          },
+          "consent": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TicketDto": {
+        "required": [
+          "attendeeId",
+          "name",
+          "code",
+          "checkedInAt"
+        ],
+        "type": "object",
+        "properties": {
+          "attendeeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "checkedInAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "TokenPair": {
         "required": [
           "accessToken",
@@ -6220,6 +9249,15 @@
           }
         }
       },
+      "Topic": {
+        "enum": [
+          "Live",
+          "Sermons",
+          "Events",
+          "Prayer",
+          "Announcements"
+        ]
+      },
       "TwoFactorStatus": {
         "required": [
           "enabled",
@@ -6233,6 +9271,17 @@
           "recoveryCodesLeft": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "UnregisterDeviceRequest": {
+        "required": [
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
           }
         }
       },
@@ -6424,6 +9473,12 @@
       "name": "Sermons"
     },
     {
+      "name": "Events"
+    },
+    {
+      "name": "Notifications admin"
+    },
+    {
       "name": "Audit"
     },
     {
@@ -6443,6 +9498,21 @@
     },
     {
       "name": "Sermons admin"
+    },
+    {
+      "name": "Events admin"
+    },
+    {
+      "name": "Prayer"
+    },
+    {
+      "name": "Prayer admin"
+    },
+    {
+      "name": "Notifications"
+    },
+    {
+      "name": "Announcements"
     }
   ]
 }

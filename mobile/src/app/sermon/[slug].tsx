@@ -9,7 +9,7 @@ import { Glass, PrimaryButton } from '@/components/glass';
 import { Screen } from '@/components/screen';
 import { Artwork, Notes } from '@/components/sermon-bits';
 import { AppText, Icon } from '@/components/text';
-import { formatDay, formatMinutes, useDownloads, useMediaSettings, useSermon } from '@/lib/media';
+import { canDownload, formatDay, formatMinutes, useDownloads, useMediaSettings, useSermon } from '@/lib/media';
 import { cycleRate, getPlayer, playSermon, skip, togglePlayback, usePlayerStore } from '@/lib/player';
 import { useTheme } from '@/theme/theme';
 import { serif, text } from '@/theme/type';
@@ -107,20 +107,22 @@ export default function SermonScreen() {
             <PrimaryButton label={`Listen${formatMinutes(s.audio.durationSeconds) ? ` · ${formatMinutes(s.audio.durationSeconds)}` : ''}`} onPress={() => void playSermon(s)} />
           )}
 
-          <Pressable
-            accessibilityRole="button"
-            disabled={downloading}
-            onPress={() => (downloaded ? downloads.remove(s.id) : void downloads.download(s))}
-            style={styles.download}>
-            <Icon name={downloaded ? { ios: 'checkmark.circle.fill', android: 'download_done' } : { ios: 'arrow.down.circle', android: 'download' }} size={20} />
-            <AppText tone="interactive" style={text.callout}>
-              {downloading
-                ? 'Downloading…'
-                : downloaded
-                  ? 'Downloaded · tap to remove'
-                  : `Download for offline (${Math.max(1, Math.round(s.audio.sizeBytes / (1024 * 1024)))} MB)`}
-            </AppText>
-          </Pressable>
+          {canDownload && (
+            <Pressable
+              accessibilityRole="button"
+              disabled={downloading}
+              onPress={() => (downloaded ? downloads.remove(s.id) : void downloads.download(s))}
+              style={styles.download}>
+              <Icon name={downloaded ? { ios: 'checkmark.circle.fill', android: 'download_done' } : { ios: 'arrow.down.circle', android: 'download' }} size={20} />
+              <AppText tone="interactive" style={text.callout}>
+                {downloading
+                  ? 'Downloading…'
+                  : downloaded
+                    ? 'Downloaded · tap to remove'
+                    : `Download for offline (${Math.max(1, Math.round(s.audio.sizeBytes / (1024 * 1024)))} MB)`}
+              </AppText>
+            </Pressable>
+          )}
         </Glass>
       )}
 

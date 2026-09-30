@@ -52,6 +52,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/events/{slug}/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RegisterForEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/communications/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DeliveryLog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/audit": {
         parameters: {
             query?: never;
@@ -429,6 +461,22 @@ export interface paths {
         };
         get: operations["GetMyProfile"];
         put: operations["UpdateMyProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/household": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyHousehold"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1316,6 +1364,678 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetEvent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{slug}/guest-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SendGuestCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/{slug}/register-guest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RegisterGuest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/registrations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetGuestRegistration"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/events/registrations/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelGuestRegistration"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/registrations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyRegistrations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/registrations/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelMyRegistration"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminListEvents"];
+        put?: never;
+        post: operations["CreateEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminGetEvent"];
+        put: operations["UpdateEvent"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PublishEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnpublishEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/attendees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListAttendees"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/attendees.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ExportAttendees"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/registrations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RegisterByStaff"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/registrations/{registrationId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelByStaff"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CheckIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/events/{id}/door-list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DoorList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prayer/wall": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PrayerWall"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prayer/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SubmitPrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prayer/requests/{id}/prayed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["IPrayed"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/prayer-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyPrayerRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/prayer-requests/{id}/answered": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkPrayerAnswered"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/prayer-requests/{id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WithdrawPrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PrayerReviewQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPrayerRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ApprovePrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/{id}/keep-with-pastors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["KeepPrayerWithPastors"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TakeDownPrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RegisterDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/devices/unregister": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnregisterDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyNotifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkNotificationRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkAllNotificationsRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/notification-preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyNotificationPreferences"];
+        put: operations["SetNotificationPreference"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListAnnouncements"];
+        put?: never;
+        post: operations["CreateAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetAnnouncement"];
+        put: operations["UpdateAnnouncement"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SubmitAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ApproveAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReturnAnnouncementToDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1339,6 +2059,49 @@ export interface components {
             /** @default ZA */
             countryCode: string;
         };
+        AdminRegisterRequest: {
+            /** Format: uuid */
+            personId: null | string;
+            firstName: null | string;
+            lastName: null | string;
+            mobile: null | string;
+            email: null | string;
+            consentGivenVerbally: boolean;
+            otherAttendeeNames: null | string[];
+            answers: null | {
+                [key: string]: string;
+            };
+        };
+        AnnouncementDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            body: string;
+            link: null | string;
+            scope: string;
+            sendEmail: boolean;
+            /** Format: date-time */
+            sendAt: null | string;
+            status: components["schemas"]["AnnouncementStatus"];
+            needsApproval: boolean;
+            createdByMe: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            approvedAt: null | string;
+            returnNote: null | string;
+            /** Format: date-time */
+            sentAt: null | string;
+            audience: null | components["schemas"]["AudienceDto"];
+            delivered: null | components["schemas"]["DeliveryCountsDto"];
+        };
+        /** @enum {unknown} */
+        AnnouncementStatus: "Draft" | "AwaitingApproval" | "Queued" | "Sent" | "Cancelled";
+        AnswerRequest: {
+            note: null | string;
+        };
         AssetDto: {
             /** Format: uuid */
             id: string;
@@ -1350,6 +2113,34 @@ export interface components {
             /** Format: int32 */
             durationSeconds: null | number;
             status: components["schemas"]["MediaAssetStatus"];
+        };
+        AttendeeRowDto: {
+            /** Format: uuid */
+            registrationId: string;
+            /** Format: uuid */
+            attendeeId: string;
+            name: string;
+            /** Format: uuid */
+            personId: null | string;
+            registrantName: string;
+            registrantEmail: null | string;
+            status: components["schemas"]["RegistrationStatus"];
+            source: components["schemas"]["RegistrationSource"];
+            /** Format: date-time */
+            registeredAt: string;
+            /** Format: date-time */
+            checkedInAt: null | string;
+            answers: {
+                [key: string]: string;
+            };
+        };
+        AudienceDto: {
+            /** Format: int32 */
+            people: number;
+            /** Format: int32 */
+            withApp: number;
+            /** Format: int32 */
+            byEmail: number;
         };
         AudioDto: {
             /** Format: uuid */
@@ -1398,6 +2189,22 @@ export interface components {
             membershipStatusId: string;
             /** Format: date */
             effectiveDate: null | string;
+        };
+        /** @enum {unknown} */
+        Channel: "Push" | "Email";
+        /** @enum {unknown} */
+        CheckInOutcome: "CheckedIn" | "AlreadyCheckedIn" | "NotConfirmed";
+        CheckInRequest: {
+            ticketCode: null | string;
+            /** Format: uuid */
+            attendeeId: null | string;
+        };
+        CheckInResultDto: {
+            outcome: components["schemas"]["CheckInOutcome"];
+            name: string;
+            /** Format: date-time */
+            checkedInAt: null | string;
+            message: string;
         };
         ChurchOverviewDto: {
             organisation: components["schemas"]["OrganisationDto"];
@@ -1540,6 +2347,35 @@ export interface components {
             /** Format: date-time */
             shownAt: null | string;
         };
+        DeliveryCountsDto: {
+            /** Format: int32 */
+            inbox: number;
+            /** Format: int32 */
+            pushed: number;
+            /** Format: int32 */
+            emailed: number;
+            /** Format: int32 */
+            failed: number;
+        };
+        DeliveryLogDto: {
+            /** Format: uuid */
+            notificationId: string;
+            /** Format: uuid */
+            personId: string;
+            topic: components["schemas"]["Topic"];
+            title: string;
+            channel: components["schemas"]["Channel"];
+            status: components["schemas"]["DeliveryStatus"];
+            /** Format: int32 */
+            attempts: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            sentAt: null | string;
+            error: null | string;
+        };
+        /** @enum {unknown} */
+        DeliveryStatus: "Pending" | "Sent" | "Failed" | "Skipped";
         DuplicateCandidateDto: {
             /** Format: uuid */
             id: string;
@@ -1554,6 +2390,52 @@ export interface components {
         EnableTwoFactorRequest: {
             code: string;
         };
+        EventAdminDto: {
+            event: components["schemas"]["EventDto"];
+            status: components["schemas"]["EventStatus"];
+            scope: string;
+            /** Format: date-time */
+            registrationOpensAt: null | string;
+            /** Format: date-time */
+            registrationClosesAt: null | string;
+            /** Format: int32 */
+            capacity: null | number;
+            waitlistEnabled: boolean;
+            /** Format: int32 */
+            confirmed: number;
+            /** Format: int32 */
+            waitlisted: number;
+            /** Format: int32 */
+            checkedIn: number;
+        };
+        EventDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            slug: string;
+            summary: null | string;
+            description: null | string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+            location: null | components["schemas"]["LocationDto"];
+            imageUrl: null | string;
+            visibility: components["schemas"]["EventVisibility"];
+            registrationRequired: boolean;
+            registrationOpen: boolean;
+            registrationClosedReason: null | string;
+            /** Format: int32 */
+            seatsLeft: null | number;
+            waitlistOnly: boolean;
+            /** Format: int32 */
+            maxPerRegistration: number;
+            questions: components["schemas"]["QuestionDto"][];
+        };
+        /** @enum {unknown} */
+        EventStatus: "Draft" | "Published" | "Cancelled";
+        /** @enum {unknown} */
+        EventVisibility: "Public" | "Members";
         /** @enum {unknown} */
         Gender: "Female" | "Male" | null;
         GrantDto: {
@@ -1569,6 +2451,34 @@ export interface components {
             expiresAt: null | string;
             reason: null | string;
             isActive: boolean;
+        };
+        GuestCodeRequest: {
+            email: string;
+        };
+        GuestCodeResponse: {
+            /** Format: uuid */
+            verificationId: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        GuestRegisterRequest: {
+            /** Format: uuid */
+            verificationId: string;
+            code: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            mobile: null | string;
+            otherAttendeeNames: null | string[];
+            answers: null | {
+                [key: string]: string;
+            };
+            consentToKeepDetails: boolean;
+            policyVersion: null | string;
+        };
+        GuestRegistrationReceipt: {
+            registration: components["schemas"]["RegistrationDto"];
+            accessKey: string;
         };
         HandleConnectCardRequest: {
             note: null | string;
@@ -1592,6 +2502,12 @@ export interface components {
             personId: string;
             role: components["schemas"]["HouseholdRole"];
         };
+        HouseholdMemberSummary: {
+            /** Format: uuid */
+            personId: string;
+            displayName: string;
+            isChild: boolean;
+        };
         /** @enum {unknown} */
         HouseholdRole: "Adult" | "Child";
         ImportResultDto: {
@@ -1602,6 +2518,11 @@ export interface components {
             /** Format: int32 */
             alreadyImported: number;
             createdTitles: string[];
+        };
+        InboxDto: {
+            items: components["schemas"]["NotificationDto"][];
+            /** Format: int32 */
+            unread: number;
         };
         /** @enum {unknown} */
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
@@ -1636,6 +2557,10 @@ export interface components {
         };
         /** @enum {unknown} */
         LivestreamStatus: "Scheduled" | "Live" | "Ended" | "Cancelled";
+        LocationDto: {
+            name: string;
+            address: null | string;
+        };
         LogoutRequest: {
             refreshToken: string;
         };
@@ -1643,6 +2568,12 @@ export interface components {
         MediaAssetStatus: "Pending" | "Ready";
         /** @enum {unknown} */
         MediaKind: "Audio" | "NotesPdf" | "Image";
+        MemberRegisterRequest: {
+            attendeePersonIds: string[];
+            answers: null | {
+                [key: string]: string;
+            };
+        };
         MembershipStatusDto: {
             /** Format: uuid */
             id: string;
@@ -1684,6 +2615,36 @@ export interface components {
             mfaRequiredForSensitive: boolean;
             palette: string;
             permissions: components["schemas"]["PermissionScopesDto"][];
+        };
+        MyPrayerRequestDto: {
+            /** Format: uuid */
+            id: string;
+            text: string;
+            wallText: null | string;
+            visibility: components["schemas"]["PrayerVisibility"];
+            anonymous: boolean;
+            status: components["schemas"]["PrayerStatus"];
+            reviewNote: null | string;
+            /** Format: int32 */
+            prayedCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            wallUntil: null | string;
+            /** Format: date-time */
+            answeredAt: null | string;
+            answerNote: null | string;
+        };
+        NotificationDto: {
+            /** Format: uuid */
+            id: string;
+            topic: components["schemas"]["Topic"];
+            title: string;
+            body: string;
+            link: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            read: boolean;
         };
         OrganisationDto: {
             /** Format: uuid */
@@ -1805,6 +2766,55 @@ export interface components {
             /** Format: int32 */
             positionSeconds: number;
         };
+        PrayerAdminDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            personName: string;
+            text: string;
+            wallText: null | string;
+            visibility: components["schemas"]["PrayerVisibility"];
+            anonymous: boolean;
+            status: components["schemas"]["PrayerStatus"];
+            source: components["schemas"]["PrayerSource"];
+            scope: string;
+            /** Format: int32 */
+            prayedCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            reviewedAt: null | string;
+            reviewNote: null | string;
+            /** Format: date-time */
+            answeredAt: null | string;
+            answerNote: null | string;
+        };
+        /** @enum {unknown} */
+        PrayerSource: "App" | "ConnectCard";
+        /** @enum {unknown} */
+        PrayerStatus: "AwaitingReview" | "OnWall" | "WithPastors" | "Closed";
+        /** @enum {unknown} */
+        PrayerVisibility: "Wall" | "PastorsOnly";
+        PrayerWallItemDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            text: string;
+            /** Format: date-time */
+            sharedAt: string;
+            /** Format: int32 */
+            prayedCount: number;
+            iPrayed: boolean;
+            isMine: boolean;
+            answered: boolean;
+        };
+        PreferenceDto: {
+            topic: components["schemas"]["Topic"];
+            channel: components["schemas"]["Channel"];
+            enabled: boolean;
+            consentGiven: boolean;
+        };
         PreferencesRequest: {
             palette: string;
         };
@@ -1823,6 +2833,18 @@ export interface components {
             onScreen: null | components["schemas"]["CueDto"];
             shown: components["schemas"]["CueDto"][];
         };
+        QuestionDto: {
+            /** Format: uuid */
+            id: string;
+            label: string;
+            required: boolean;
+        };
+        QuestionInput: {
+            /** Format: uuid */
+            id: null | string;
+            label: string;
+            required: boolean;
+        };
         RecordConsentRequest: {
             decisions: components["schemas"]["ConsentDecisionDto"][];
             policyVersion: string;
@@ -1835,6 +2857,11 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
             device: null | string;
+        };
+        RegisterDeviceRequest: {
+            token: string;
+            platform: string;
+            name: null | string;
         };
         RegisterRequest: {
             /** Format: uuid */
@@ -1849,6 +2876,27 @@ export interface components {
             consents: components["schemas"]["ConsentDecision"][];
             device: null | string;
         };
+        RegistrationDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            eventId: string;
+            eventTitle: string;
+            eventSlug: string;
+            /** Format: date-time */
+            startsAt: string;
+            location: null | components["schemas"]["LocationDto"];
+            status: components["schemas"]["RegistrationStatus"];
+            /** Format: int32 */
+            waitlistPosition: null | number;
+            tickets: components["schemas"]["TicketDto"][];
+            /** Format: date-time */
+            createdAt: string;
+        };
+        /** @enum {unknown} */
+        RegistrationSource: "App" | "Web" | "Admin";
+        /** @enum {unknown} */
+        RegistrationStatus: "Confirmed" | "Waitlisted" | "Cancelled";
         RequestCodeRequest: {
             phone: string;
         };
@@ -1859,6 +2907,13 @@ export interface components {
             expiresAt: string;
             maskedPhone: string;
         };
+        ReturnAnnouncementRequest: {
+            note: null | string;
+        };
+        ReviewRequest: {
+            wallText: null | string;
+            note: null | string;
+        };
         RoleDto: {
             /** Format: uuid */
             id: string;
@@ -1866,6 +2921,39 @@ export interface components {
             description: null | string;
             isSystem: boolean;
             permissions: string[];
+        };
+        SaveAnnouncementRequest: {
+            title: string;
+            body: string;
+            link: null | string;
+            scope: string;
+            sendEmail: boolean;
+            /** Format: date-time */
+            sendAt: null | string;
+        };
+        SaveEventRequest: {
+            title: string;
+            summary: null | string;
+            description: null | string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+            location: null | components["schemas"]["LocationDto"];
+            imageUrl: null | string;
+            visibility: components["schemas"]["EventVisibility"];
+            registrationRequired: boolean;
+            /** Format: date-time */
+            registrationOpensAt: null | string;
+            /** Format: date-time */
+            registrationClosesAt: null | string;
+            /** Format: int32 */
+            capacity: null | number;
+            waitlistEnabled: boolean;
+            /** Format: int32 */
+            maxPerRegistration: number;
+            questions: components["schemas"]["QuestionInput"][];
+            scope: null | string;
         };
         SaveLivestreamRequest: {
             title: string;
@@ -2027,6 +3115,11 @@ export interface components {
             token: string;
             password: string;
         };
+        SetPreferenceRequest: {
+            topic: components["schemas"]["Topic"];
+            channel: components["schemas"]["Channel"];
+            enabled: boolean;
+        };
         SetSermonAssetRequest: {
             /** Format: uuid */
             assetId: null | string;
@@ -2094,6 +3187,20 @@ export interface components {
             /** Format: date-time */
             recordedAt: string;
         };
+        SubmitPrayerRequest: {
+            text: string;
+            shareOnWall: boolean;
+            anonymous: boolean;
+            consent: boolean;
+        };
+        TicketDto: {
+            /** Format: uuid */
+            attendeeId: string;
+            name: string;
+            code: string;
+            /** Format: date-time */
+            checkedInAt: null | string;
+        };
         TokenPair: {
             accessToken: string;
             /** Format: date-time */
@@ -2102,10 +3209,15 @@ export interface components {
             /** Format: date-time */
             refreshTokenExpiresAt: string;
         };
+        /** @enum {unknown} */
+        Topic: "Live" | "Sermons" | "Events" | "Prayer" | "Announcements";
         TwoFactorStatus: {
             enabled: boolean;
             /** Format: int32 */
             recoveryCodesLeft: number;
+        };
+        UnregisterDeviceRequest: {
+            token: string;
         };
         UpdateCampusRequest: {
             name: string;
@@ -2218,6 +3330,52 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    RegisterForEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MemberRegisterRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationDto"];
+                };
+            };
+        };
+    };
+    DeliveryLog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliveryLogDto"][];
+                };
             };
         };
     };
@@ -2919,6 +4077,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonDetailDto"];
+                };
+            };
+        };
+    };
+    MyHousehold: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdMemberSummary"][];
                 };
             };
         };
@@ -4364,6 +5542,1064 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ListEvents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventDto"][];
+                };
+            };
+        };
+    };
+    GetEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventDto"];
+                };
+            };
+        };
+    };
+    SendGuestCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuestCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuestCodeResponse"];
+                };
+            };
+        };
+    };
+    RegisterGuest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuestRegisterRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuestRegistrationReceipt"];
+                };
+            };
+        };
+    };
+    GetGuestRegistration: {
+        parameters: {
+            query: {
+                key: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationDto"];
+                };
+            };
+        };
+    };
+    CancelGuestRegistration: {
+        parameters: {
+            query: {
+                key: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MyRegistrations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationDto"][];
+                };
+            };
+        };
+    };
+    CancelMyRegistration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminListEvents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"][];
+                };
+            };
+        };
+    };
+    CreateEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveEventRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"];
+                };
+            };
+        };
+    };
+    AdminGetEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"];
+                };
+            };
+        };
+    };
+    UpdateEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveEventRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"];
+                };
+            };
+        };
+    };
+    PublishEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"];
+                };
+            };
+        };
+    };
+    UnpublishEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"];
+                };
+            };
+        };
+    };
+    CancelEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"];
+                };
+            };
+        };
+    };
+    ListAttendees: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendeeRowDto"][];
+                };
+            };
+        };
+    };
+    ExportAttendees: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RegisterByStaff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminRegisterRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrationDto"];
+                };
+            };
+        };
+    };
+    CancelByStaff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                registrationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CheckIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckInRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckInResultDto"];
+                };
+            };
+        };
+    };
+    DoorList: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketDto"][];
+                };
+            };
+        };
+    };
+    PrayerWall: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerWallItemDto"][];
+                };
+            };
+        };
+    };
+    SubmitPrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitPrayerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"];
+                };
+            };
+        };
+    };
+    IPrayed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                };
+            };
+        };
+    };
+    MyPrayerRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"][];
+                };
+            };
+        };
+    };
+    MarkPrayerAnswered: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"];
+                };
+            };
+        };
+    };
+    WithdrawPrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"];
+                };
+            };
+        };
+    };
+    PrayerReviewQueue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"][];
+                };
+            };
+        };
+    };
+    ListPrayerRequests: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PrayerStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"][];
+                };
+            };
+        };
+    };
+    ApprovePrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"];
+                };
+            };
+        };
+    };
+    KeepPrayerWithPastors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"];
+                };
+            };
+        };
+    };
+    TakeDownPrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"];
+                };
+            };
+        };
+    };
+    RegisterDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDeviceRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UnregisterDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnregisterDeviceRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MyNotifications: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InboxDto"];
+                };
+            };
+        };
+    };
+    MarkNotificationRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MarkAllNotificationsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MyNotificationPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferenceDto"][];
+                };
+            };
+        };
+    };
+    SetNotificationPreference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetPreferenceRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ListAnnouncements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"][];
+                };
+            };
+        };
+    };
+    CreateAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAnnouncementRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    GetAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    UpdateAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAnnouncementRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    SubmitAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    ApproveAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    ReturnAnnouncementToDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnAnnouncementRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    CancelAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
             };
         };
     };

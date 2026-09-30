@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Shapers.Communications.Domain/Shapers.Communications.Domain.csproj" />
+    <ProjectReference Include="../Shapers.Communications.Contracts/Shapers.Communications.Contracts.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/Shapers.Platform/Shapers.Platform.csproj" />
+    <ProjectReference Include="../../People/Shapers.People.Contracts/Shapers.People.Contracts.csproj" />
+    <ProjectReference Include="../../Church/Shapers.Church.Contracts/Shapers.Church.Contracts.csproj" />
+    <ProjectReference Include="../../Media/Shapers.Media.Contracts/Shapers.Media.Contracts.csproj" />
+    <ProjectReference Include="../../Events/Shapers.Events.Contracts/Shapers.Events.Contracts.csproj" />
+    <ProjectReference Include="../../Prayer/Shapers.Prayer.Contracts/Shapers.Prayer.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shapers.Communications.Tests" />
+  </ItemGroup>
+</Project>
