@@ -22,6 +22,13 @@
     <Project Path="src/Modules/Communications/Shapers.Communications.Domain/Shapers.Communications.Domain.csproj" />
     <Project Path="src/Modules/Communications/Shapers.Communications.Infrastructure/Shapers.Communications.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Privacy/">
+    <Project Path="src/Modules/Privacy/Shapers.Privacy.Api/Shapers.Privacy.Api.csproj" />
+    <Project Path="src/Modules/Privacy/Shapers.Privacy.Application/Shapers.Privacy.Application.csproj" />
+    <Project Path="src/Modules/Privacy/Shapers.Privacy.Contracts/Shapers.Privacy.Contracts.csproj" />
+    <Project Path="src/Modules/Privacy/Shapers.Privacy.Domain/Shapers.Privacy.Domain.csproj" />
+    <Project Path="src/Modules/Privacy/Shapers.Privacy.Infrastructure/Shapers.Privacy.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Prayer/">
     <Project Path="src/Modules/Prayer/Shapers.Prayer.Api/Shapers.Prayer.Api.csproj" />
     <Project Path="src/Modules/Prayer/Shapers.Prayer.Application/Shapers.Prayer.Application.csproj" />
@@ -65,6 +72,7 @@
   <Folder Name="/tests/Modules/">
     <Project Path="tests/Modules/Shapers.Events.Tests/Shapers.Events.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Prayer.Tests/Shapers.Prayer.Tests.csproj" />
+    <Project Path="tests/Modules/Shapers.Privacy.Tests/Shapers.Privacy.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Communications.Tests/Shapers.Communications.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Identity.Tests/Shapers.Identity.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Media.Tests/Shapers.Media.Tests.csproj" />

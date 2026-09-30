@@ -6,6 +6,7 @@ using Shapers.People.Contracts;
 using Shapers.People.Domain;
 using Shapers.Platform;
 using Shapers.Platform.Authorization;
+using Shapers.Platform.Jobs;
 
 namespace Shapers.People.Infrastructure;
 
@@ -27,6 +28,10 @@ public static class PeopleInfrastructure
         services.AddScoped<IGuestRecords, GuestRecords>();
         services.AddScoped<IPeopleDirectory, PeopleDirectory>();
         services.AddScoped<IPeopleRegistration, PeopleRegistration>();
+        services.AddScoped<ConnectCardRetentionJob>();
+        services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, PeoplePersonalData>();
+        services.AddSingleton(new RecurringJobDefinition("people-connect-card-retention", "30 2 * * *", (sp, ct) =>
+            sp.GetRequiredService<ConnectCardRetentionJob>().RunAsync(ct)));
         return services;
     }
 

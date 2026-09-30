@@ -11,6 +11,9 @@ public enum PersonStatus
 
     /// <summary>A duplicate folded into another record. Kept as a tombstone so old references still resolve.</summary>
     Merged,
+
+    /// <summary>Erased at the person's request (or by retention): an empty shell so old references still resolve.</summary>
+    Erased,
 }
 
 /// <summary>How the record first entered the system. Useful for data-quality work and dedup.</summary>
@@ -241,6 +244,22 @@ public sealed partial class Person : AggregateRoot<Guid>
         Touch(now);
     }
 
+    /// <summary>
+    /// Removes everything that identifies the person. The record stays as an empty shell so bookings, audit entries
+    /// and giving records that point at it still resolve, but it can't be edited or found again.
+    /// </summary>
+    public void Erase(DateTimeOffset now)
+    {
+        FirstName = "Removed";
+        LastName = "at their request";
+        PreferredName = null;
+        DateOfBirth = null;
+        Gender = null;
+        _contacts.Clear();
+        Status = PersonStatus.Erased;
+        Touch(now);
+    }
+
     /// <summary>Called on the duplicate. Use <see cref="PersonMerger"/> rather than calling this directly.</summary>
     internal void BecomeMergedInto(Person survivor, DateTimeOffset now)
     {
@@ -269,6 +288,11 @@ public sealed partial class Person : AggregateRoot<Guid>
         if (Status == PersonStatus.Merged)
         {
             throw new DomainRuleException("people.merged", "This record was merged into another person and can no longer change.");
+        }
+
+        if (Status == PersonStatus.Erased)
+        {
+            throw new DomainRuleException("people.erased", "This record was erased and can no longer change.");
         }
     }
 

@@ -45,6 +45,7 @@ public static class IdentityInfrastructure
         services.AddScoped<IAuthorizer, ScopedAuthorizer>();
         services.AddScoped<IUserAccounts, UserAccounts>();
         services.AddScoped<IUserDirectory, UserDirectory>();
+        services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, IdentityPersonalData>();
         services.AddScoped<ITokenIssuer, JwtTokenIssuer>();
         services.AddScoped<IOtpHasher, HmacOtpHasher>();
         services.AddScoped<OtpLoginService>();

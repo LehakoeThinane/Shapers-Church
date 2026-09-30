@@ -42,6 +42,8 @@ public static class CommunicationsInfrastructure
         services.AddScoped<Unsubscribe>();
         services.AddScoped<AnnouncementService>();
         services.AddScoped<AnnouncementDispatchJob>();
+        services.AddScoped<NotificationRetentionJob>();
+        services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, CommunicationsPersonalData>();
         services.AddScoped<IIntegrationEventHandler<LivestreamStartedIntegrationEvent>, NotifyLivestreamStarted>();
         services.AddScoped<IIntegrationEventHandler<SermonPublishedIntegrationEvent>, NotifySermonPublished>();
         services.AddScoped<IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>, NotifyWaitlistPromoted>();
@@ -51,6 +53,8 @@ public static class CommunicationsInfrastructure
             sp.GetRequiredService<AnnouncementDispatchJob>().RunAsync(ct)));
         services.AddSingleton(new RecurringJobDefinition("communications-deliver", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<DeliveryJob>().RunAsync(ct)));
+        services.AddSingleton(new RecurringJobDefinition("communications-retention", "25 2 * * *", (sp, ct) =>
+            sp.GetRequiredService<NotificationRetentionJob>().RunAsync(ct)));
         return services;
     }
 

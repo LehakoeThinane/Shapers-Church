@@ -22,10 +22,14 @@ public static class PrayerInfrastructure
         services.AddScoped<PrayerService>();
         services.AddScoped<PrayerAdminService>();
         services.AddScoped<WallExpiryJob>();
+        services.AddScoped<PrayerRetentionJob>();
+        services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, PrayerPersonalData>();
         services.AddScoped<IIntegrationEventHandler<ConnectCardSubmittedIntegrationEvent>, FileConnectCardPrayer>();
 
         services.AddSingleton(new RecurringJobDefinition("prayer-wall-expiry", "15 2 * * *", (sp, ct) =>
             sp.GetRequiredService<WallExpiryJob>().RunAsync(ct)));
+        services.AddSingleton(new RecurringJobDefinition("prayer-retention", "20 2 * * *", (sp, ct) =>
+            sp.GetRequiredService<PrayerRetentionJob>().RunAsync(ct)));
         return services;
     }
 

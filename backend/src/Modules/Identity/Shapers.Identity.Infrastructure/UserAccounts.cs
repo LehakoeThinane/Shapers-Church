@@ -94,3 +94,46 @@ internal sealed class UserDirectory(IdentityDbContext db) : IUserDirectory
     public async Task<IReadOnlySet<Guid>> PeopleWithUsersAsync(IReadOnlyCollection<Guid> personIds, CancellationToken cancellationToken = default) =>
         (await db.Users.AsNoTracking().Where(u => personIds.Contains(u.PersonId)).Select(u => u.PersonId).ToListAsync(cancellationToken)).ToHashSet();
 }
+
+/// <summary>The login: phone, email, when it was used, and any staff roles. Erasing deletes it and ends every session.</summary>
+public sealed class IdentityPersonalData(IdentityDbContext db) : Shapers.Platform.Privacy.IPersonalDataSource
+{
+    public string Name => "Login";
+
+    public async Task<object?> ExportAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var user = await db.Users.AsNoTracking().SingleOrDefaultAsync(u => u.PersonId == personId, cancellationToken);
+        if (user is null)
+        {
+            return null;
+        }
+
+        var roles = await (from g in db.Grants.AsNoTracking()
+                           join r in db.Roles.AsNoTracking() on g.RoleId equals r.Id
+                           where g.UserId == user.Id
+                           select new { Role = r.Name, g.Scope }).ToListAsync(cancellationToken);
+        return new
+        {
+            user.PhoneNumber,
+            user.Email,
+            TwoStepVerification = user.TwoFactorEnabled,
+            user.Palette,
+            user.CreatedAt,
+            user.LastSignInAt,
+            StaffRoles = roles,
+        };
+    }
+
+    public async Task<int> EraseAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var userIds = await db.Users.Where(u => u.PersonId == personId).Select(u => u.Id).ToListAsync(cancellationToken);
+        if (userIds.Count == 0)
+        {
+            return 0;
+        }
+
+        return await db.RefreshTokens.Where(t => userIds.Contains(t.UserId)).ExecuteDeleteAsync(cancellationToken)
+            + await db.Grants.Where(g => userIds.Contains(g.UserId)).ExecuteDeleteAsync(cancellationToken)
+            + await db.Users.Where(u => userIds.Contains(u.Id)).ExecuteDeleteAsync(cancellationToken);
+    }
+}

@@ -29,7 +29,7 @@ public sealed class PeopleService(
 
         var query = db.Persons.AsNoTracking()
             .WithinScopes(p => p.Scope, scopes)
-            .Where(p => p.Status != PersonStatus.Merged);
+            .Where(p => p.Status != PersonStatus.Merged && p.Status != PersonStatus.Erased);
 
         if (ScopePath.TryParse(request.Scope, out var within))
         {

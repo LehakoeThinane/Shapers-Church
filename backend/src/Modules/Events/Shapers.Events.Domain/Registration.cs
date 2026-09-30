@@ -73,6 +73,12 @@ public sealed class Attendee
 
     public Guid? CheckedInByUserId { get; private set; }
 
+    internal void Anonymise()
+    {
+        PersonId = null;
+        Name = "Removed at their request";
+    }
+
     internal void CheckIn(Guid? by, DateTimeOffset now)
     {
         CheckedInAt = now;
@@ -212,6 +218,36 @@ public sealed class Registration : AggregateRoot<Guid>
     }
 
     public void MarkReminderSent(DateTimeOffset now) => ReminderSentAt = now;
+
+    /// <summary>
+    /// A person asked to be erased: their name and answers go, but the booking stays so seat counts and attendance
+    /// figures remain true. Returns true when anything changed.
+    /// </summary>
+    public bool ErasePerson(Guid personId)
+    {
+        var changed = false;
+        foreach (var attendee in _attendees.Where(a => a.PersonId == personId))
+        {
+            attendee.Anonymise();
+            changed = true;
+        }
+
+        if (RegistrantPersonId == personId)
+        {
+            foreach (var attendee in _attendees.Where(a => a.PersonId is null))
+            {
+                // Guests they brought were named only by them.
+                attendee.Anonymise();
+            }
+
+            RegistrantPersonId = Guid.Empty;
+            Answers = [];
+            GuestKeyHash = null;
+            changed = true;
+        }
+
+        return changed;
+    }
 }
 
 /// <summary>

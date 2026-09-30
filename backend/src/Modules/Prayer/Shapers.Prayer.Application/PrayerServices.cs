@@ -265,3 +265,34 @@ public sealed class WallExpiryJob(IPrayerDb db, TimeProvider clock)
         return expired;
     }
 }
+
+/// <summary>A person's prayer requests and "I prayed" marks, for export and erasure.</summary>
+public sealed class PrayerPersonalData(IPrayerDb db) : Shapers.Platform.Privacy.IPersonalDataSource
+{
+    public string Name => "Prayer requests";
+
+    public async Task<object?> ExportAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var requests = await db.Requests.AsNoTracking().Where(r => r.PersonId == personId).OrderBy(r => r.CreatedAt)
+            .Select(r => new { r.CreatedAt, r.Text, r.WallText, Visibility = r.Visibility.ToString(), r.Anonymous, Status = r.Status.ToString(), r.AnsweredAt, r.AnswerNote })
+            .ToListAsync(cancellationToken);
+        var prayedFor = await db.Responses.AsNoTracking().CountAsync(x => x.PersonId == personId, cancellationToken);
+        return requests.Count == 0 && prayedFor == 0 ? null : new { Requests = requests, TimesYouPrayedForOthers = prayedFor };
+    }
+
+    public async Task<int> EraseAsync(Guid personId, CancellationToken cancellationToken) =>
+        await db.Responses.Where(x => x.PersonId == personId).ExecuteDeleteAsync(cancellationToken)
+        + await db.Requests.Where(r => r.PersonId == personId).ExecuteDeleteAsync(cancellationToken);
+}
+
+/// <summary>Nightly: prayer requests are deleted a year after they were made.</summary>
+public sealed class PrayerRetentionJob(IPrayerDb db, TimeProvider clock)
+{
+    public static readonly TimeSpan Retention = TimeSpan.FromDays(365);
+
+    public Task<int> RunAsync(CancellationToken cancellationToken)
+    {
+        var cutoff = clock.GetUtcNow() - Retention;
+        return db.Requests.Where(r => r.CreatedAt < cutoff).ExecuteDeleteAsync(cancellationToken);
+    }
+}

@@ -39,6 +39,14 @@ public static class PlatformServiceCollectionExtensions
             var cutoff = sp.GetRequiredService<TimeProvider>().GetUtcNow().AddDays(-30);
             return sp.GetRequiredService<PlatformDbContext>().InboxRecords.Where(r => r.ProcessedAt < cutoff).ExecuteDeleteAsync(ct);
         }));
+
+        // The audit log is kept for five years (the church's retention schedule), then deleted. The database refuses
+        // to delete anything younger, so this is the only way entries ever leave.
+        services.AddSingleton(new RecurringJobDefinition("platform-audit-retention", "0 4 * * *", (sp, ct) =>
+        {
+            var cutoff = sp.GetRequiredService<TimeProvider>().GetUtcNow() - AuditLog.Retention;
+            return sp.GetRequiredService<PlatformDbContext>().AuditEntries.Where(e => e.OccurredAt < cutoff).ExecuteDeleteAsync(ct);
+        }));
         return services;
     }
 

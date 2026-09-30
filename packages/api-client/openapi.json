@@ -4594,6 +4594,184 @@
           }
         }
       }
+    },
+    "/api/me/data-export": {
+      "get": {
+        "tags": [
+          "Privacy"
+        ],
+        "operationId": "DownloadMyData",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/me/privacy-requests": {
+      "get": {
+        "tags": [
+          "Privacy"
+        ],
+        "operationId": "MyPrivacyRequests",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyDataRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Privacy"
+        ],
+        "operationId": "SubmitPrivacyRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDataRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyDataRequestDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/privacy/requests": {
+      "get": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "ListPrivacyRequests",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/DataRequestStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataRequestAdminDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/privacy/requests/{id}/complete": {
+      "post": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "CompletePrivacyRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecideDataRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataRequestAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/privacy/requests/{id}/decline": {
+      "post": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "DeclinePrivacyRequest",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecideDataRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataRequestAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5832,6 +6010,98 @@
           }
         }
       },
+      "DataRequestAdminDto": {
+        "required": [
+          "id",
+          "personId",
+          "personName",
+          "type",
+          "details",
+          "status",
+          "createdAt",
+          "dueAt",
+          "overdue",
+          "decidedAt",
+          "response"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personName": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DataRequestType"
+          },
+          "details": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/DataRequestStatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "decidedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "response": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "DataRequestStatus": {
+        "enum": [
+          "Open",
+          "Completed",
+          "Declined"
+        ]
+      },
+      "DataRequestType": {
+        "enum": [
+          "Correction",
+          "Deletion"
+        ]
+      },
+      "DecideDataRequest": {
+        "required": [
+          "response"
+        ],
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "DeliveryCountsDto": {
         "required": [
           "inbox",
@@ -6826,6 +7096,53 @@
           }
         }
       },
+      "MyDataRequestDto": {
+        "required": [
+          "id",
+          "type",
+          "details",
+          "status",
+          "createdAt",
+          "decidedAt",
+          "response"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DataRequestType"
+          },
+          "details": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/DataRequestStatus"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "decidedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "response": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "MyPrayerRequestDto": {
         "required": [
           "id",
@@ -7407,7 +7724,8 @@
           "Active",
           "Inactive",
           "Deceased",
-          "Merged"
+          "Merged",
+          "Erased"
         ]
       },
       "PlaybackUpdateRequest": {
@@ -9173,6 +9491,24 @@
           }
         }
       },
+      "SubmitDataRequest": {
+        "required": [
+          "type",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/DataRequestType"
+          },
+          "details": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "SubmitPrayerRequest": {
         "required": [
           "text",
@@ -9513,6 +9849,12 @@
     },
     {
       "name": "Announcements"
+    },
+    {
+      "name": "Privacy"
+    },
+    {
+      "name": "Privacy admin"
     }
   ]
 }

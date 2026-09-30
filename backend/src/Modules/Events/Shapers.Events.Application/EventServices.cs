@@ -178,3 +178,44 @@ public sealed class PublicEventService(IEventsDb db, EventReader reader, ICurren
             : await reader.ToDtoAsync(e, cancellationToken);
     }
 }
+
+/// <summary>A person's event bookings, for export and erasure (anonymised, so attendance figures stay true).</summary>
+public sealed class EventsPersonalData(IEventsDb db) : Shapers.Platform.Privacy.IPersonalDataSource
+{
+    public string Name => "Event bookings";
+
+    public async Task<object?> ExportAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var registrations = await db.Registrations.AsNoTracking()
+            .Where(r => r.RegistrantPersonId == personId || r.Attendees.Any(a => a.PersonId == personId))
+            .ToListAsync(cancellationToken);
+        if (registrations.Count == 0)
+        {
+            return null;
+        }
+
+        var eventIds = registrations.Select(r => r.EventId).Distinct().ToList();
+        var titles = await db.Events.AsNoTracking().Where(e => eventIds.Contains(e.Id)).ToDictionaryAsync(e => e.Id, e => new { e.Title, e.StartsAt }, cancellationToken);
+        return registrations.Select(r => new
+        {
+            Event = titles.GetValueOrDefault(r.EventId)?.Title,
+            StartsAt = titles.GetValueOrDefault(r.EventId)?.StartsAt,
+            Status = r.Status.ToString(),
+            BookedByYou = r.RegistrantPersonId == personId,
+            r.CreatedAt,
+            Attendees = r.RegistrantPersonId == personId ? r.Attendees.Select(a => a.Name).ToList() : [],
+            Answers = r.RegistrantPersonId == personId ? r.Answers.Values.ToList() : [],
+            CheckedIn = r.Attendees.Where(a => a.PersonId == personId).Select(a => a.CheckedInAt).FirstOrDefault(),
+        }).ToList();
+    }
+
+    public async Task<int> EraseAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var registrations = await db.Registrations
+            .Where(r => r.RegistrantPersonId == personId || r.Attendees.Any(a => a.PersonId == personId))
+            .ToListAsync(cancellationToken);
+        var changed = registrations.Count(r => r.ErasePerson(personId));
+        await db.SaveChangesAsync(cancellationToken);
+        return changed;
+    }
+}
