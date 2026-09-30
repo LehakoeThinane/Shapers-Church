@@ -131,6 +131,26 @@
         }
       }
     },
+    "/api/privacy/notice": {
+      "get": {
+        "tags": [
+          "Privacy"
+        ],
+        "operationId": "PrivacyNotice",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyNoticeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/audit": {
       "get": {
         "tags": [
@@ -4595,6 +4615,26 @@
         }
       }
     },
+    "/api/me/privacy-status": {
+      "get": {
+        "tags": [
+          "Privacy"
+        ],
+        "operationId": "MyPrivacyStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyStatusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me/data-export": {
       "get": {
         "tags": [
@@ -4766,6 +4806,160 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DataRequestAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/privacy/breaches": {
+      "get": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "ListBreaches",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BreachDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "RecordBreach",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveBreachRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BreachDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/privacy/breaches/{id}": {
+      "put": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "UpdateBreach",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveBreachRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BreachDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/privacy/breaches/{id}/close": {
+      "post": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "CloseBreach",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BreachDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/privacy/breaches/{id}/reopen": {
+      "post": {
+        "tags": [
+          "Privacy admin"
+        ],
+        "operationId": "ReopenBreach",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BreachDto"
                 }
               }
             }
@@ -5298,6 +5492,113 @@
             "type": "string"
           }
         }
+      },
+      "BreachDto": {
+        "required": [
+          "id",
+          "title",
+          "description",
+          "discoveredAt",
+          "occurredAt",
+          "dataInvolved",
+          "peopleAffected",
+          "specialInformation",
+          "containment",
+          "regulatorNotifiedAt",
+          "peopleNotifiedAt",
+          "status",
+          "notificationOverdue",
+          "createdAt",
+          "updatedAt",
+          "closedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "discoveredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "occurredAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "dataInvolved": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "peopleAffected": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "specialInformation": {
+            "type": "boolean"
+          },
+          "containment": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "regulatorNotifiedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "peopleNotifiedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BreachStatus"
+          },
+          "notificationOverdue": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "BreachStatus": {
+        "enum": [
+          "Open",
+          "Closed"
+        ]
       },
       "CampusDto": {
         "required": [
@@ -7928,6 +8229,48 @@
           }
         }
       },
+      "PrivacyNoticeDto": {
+        "required": [
+          "version",
+          "effectiveFrom",
+          "markdown"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date"
+          },
+          "markdown": {
+            "type": "string"
+          }
+        }
+      },
+      "PrivacyStatusDto": {
+        "required": [
+          "currentVersion",
+          "acceptedVersion",
+          "needsReview"
+        ],
+        "type": "object",
+        "properties": {
+          "currentVersion": {
+            "type": "string"
+          },
+          "acceptedVersion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "needsReview": {
+            "type": "boolean"
+          }
+        }
+      },
       "PublicLivestreamDto": {
         "required": [
           "id",
@@ -8389,6 +8732,76 @@
             "type": "boolean"
           },
           "sendAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "SaveBreachRequest": {
+        "required": [
+          "title",
+          "description",
+          "discoveredAt",
+          "occurredAt",
+          "dataInvolved",
+          "peopleAffected",
+          "specialInformation",
+          "containment",
+          "regulatorNotifiedAt",
+          "peopleNotifiedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "discoveredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "occurredAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "dataInvolved": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "peopleAffected": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "specialInformation": {
+            "type": "boolean"
+          },
+          "containment": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "regulatorNotifiedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "peopleNotifiedAt": {
             "type": [
               "null",
               "string"
@@ -9815,6 +10228,9 @@
       "name": "Notifications admin"
     },
     {
+      "name": "Privacy"
+    },
+    {
       "name": "Audit"
     },
     {
@@ -9849,9 +10265,6 @@
     },
     {
       "name": "Announcements"
-    },
-    {
-      "name": "Privacy"
     },
     {
       "name": "Privacy admin"

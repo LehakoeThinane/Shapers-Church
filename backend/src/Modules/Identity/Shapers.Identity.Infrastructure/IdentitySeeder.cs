@@ -56,7 +56,7 @@ public static class SystemRoles
             [DoorVolunteer] = ("Checks people in at events. Sees names only.", [EventsPermissions.CheckIn]),
             [InformationOfficer] = ("POPIA: handles correction and deletion requests and checks who read sensitive records.",
             [
-                PrivacyPermissions.RequestsManage, PlatformPermissions.AuditView,
+                PrivacyPermissions.RequestsManage, PrivacyPermissions.BreachesManage, PlatformPermissions.AuditView,
             ]),
             [PrayerTeam] = ("Reviews requests for the prayer wall. Pastors-only requests stay with the pastors.", [PrayerPermissions.RequestsModerate]),
             [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",

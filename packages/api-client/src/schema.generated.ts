@@ -84,6 +84,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/privacy/notice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PrivacyNotice"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/audit": {
         parameters: {
             query?: never;
@@ -2036,6 +2052,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/privacy-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyPrivacyStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me/data-export": {
         parameters: {
             query?: never;
@@ -2110,6 +2142,70 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["DeclinePrivacyRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListBreaches"];
+        put?: never;
+        post: operations["RecordBreach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateBreach"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches/{id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CloseBreach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReopenBreach"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2252,6 +2348,35 @@ export interface components {
             sharedKey: string;
             authenticatorUri: string;
         };
+        BreachDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string;
+            /** Format: date-time */
+            discoveredAt: string;
+            /** Format: date-time */
+            occurredAt: null | string;
+            dataInvolved: null | string;
+            /** Format: int32 */
+            peopleAffected: null | number;
+            specialInformation: boolean;
+            containment: null | string;
+            /** Format: date-time */
+            regulatorNotifiedAt: null | string;
+            /** Format: date-time */
+            peopleNotifiedAt: null | string;
+            status: components["schemas"]["BreachStatus"];
+            notificationOverdue: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            closedAt: null | string;
+        };
+        /** @enum {unknown} */
+        BreachStatus: "Open" | "Closed";
         CampusDto: {
             /** Format: uuid */
             id: string;
@@ -2935,6 +3060,17 @@ export interface components {
         PreferencesRequest: {
             palette: string;
         };
+        PrivacyNoticeDto: {
+            version: string;
+            /** Format: date */
+            effectiveFrom: string;
+            markdown: string;
+        };
+        PrivacyStatusDto: {
+            currentVersion: string;
+            acceptedVersion: null | string;
+            needsReview: boolean;
+        };
         PublicLivestreamDto: {
             /** Format: uuid */
             id: string;
@@ -3047,6 +3183,23 @@ export interface components {
             sendEmail: boolean;
             /** Format: date-time */
             sendAt: null | string;
+        };
+        SaveBreachRequest: {
+            title: string;
+            description: string;
+            /** Format: date-time */
+            discoveredAt: string;
+            /** Format: date-time */
+            occurredAt: null | string;
+            dataInvolved: null | string;
+            /** Format: int32 */
+            peopleAffected: null | number;
+            specialInformation: boolean;
+            containment: null | string;
+            /** Format: date-time */
+            regulatorNotifiedAt: null | string;
+            /** Format: date-time */
+            peopleNotifiedAt: null | string;
         };
         SaveEventRequest: {
             title: string;
@@ -3496,6 +3649,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DeliveryLogDto"][];
+                };
+            };
+        };
+    };
+    PrivacyNotice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrivacyNoticeDto"];
                 };
             };
         };
@@ -6724,6 +6897,26 @@ export interface operations {
             };
         };
     };
+    MyPrivacyStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrivacyStatusDto"];
+                };
+            };
+        };
+    };
     DownloadMyData: {
         parameters: {
             query?: never;
@@ -6856,6 +7049,120 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DataRequestAdminDto"];
+                };
+            };
+        };
+    };
+    ListBreaches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"][];
+                };
+            };
+        };
+    };
+    RecordBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveBreachRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
+                };
+            };
+        };
+    };
+    UpdateBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveBreachRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
+                };
+            };
+        };
+    };
+    CloseBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
+                };
+            };
+        };
+    };
+    ReopenBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
                 };
             };
         };

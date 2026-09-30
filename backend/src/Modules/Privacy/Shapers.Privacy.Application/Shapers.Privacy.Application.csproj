@@ -8,4 +8,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Shapers.Privacy.Tests" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="privacy-notice.md" LogicalName="Shapers.Privacy.Application.privacy-notice.md" />
+  </ItemGroup>
 </Project>

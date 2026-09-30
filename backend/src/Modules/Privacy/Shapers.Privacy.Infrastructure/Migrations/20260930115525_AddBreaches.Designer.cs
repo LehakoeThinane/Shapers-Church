@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Shapers.Privacy.Infrastructure;
@@ -11,9 +12,11 @@ using Shapers.Privacy.Infrastructure;
 namespace Shapers.Privacy.Infrastructure.Migrations
 {
     [DbContext(typeof(PrivacyDbContext))]
-    partial class PrivacyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260930115525_AddBreaches")]
+    partial class AddBreaches
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

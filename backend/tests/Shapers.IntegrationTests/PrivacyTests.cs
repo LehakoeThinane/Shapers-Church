@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -116,7 +117,47 @@ public sealed class PrivacyTests(ApiFactory api) : IClassFixture<ApiFactory>
         await Assert.ThrowsAnyAsync<Exception>(() => platform.Database.ExecuteSqlRawAsync("DELETE FROM platform.audit_entries", ct));
     }
 
-    private async Task<HttpClient> SignInMemberAsync(string phone, string e164, string first, string last)
+    [Fact]
+    public async Task Members_are_asked_to_review_a_notice_version_they_have_not_accepted()
+    {
+        var notice = await (await api.Browser().GetAsync("/api/privacy/notice")).ReadAsync<PrivacyNoticeDto>();
+        Assert.Equal("2026-09", notice.Version);
+        Assert.Contains("Information Regulator", notice.Markdown, StringComparison.Ordinal);
+
+        // Signed up under an older notice: asked to review, then accepting the current one clears it.
+        var member = await SignInMemberAsync("082 555 5004", "+27825555004", "Kea", "Mahlangu", policyVersion: "2025-01");
+        var before = await (await member.GetAsync("/api/me/privacy-status")).ReadAsync<PrivacyStatusDto>();
+        Assert.True(before.NeedsReview);
+        Assert.Equal("2025-01", before.AcceptedVersion);
+
+        (await member.PostJsonAsync("/api/me/consents", new RecordConsentRequest([new ConsentDecisionDto(ConsentPurposes.ChurchRecord, true)], notice.Version, ConsentSource.MobileApp)))
+            .EnsureSuccessStatusCode();
+        var after = await (await member.GetAsync("/api/me/privacy-status")).ReadAsync<PrivacyStatusDto>();
+        Assert.False(after.NeedsReview);
+    }
+
+    [Fact]
+    public async Task The_breach_register_records_notifications_and_only_closes_when_complete()
+    {
+        var admin = await api.SignInAdminAsync();
+        var discovered = DateTimeOffset.UtcNow.AddHours(-3);
+        var breach = await (await admin.PostJsonAsync("/api/admin/privacy/breaches", new SaveBreachRequest(
+            "Phishing email", "A volunteer's email account was accessed.", discovered, null, "Names and phone numbers of the welcome team", 12, false, null, null, null)))
+            .ReadAsync<BreachDto>();
+        Assert.Equal(BreachStatus.Open, breach.Status);
+
+        Assert.Equal(HttpStatusCode.BadRequest, (await admin.PostAsync($"/api/admin/privacy/breaches/{breach.Id}/close", null)).StatusCode);
+        (await admin.PutAsJsonAsync($"/api/admin/privacy/breaches/{breach.Id}", new SaveBreachRequest(
+            "Phishing email", "A volunteer's email account was accessed.", discovered, null, "Names and phone numbers of the welcome team", 12, false,
+            "Password reset, two-step verification turned on.", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow), ApiFactory.Json)).EnsureSuccessStatusCode();
+        var closed = await (await admin.PostAsync($"/api/admin/privacy/breaches/{breach.Id}/close", null)).ReadAsync<BreachDto>();
+        Assert.Equal(BreachStatus.Closed, closed.Status);
+
+        var member = await SignInMemberAsync("082 555 5005", "+27825555005", "Sipho", "Zulu");
+        Assert.Equal(HttpStatusCode.Forbidden, (await member.GetAsync("/api/admin/privacy/breaches")).StatusCode);
+    }
+
+    private async Task<HttpClient> SignInMemberAsync(string phone, string e164, string first, string last, string policyVersion = "2026-09")
     {
         var client = api.Browser();
         var request = await (await client.PostJsonAsync("/api/auth/otp/request", new { phone })).ReadAsync<RequestCodeResponse>();
@@ -127,7 +168,7 @@ public sealed class PrivacyTests(ApiFactory api) : IClassFixture<ApiFactory>
             registrationTicket = verified.RegistrationTicket,
             firstName = first,
             lastName = last,
-            policyVersion = "2026-09",
+            policyVersion,
             consents = new[] { new ConsentDecision(ConsentPurposes.ChurchRecord, true) },
         })).ReadAsync<SignInResponse>();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", signedIn.Tokens!.AccessToken);

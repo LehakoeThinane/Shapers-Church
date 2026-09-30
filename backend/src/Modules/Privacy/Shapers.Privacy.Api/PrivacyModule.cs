@@ -27,7 +27,14 @@ public sealed class PrivacyModule : IModule
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
+        endpoints.MapGet("/api/privacy/notice", (PrivacyNoticeService service) => service.Current())
+            .WithTags("Privacy")
+            .WithName("PrivacyNotice")
+            .AllowAnonymous();
+
         var me = endpoints.MapGroup("/api/me").WithTags("Privacy").RequireAuthorization();
+        me.MapGet("/privacy-status", async (PrivacyNoticeService service, CancellationToken ct) => (await service.StatusAsync(ct)).ToHttp())
+            .WithName("MyPrivacyStatus");
         me.MapGet("/data-export", async Task<Results<FileContentHttpResult, ProblemHttpResult>> (MyPrivacyService service, CancellationToken ct) =>
             {
                 var export = await service.ExportAsync(ct);
@@ -54,5 +61,24 @@ public sealed class PrivacyModule : IModule
                 (await service.DeclineAsync(id, request, ct)).ToHttp())
             .WithName("DeclinePrivacyRequest")
             .RequirePermission(PrivacyPermissions.RequestsManage);
+
+        var breaches = admin.MapGroup("/breaches");
+        breaches.MapGet("/", (BreachService service, CancellationToken ct) => service.ListAsync(ct))
+            .WithName("ListBreaches")
+            .RequirePermission(PrivacyPermissions.BreachesManage);
+        breaches.MapPost("/", async (SaveBreachRequest request, BreachService service, CancellationToken ct) =>
+                (await service.RecordAsync(request, ct)).ToCreated(b => $"/api/admin/privacy/breaches/{b.Id}"))
+            .WithName("RecordBreach")
+            .RequirePermission(PrivacyPermissions.BreachesManage);
+        breaches.MapPut("/{id:guid}", async (Guid id, SaveBreachRequest request, BreachService service, CancellationToken ct) =>
+                (await service.UpdateAsync(id, request, ct)).ToHttp())
+            .WithName("UpdateBreach")
+            .RequirePermission(PrivacyPermissions.BreachesManage);
+        breaches.MapPost("/{id:guid}/close", async (Guid id, BreachService service, CancellationToken ct) => (await service.CloseAsync(id, ct)).ToHttp())
+            .WithName("CloseBreach")
+            .RequirePermission(PrivacyPermissions.BreachesManage);
+        breaches.MapPost("/{id:guid}/reopen", async (Guid id, BreachService service, CancellationToken ct) => (await service.ReopenAsync(id, ct)).ToHttp())
+            .WithName("ReopenBreach")
+            .RequirePermission(PrivacyPermissions.BreachesManage);
     }
 }

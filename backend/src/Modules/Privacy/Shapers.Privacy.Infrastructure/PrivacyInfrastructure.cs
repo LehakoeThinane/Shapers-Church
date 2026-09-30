@@ -19,6 +19,8 @@ public sealed class PrivacyDbContext(DbContextOptions<PrivacyDbContext> options)
 
     public DbSet<DataRequest> Requests => Set<DataRequest>();
 
+    public DbSet<Breach> Breaches => Set<Breach>();
+
     Task<int> IPrivacyDb.SaveChangesAsync(CancellationToken cancellationToken) => SaveChangesAsync(cancellationToken);
 
     protected override void ConfigureModel(ModelBuilder modelBuilder)
@@ -33,6 +35,19 @@ public sealed class PrivacyDbContext(DbContextOptions<PrivacyDbContext> options)
             b.Property(r => r.Response).HasMaxLength(DataRequest.MaxDetails);
             b.HasIndex(r => new { r.Status, r.DueAt });
             b.HasIndex(r => r.PersonId);
+            b.Property<uint>("xmin").IsRowVersion();
+        });
+
+        modelBuilder.Entity<Breach>(b =>
+        {
+            b.ToTable("breaches");
+            b.Property(x => x.Id).ValueGeneratedNever();
+            b.Property(x => x.Title).HasMaxLength(150);
+            b.Property(x => x.Description).HasMaxLength(Breach.MaxText);
+            b.Property(x => x.DataInvolved).HasMaxLength(Breach.MaxText);
+            b.Property(x => x.Containment).HasMaxLength(Breach.MaxText);
+            b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+            b.HasIndex(x => new { x.Status, x.DiscoveredAt });
             b.Property<uint>("xmin").IsRowVersion();
         });
     }
@@ -56,6 +71,9 @@ public static class PrivacyInfrastructure
         services.AddScoped<MyPrivacyService>();
         services.AddScoped<DataRequestAdminService>();
         services.AddScoped<GuestRetentionJob>();
+        services.AddScoped<PrivacyNoticeService>();
+        services.AddScoped<BreachService>();
+        services.Configure<PrivacyNoticeOptions>(configuration.GetSection(PrivacyNoticeOptions.SectionName));
         services.AddSingleton(new RecurringJobDefinition("privacy-guest-retention", "40 2 * * *", (sp, ct) =>
             sp.GetRequiredService<GuestRetentionJob>().RunAsync(ct)));
         return services;

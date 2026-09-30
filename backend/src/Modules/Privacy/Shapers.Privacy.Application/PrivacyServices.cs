@@ -15,6 +15,8 @@ public interface IPrivacyDb
 {
     DbSet<DataRequest> Requests { get; }
 
+    DbSet<Breach> Breaches { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
@@ -23,6 +25,7 @@ public sealed class PrivacyPermissionProvider : IPermissionProvider
     public IEnumerable<PermissionDefinition> GetPermissions() =>
     [
         new(PrivacyPermissions.RequestsManage, "privacy", "Handle correction and deletion requests (deleting erases the person)", IsSensitive: true),
+        new(PrivacyPermissions.BreachesManage, "privacy", "Keep the breach register", IsSensitive: true),
     ];
 }
 
