@@ -50,4 +50,5 @@ export const Permissions = {
   prayerModerate: 'prayer.requests.moderate',
   announcementsSend: 'communications.announcements.send',
   announcementsApprove: 'communications.announcements.approve',
+  privacyRequests: 'privacy.requests.manage',
 } as const;

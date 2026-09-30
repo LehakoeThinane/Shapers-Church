@@ -19,6 +19,7 @@ const nav: { to: string; label: string; permission: string | readonly string[] |
   { to: '/livestreams', label: 'Livestream', permission: Permissions.livestreamManage },
   { to: '/church', label: 'Campuses & ministries', permission: null },
   { to: '/access', label: 'Roles & access', permission: Permissions.usersView },
+  { to: '/privacy', label: 'Privacy requests', permission: Permissions.privacyRequests },
   { to: '/audit', label: 'Audit log', permission: Permissions.auditView },
   { to: '/security', label: 'Security', permission: null },
 ];

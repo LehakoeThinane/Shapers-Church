@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,11 +28,11 @@ public sealed class PrivacyModule : IModule
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         var me = endpoints.MapGroup("/api/me").WithTags("Privacy").RequireAuthorization();
-        me.MapGet("/data-export", async (MyPrivacyService service, CancellationToken ct) =>
+        me.MapGet("/data-export", async Task<Results<FileContentHttpResult, ProblemHttpResult>> (MyPrivacyService service, CancellationToken ct) =>
             {
                 var export = await service.ExportAsync(ct);
                 return export.IsSuccess
-                    ? Results.File(export.Value, "application/json", "shapers-church-my-data.json")
+                    ? TypedResults.File(export.Value, "application/json", "shapers-church-my-data.json")
                     : export.Error!.ToProblem();
             })
             .WithName("DownloadMyData")
