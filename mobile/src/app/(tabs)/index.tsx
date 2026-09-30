@@ -10,6 +10,7 @@ import { EventRow } from '@/components/event-bits';
 import { SermonRow } from '@/components/sermon-bits';
 import { api, unwrap, useSession } from '@/lib/api';
 import { eventWhen, useMyRegistrations, useUpcomingEvents } from '@/lib/events';
+import { enablePush, pushSupported, useInbox, usePushPermission, usePushStore } from '@/lib/notifications';
 import { startsIn, useLiveNow } from '@/lib/live';
 import { useContinueListening, useSermons } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
@@ -43,6 +44,10 @@ export default function HomeScreen() {
   const stream = live?.stream;
   const events = useUpcomingEvents().data ?? [];
   const myNext = useMyRegistrations().upcoming[0];
+  const unread = useInbox().data?.unread ?? 0;
+  const permission = usePushPermission();
+  const { dismissed, dismiss } = usePushStore();
+  const askForPush = status === 'signedIn' && pushSupported && permission.data === 'undetermined' && !dismissed;
 
   const firstName = profile.data?.preferredName ?? profile.data?.firstName;
   const initials = profile.data ? `${profile.data.firstName[0] ?? ''}${profile.data.lastName[0] ?? ''}` : '';
@@ -56,18 +61,53 @@ export default function HomeScreen() {
           </AppText>
           <AppText style={text.largeTitle}>{firstName ?? 'Welcome'}</AppText>
         </View>
-        <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => router.push('/profile')}>
-          <Glass cornerRadius={21} style={styles.avatar}>
-            {initials ? (
-              <AppText tone="interactive" style={text.headline}>
-                {initials}
-              </AppText>
-            ) : (
-              <Icon name={{ ios: 'person.fill', android: 'person' }} size={20} />
-            )}
-          </Glass>
-        </Pressable>
+        <View style={styles.topActions}>
+          {status === 'signedIn' && (
+            <Pressable accessibilityRole="button" accessibilityLabel={unread ? `Notifications, ${unread} unread` : 'Notifications'} onPress={() => router.push('/inbox')}>
+              <Glass cornerRadius={21} style={styles.avatar}>
+                <Icon name={{ ios: 'bell', android: 'notifications' }} size={20} />
+                {unread > 0 && (
+                  <View style={[styles.badge, { backgroundColor: palette.color.accent }]}>
+                    <AppText style={[text.label, { color: palette.color.text.onAccent }]}>{unread > 9 ? '9+' : unread}</AppText>
+                  </View>
+                )}
+              </Glass>
+            </Pressable>
+          )}
+          <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => router.push('/profile')}>
+            <Glass cornerRadius={21} style={styles.avatar}>
+              {initials ? (
+                <AppText tone="interactive" style={text.headline}>
+                  {initials}
+                </AppText>
+              ) : (
+                <Icon name={{ ios: 'person.fill', android: 'person' }} size={20} />
+              )}
+            </Glass>
+          </Pressable>
+        </View>
       </View>
+
+      {askForPush && (
+        <Glass style={styles.card}>
+          <AppText style={text.headline}>Know when we go live</AppText>
+          <AppText tone="secondary">
+            Get a notification when a service starts, a new sermon is published, or your event booking changes. You choose which in your profile.
+          </AppText>
+          <View style={styles.promptActions}>
+            <Pressable accessibilityRole="button" onPress={() => void enablePush().finally(() => void permission.refetch())}>
+              <AppText tone="interactive" style={text.headline}>
+                Turn on
+              </AppText>
+            </Pressable>
+            <Pressable accessibilityRole="button" onPress={dismiss}>
+              <AppText tone="tertiary" style={text.callout}>
+                Not now
+              </AppText>
+            </Pressable>
+          </View>
+        </Glass>
+      )}
 
       <Glass cornerRadius={radius.card} style={styles.live}>
         <View style={[styles.video, { backgroundColor: palette.color.video.middle }]}>
@@ -189,6 +229,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: space.xxs },
   avatar: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
+  topActions: { flexDirection: 'row', gap: space.sm },
+  badge: { position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center' },
+  promptActions: { flexDirection: 'row', alignItems: 'center', gap: space.lg, marginTop: space.xs },
   live: { padding: space.sm },
   video: { height: 168, borderRadius: 22, overflow: 'hidden', justifyContent: 'space-between', padding: 12 },
   pill: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill },
