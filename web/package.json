@@ -12,6 +12,7 @@
     "test": "echo \"(no website unit tests yet)\""
   },
   "dependencies": {
+    "@microsoft/signalr": "^10.0.11",
     "@shapers/tokens": "workspace:*",
     "astro": "^7.3.5",
     "marked": "^18.0.14",

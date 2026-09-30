@@ -21,6 +21,7 @@ import { BreachesPage } from './pages/BreachesPage';
 import { ContentPage, PageEditorPage, PostEditorPage } from './pages/ContentPages';
 import { AnnouncementEditorPage, AnnouncementsPage } from './pages/AnnouncementPages';
 import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
+import { ChatConsolePage, ChatStreamsPage } from './pages/ChatModerationPage';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -55,6 +56,8 @@ const router = createBrowserRouter([
       { path: 'sermons/:id', element: <SermonEditorPage /> },
       { path: 'livestreams', element: <LivestreamsPage /> },
       { path: 'livestreams/:id', element: <LivestreamConsolePage /> },
+      { path: 'chat', element: <ChatStreamsPage /> },
+      { path: 'chat/:id', element: <ChatConsolePage /> },
       { path: 'events', element: <EventsPage /> },
       { path: 'events/new', element: <EventEditorPage /> },
       { path: 'events/:id', element: <EventEditorPage /> },

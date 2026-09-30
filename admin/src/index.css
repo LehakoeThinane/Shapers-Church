@@ -576,3 +576,9 @@ fieldset {
 .review-item:last-child {
   border-bottom: 0;
 }
+
+/* Live chat console: the full log scrolls on its own so the queue stays in view. */
+.chat-log {
+  max-height: 60vh;
+  overflow-y: auto;
+}

@@ -6,6 +6,7 @@
     "@expo-google-fonts/figtree": "^0.4.1",
     "@expo-google-fonts/newsreader": "^0.4.1",
     "@expo/ui": "~57.0.21",
+    "@microsoft/signalr": "^10.0.11",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@shapers/api-client": "workspace:*",
     "@shapers/tokens": "workspace:*",

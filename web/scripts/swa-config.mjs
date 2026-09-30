@@ -40,7 +40,8 @@ const csp = [
   "img-src 'self' https: data:",
   "media-src 'self' https:",
   "frame-src https://www.youtube-nocookie.com",
-  `connect-src 'self' ${publicApi}`,
+  // The live chat's real-time connection uses the API's WebSocket address as well as ordinary requests.
+  `connect-src 'self' ${publicApi} ${publicApi.replace(/^http/, 'ws')}`,
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",

@@ -11,6 +11,11 @@ import Base from '../layouts/Base.astro';
       <a class="button" id="give" href="/giving">Give</a>
       <a class="button secondary" href="/connect">Connect with us</a>
     </div>
+    <section class="chat" id="chat" hidden aria-labelledby="chat-heading">
+      <h2 id="chat-heading">Live chat</h2>
+      <ol class="chat-messages" id="chat-messages" aria-live="polite"></ol>
+      <p class="small muted">To join the conversation, sign in on the Shapers Church app. Need prayer? <a href="/connect">Let us know</a>: only the pastoral team sees it.</p>
+    </section>
     <p class="small muted">
       The Shapers Church app shows the sermon notes and the scripture on screen while you watch, and lets you ask for prayer.
     </p>
@@ -19,12 +24,28 @@ import Base from '../layouts/Base.astro';
 
 <script>
   import { liveNow } from '../scripts/live';
+  import { followChat } from '../scripts/chat';
 
   const state = document.getElementById('state')!;
   const player = document.getElementById('player')!;
   const actions = document.getElementById('actions')!;
   const give = document.getElementById('give') as HTMLAnchorElement;
+  const chat = document.getElementById('chat')!;
+  const chatList = document.getElementById('chat-messages')!;
   let shownVideo = '';
+  let followed = '';
+  let stopChat: (() => void) | null = null;
+
+  function showChat(streamId: string | null) {
+    if (streamId === followed) return;
+    stopChat?.();
+    stopChat = null;
+    followed = streamId ?? '';
+    chat.hidden = true;
+    if (streamId) {
+      stopChat = followChat(streamId, chatList, (open) => (chat.hidden = !open));
+    }
+  }
 
   async function refresh() {
     const live = await liveNow();
@@ -32,8 +53,10 @@ import Base from '../layouts/Base.astro';
     if (!live || !stream) {
       state.textContent = 'There is no service streaming right now. Past services are on the sermons page.';
       player.hidden = true;
+      showChat(null);
       return;
     }
+    showChat(stream.id);
     if (live.state === 'Live' && stream.youTubeId) {
       state.textContent = `${stream.title} is live now.`;
       if (shownVideo !== stream.youTubeId) {
