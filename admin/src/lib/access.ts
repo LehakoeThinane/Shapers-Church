@@ -46,4 +46,6 @@ export const Permissions = {
   eventsRegistrationsView: 'events.registrations.view',
   eventsRegistrationsManage: 'events.registrations.manage',
   eventsCheckIn: 'events.checkin',
+  prayerView: 'prayer.requests.view',
+  prayerModerate: 'prayer.requests.moderate',
 } as const;

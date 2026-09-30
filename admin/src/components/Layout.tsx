@@ -7,9 +7,11 @@ import { usePalette } from '../lib/palette-context';
 import { scopeLabel, useScope } from '../lib/scope-context';
 import { Button, Loading, Select } from './ui';
 
-const nav = [
+// An item shows when the user holds any of its permissions.
+const nav: { to: string; label: string; permission: string | readonly string[] | null }[] = [
   { to: '/people', label: 'People', permission: Permissions.peopleView },
-  { to: '/events', label: 'Events', permission: Permissions.eventsCheckIn },
+  { to: '/events', label: 'Events', permission: [Permissions.eventsEdit, Permissions.eventsCheckIn] },
+  { to: '/prayer', label: 'Prayer', permission: [Permissions.prayerView, Permissions.prayerModerate] },
   { to: '/connect', label: 'Connect cards', permission: Permissions.peopleView },
   { to: '/duplicates', label: 'Duplicates', permission: Permissions.peopleMerge },
   { to: '/sermons', label: 'Sermons', permission: Permissions.mediaEdit },
@@ -18,7 +20,7 @@ const nav = [
   { to: '/access', label: 'Roles & access', permission: Permissions.usersView },
   { to: '/audit', label: 'Audit log', permission: Permissions.auditView },
   { to: '/security', label: 'Security', permission: null },
-] as const;
+];
 
 export function Layout() {
   const { data: access, isPending, isError } = useAccess();
@@ -46,7 +48,7 @@ export function Layout() {
         </div>
         <nav>
           {nav
-            .filter((item) => item.permission === null || can(access, item.permission))
+            .filter((item) => item.permission === null || (typeof item.permission === 'string' ? [item.permission] : item.permission).some((p) => can(access, p)))
             .map((item) => (
               <NavLink key={item.to} to={item.to} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
                 {item.label}

@@ -567,3 +567,12 @@ fieldset {
   padding: 0;
   min-width: 0;
 }
+
+.review-item {
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-glass-edge);
+}
+
+.review-item:last-child {
+  border-bottom: 0;
+}

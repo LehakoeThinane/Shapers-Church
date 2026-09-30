@@ -22,7 +22,7 @@ function greeting(date = new Date()) {
 
 const quickActions = [
   { label: 'Give', icon: { ios: 'heart', android: 'volunteer_activism' }, href: '/give' },
-  { label: 'Prayer', icon: { ios: 'hands.sparkles', android: 'self_improvement' }, href: '/community' },
+  { label: 'Prayer', icon: { ios: 'hands.sparkles', android: 'self_improvement' }, href: '/prayer' },
   { label: 'Groups', icon: { ios: 'person.3', android: 'groups' }, href: '/community' },
   { label: 'Serve', icon: { ios: 'hand.raised', android: 'front_hand' }, href: '/community' },
 ] as const;
