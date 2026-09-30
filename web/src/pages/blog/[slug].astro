@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { get, getAll, type Schemas } from '../../lib/api';
+import { longDate, renderMarkdown } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const posts = await getAll<Schemas['PostSummaryDto']>('/api/content/posts');
+  return posts.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = await get<Schemas['PostDto'] | null>(`/api/content/posts/${slug}`, null);
+if (!post) return Astro.redirect('/blog');
+---
+
+<Base title={post.post.title} description={post.post.summary ?? undefined} image={post.post.coverImageUrl}>
+  <article class="section prose">
+    {post.post.coverImageUrl && <img src={post.post.coverImageUrl} alt="" style="border-radius: var(--radius-xl)" />}
+    <div>
+      <span class="label">{post.post.kind === 'News' ? 'News' : 'Blog'}</span>
+      <h1>{post.post.title}</h1>
+      <p class="muted">{[post.post.author, longDate(post.post.publishedAt)].filter(Boolean).join(' · ')}</p>
+    </div>
+    <div set:html={renderMarkdown(post.body)} />
+    <p><a href="/blog">More from the blog</a></p>
+  </article>
+</Base>

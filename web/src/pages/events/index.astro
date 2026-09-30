@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { get, type Schemas } from '../../lib/api';
+import { dayAndTime } from '../../lib/format';
+
+const events = await get<Schemas['EventDto'][]>('/api/events', []);
+---
+
+<Base title="Events" description="What's coming up at Shapers Church, and how to book.">
+  <section class="section">
+    <h1>Events</h1>
+    {events.length === 0 && <p class="muted">No events coming up right now. Check back soon.</p>}
+    <div class="grid">
+      {
+        events.map((e) => (
+          <a class="glass card" href={`/events/${e.slug}`}>
+            {e.imageUrl && <img src={e.imageUrl} alt="" loading="lazy" />}
+            <span class="label">{dayAndTime(e.startsAt)}</span>
+            <strong>{e.title}</strong>
+            {e.summary && <span class="muted">{e.summary}</span>}
+            {e.location && <span class="small muted">{e.location.name}</span>}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>

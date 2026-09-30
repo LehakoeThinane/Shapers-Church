@@ -1,0 +1,99 @@
+---
+import Base from '../layouts/Base.astro';
+import { get, type Schemas } from '../lib/api';
+import { dayAndTime, longDate } from '../lib/format';
+
+const [sermons, events, news] = await Promise.all([
+  get<Schemas['PagedResultOfSermonSummaryDto']>('/api/media/sermons?pageSize=3', { items: [], total: 0, page: 1, pageSize: 3 }),
+  get<Schemas['EventDto'][]>('/api/events', []),
+  get<Schemas['PostSummaryDto'][]>('/api/content/news?count=3', []),
+]);
+---
+
+<Base>
+  <section class="hero">
+    <span class="label">Rivonia, Johannesburg</span>
+    <h1>Building productive people <span class="serif">for the kingdom of God</span></h1>
+    <p>A church for purpose, spiritual growth and personal development. Join us on Sundays at 8 Mellis Road, Rivonia, or watch online.</p>
+    <div class="row">
+      <a class="button" href="/live" id="live-button">Watch online</a>
+      <a class="button secondary" href="/connect">I&apos;m new</a>
+    </div>
+    <p class="small muted" id="live-status" aria-live="polite"></p>
+  </section>
+
+  {
+    news.length > 0 && (
+      <section class="section">
+        <h2>News</h2>
+        <div class="grid">
+          {news.map((n) => (
+            <a class="glass card" href={`/blog/${n.slug}`}>
+              <strong>{n.title}</strong>
+              {n.summary && <span class="muted">{n.summary}</span>}
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    sermons.items.length > 0 && (
+      <section class="section">
+        <div class="section-head">
+          <h2>Latest sermons</h2>
+          <a href="/sermons">All sermons</a>
+        </div>
+        <div class="grid">
+          {sermons.items.map((s) => (
+            <a class="glass card" href={`/sermons/${s.slug}`}>
+              {s.thumbnailUrl && <img src={s.thumbnailUrl} alt="" loading="lazy" />}
+              <strong>{s.title}</strong>
+              <span class="small muted">
+                {s.speakers.join(', ')} · {longDate(s.preachedOn)}
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    events.length > 0 && (
+      <section class="section">
+        <div class="section-head">
+          <h2>Coming up</h2>
+          <a href="/events">All events</a>
+        </div>
+        <div class="grid">
+          {events.slice(0, 3).map((e) => (
+            <a class="glass card" href={`/events/${e.slug}`}>
+              <span class="label">{dayAndTime(e.startsAt)}</span>
+              <strong>{e.title}</strong>
+              {e.summary && <span class="muted">{e.summary}</span>}
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<script>
+  import { liveNow } from '../scripts/live';
+
+  // Whether a service is on right now changes by the minute, so the browser asks the API directly.
+  void liveNow().then((live) => {
+    const status = document.getElementById('live-status');
+    const button = document.getElementById('live-button');
+    if (!status || !button || !live?.stream) return;
+    if (live.state === 'Live') {
+      button.textContent = '● Live now: watch';
+      status.textContent = `${live.stream.title} is streaming now.`;
+    } else if (live.state === 'Upcoming') {
+      status.textContent = `Next online service: ${new Intl.DateTimeFormat('en-ZA', { weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }).format(new Date(live.stream.scheduledStart))}.`;
+    }
+  });
+</script>

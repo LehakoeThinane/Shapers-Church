@@ -1,0 +1,56 @@
+---
+import Base from '../../layouts/Base.astro';
+import { get, getAll, type Schemas } from '../../lib/api';
+import { longDate, renderMarkdown } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const sermons = await getAll<Schemas['SermonSummaryDto']>('/api/media/sermons');
+  return sermons.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const sermon = await get<Schemas['SermonDetailDto'] | null>(`/api/media/sermons/${slug}`, null);
+if (!sermon) return Astro.redirect('/sermons');
+const video = sermon.video;
+---
+
+<Base title={sermon.title} description={sermon.summary ?? `A sermon by ${sermon.speakers.map((s) => s.name).join(', ')}.`} image={video?.thumbnailUrl}>
+  <article class="section">
+    <div>
+      {sermon.series && <span class="label">{sermon.series.title}</span>}
+      <h1>{sermon.title}</h1>
+      <p class="muted">
+        {sermon.speakers.map((s) => s.name).join(', ')} · {longDate(sermon.preachedOn)}
+        {sermon.scripture.length > 0 && ` · ${sermon.scripture.map((s) => s.display).join('; ')}`}
+      </p>
+    </div>
+
+    {
+      video && (
+        <div class="video">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${video.externalId}`}
+            title={sermon.title}
+            loading="lazy"
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+        </div>
+      )
+    }
+
+    {
+      sermon.audio && (
+        <div class="glass stack">
+          <strong>Listen</strong>
+          <audio controls preload="none" src={sermon.audio.url} style="width: 100%" />
+          <span class="small muted">Audio uses much less data than video.</span>
+        </div>
+      )
+    }
+
+    {sermon.summary && <p class="prose">{sermon.summary}</p>}
+    {sermon.notes && <div class="prose" set:html={renderMarkdown(sermon.notes)} />}
+    {sermon.notesPdfUrl && <a class="button secondary" href={sermon.notesPdfUrl}>Download the notes (PDF)</a>}
+  </article>
+</Base>

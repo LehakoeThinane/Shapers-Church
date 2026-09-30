@@ -12,9 +12,10 @@ See [docs/overview.md](docs/overview.md) for the vision, modules and roadmap, an
 
 | Path | What |
 |---|---|
-| `backend/` | ASP.NET Core (.NET 10) modular monolith: `src/Modules/{Church,People,Identity}`, shared `BuildingBlocks`, and the `Host/Shapers.Api` composition root |
+| `backend/` | ASP.NET Core (.NET 10) modular monolith: one folder per module in `src/Modules`, shared `BuildingBlocks`, and the `Host/Shapers.Api` composition root |
 | `admin/` | Admin portal (React + Vite + TypeScript) |
 | `mobile/` | Member app (Expo + Expo Router, native tabs, Liquid Glass) |
+| `web/` | Public website (Astro, static), to replace shaperschurch.com |
 | `packages/tokens` | Midnight and Rose theme tokens, generated from `design/tokens/tokens.json` |
 | `packages/api-client` | Typed API client, generated from the backend's OpenAPI document |
 | `design/` | Mockup (`shapers-glass.html`), token source and brand assets |
@@ -94,6 +95,26 @@ Build and install:
 - `npx eas-cli build --profile development --platform android` builds an APK. Open the link it prints on the phone to install it. Start the dev server with `pnpm mobile` and open the project from the installed app.
 - `npx eas-cli build --profile preview --platform android` builds a stand-alone APK with the app code inside. Use it when the Wi-Fi is too unreliable to load the code from your PC: only the small API calls travel over the network.
 - iPhone builds need an Apple Developer account (paid) and registering the test devices (`npx eas-cli device:create`).
+
+## Public website
+
+The website in `web/` is built from the API ahead of time (sermons, events, blog, pages) and served as static files, so it's fast and cheap. Live status, seats left, guest bookings and tickets are fetched in the visitor's browser.
+
+Locally, with the API running:
+
+```powershell
+cd web
+$env:API_URL = "http://127.0.0.1:5080"; pnpm dev      # http://localhost:4321
+```
+
+Deployment (Azure Static Web Apps behind Cloudflare, see ADR 0009):
+
+1. Create an Azure Static Web App (Free or Standard plan) with **Other** as the build preset and no GitHub link. Copy its deployment token.
+2. In GitHub → Settings → Secrets and variables → Actions, add the secret `AZURE_STATIC_WEB_APPS_API_TOKEN` and the variable `WEBSITE_API_URL` (the public API address, e.g. `https://api.shaperschurch.com`).
+3. Add the website's address to the API's `Cors:Origins` so browsers may call it.
+4. Point `shaperschurch.com` at the Static Web App in Cloudflare once you're ready to switch over from WordPress.
+
+The **Website** workflow then builds from the live API and deploys every hour, whenever website code changes on `main`, and within minutes of new content being published. For that last one, set `Content:SiteRebuild:Url` to `https://api.github.com/repos/LehakoeThinane/Shapers-Church/dispatches` and `Content:SiteRebuild:Token` to a fine-grained GitHub token with *Contents: read and write* on this repository (in Key Vault, never in the repo).
 
 ## Everyday commands
 

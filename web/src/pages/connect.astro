@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Connect" description="New to Shapers Church, or want someone to get in touch? Let us know.">
+  <section class="section">
+    <h1>Connect with us</h1>
+    <p class="muted prose">New here, made a decision to follow Jesus, need prayer or want to get involved? Tell us and someone from the church will be in touch this week.</p>
+    <form class="glass stack" id="connect">
+      <div class="row">
+        <label>First name<input name="firstName" required maxlength="60" autocomplete="given-name" /></label>
+        <label>Last name<input name="lastName" required maxlength="60" autocomplete="family-name" /></label>
+      </div>
+      <div class="row">
+        <label>Mobile<input name="mobile" type="tel" autocomplete="tel" /></label>
+        <label>Email<input name="email" type="email" autocomplete="email" /></label>
+      </div>
+      <fieldset class="stack" style="border: 0; padding: 0; margin: 0">
+        <legend>I&apos;d like to…</legend>
+        <label class="check"><input type="checkbox" name="reason" value="FirstTime" /> say I&apos;m new here</label>
+        <label class="check"><input type="checkbox" name="reason" value="Decision" /> share that I&apos;ve decided to follow Jesus</label>
+        <label class="check"><input type="checkbox" name="reason" value="Prayer" /> ask for prayer (only our pastors see this)</label>
+        <label class="check"><input type="checkbox" name="reason" value="JoinGroup" /> join a small group</label>
+        <label class="check"><input type="checkbox" name="reason" value="Serve" /> serve</label>
+        <label class="check"><input type="checkbox" name="reason" value="MoreInfo" /> find out more</label>
+      </fieldset>
+      <label>Anything you&apos;d like us to know?<textarea name="message" rows="4" maxlength="1000"></textarea></label>
+      <label class="check">
+        <input type="checkbox" name="consent" required />
+        <span>Shapers Church may keep my details to get in touch. <a href="/privacy">How we look after your information</a>.</span>
+      </label>
+      <button class="button" type="submit">Send</button>
+      <p class="error" id="error" role="alert"></p>
+    </form>
+    <div class="glass" id="thanks" hidden>
+      <h2>Thank you</h2>
+      <p>We&apos;ve got it. Someone from the church will be in touch this week.</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { getJson, post } from '../scripts/live';
+  import type { Schemas } from '@shapers/api-client';
+
+  const form = document.getElementById('connect') as HTMLFormElement;
+  const error = document.getElementById('error')!;
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    error.textContent = '';
+    const data = new FormData(form);
+    const reasons = data.getAll('reason').map(String);
+    const mobile = String(data.get('mobile') ?? '').trim();
+    const email = String(data.get('email') ?? '').trim();
+    if (reasons.length === 0) {
+      error.textContent = 'Choose at least one thing you would like.';
+      return;
+    }
+    if (!mobile && !email) {
+      error.textContent = 'Give us a mobile number or email so we can get back to you.';
+      return;
+    }
+    try {
+      const notice = await getJson<Schemas['PrivacyNoticeDto']>('/api/privacy/notice');
+      await post('/api/connect', {
+        firstName: String(data.get('firstName') ?? '').trim(),
+        lastName: String(data.get('lastName') ?? '').trim(),
+        mobile: mobile || null,
+        email: email || null,
+        reasons,
+        message: String(data.get('message') ?? '').trim() || null,
+        source: 'website',
+        sourceId: null,
+        consentToKeepDetails: data.get('consent') === 'on',
+        policyVersion: notice.version,
+      });
+      form.hidden = true;
+      document.getElementById('thanks')!.hidden = false;
+    } catch (e) {
+      error.textContent = (e as Error).message;
+    }
+  });
+</script>

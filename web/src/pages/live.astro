@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Watch live" description="Watch Shapers Church services online.">
+  <section class="section">
+    <h1>Watch live</h1>
+    <p class="muted" id="state" aria-live="polite">Checking whether we're live…</p>
+    <div class="video" id="player" hidden></div>
+    <div class="row" id="actions" hidden>
+      <a class="button" id="give" href="/giving">Give</a>
+      <a class="button secondary" href="/connect">Connect with us</a>
+    </div>
+    <p class="small muted">
+      The Shapers Church app shows the sermon notes and the scripture on screen while you watch, and lets you ask for prayer.
+    </p>
+  </section>
+</Base>
+
+<script>
+  import { liveNow } from '../scripts/live';
+
+  const state = document.getElementById('state')!;
+  const player = document.getElementById('player')!;
+  const actions = document.getElementById('actions')!;
+  const give = document.getElementById('give') as HTMLAnchorElement;
+  let shownVideo = '';
+
+  async function refresh() {
+    const live = await liveNow();
+    const stream = live?.stream;
+    if (!live || !stream) {
+      state.textContent = 'There is no service streaming right now. Past services are on the sermons page.';
+      player.hidden = true;
+      return;
+    }
+    if (live.state === 'Live' && stream.youTubeId) {
+      state.textContent = `${stream.title} is live now.`;
+      if (shownVideo !== stream.youTubeId) {
+        const frame = document.createElement('iframe');
+        frame.src = `https://www.youtube-nocookie.com/embed/${stream.youTubeId}?autoplay=1`;
+        frame.title = stream.title;
+        frame.allow = 'autoplay; encrypted-media; picture-in-picture';
+        frame.allowFullscreen = true;
+        player.replaceChildren(frame);
+        shownVideo = stream.youTubeId;
+      }
+      player.hidden = false;
+      actions.hidden = false;
+      if (stream.giveUrl) give.href = stream.giveUrl;
+    } else {
+      const when = new Intl.DateTimeFormat('en-ZA', { weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }).format(
+        new Date(stream.scheduledStart),
+      );
+      state.textContent = `Next online service: ${stream.title}, ${when}.`;
+      player.hidden = true;
+    }
+  }
+
+  void refresh();
+  // Check again every half minute, but only while the page is open and visible.
+  setInterval(() => {
+    if (document.visibilityState === 'visible') void refresh();
+  }, 30_000);
+</script>

@@ -1,0 +1,85 @@
+---
+import '@shapers/tokens/tokens.css';
+import '../styles/site.css';
+import { get, type Schemas } from '../lib/api';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string | null;
+  /** Private pages (e.g. someone's tickets) stay out of search engines. */
+  noindex?: boolean;
+}
+
+const { title, description, image, noindex } = Astro.props;
+const menu = await get<Schemas['MenuItemDto'][]>('/api/content/menu', []);
+const fullTitle = title ? `${title} · Shapers Church` : 'Shapers Church · Rivonia, Johannesburg';
+const summary = description ?? 'Shapers Church in Rivonia, Johannesburg: building productive people for the kingdom of God.';
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/sermons', label: 'Sermons' },
+  { href: '/events', label: 'Events' },
+  { href: '/live', label: 'Watch live' },
+  { href: '/blog', label: 'Blog' },
+  ...menu.map((m) => ({ href: `/${m.slug}`, label: m.title })),
+];
+---
+
+<!doctype html>
+<html lang="en-ZA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={summary} />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <meta property="og:title" content={title ?? 'Shapers Church'} />
+    <meta property="og:description" content={summary} />
+    <meta property="og:type" content="website" />
+    {image && <meta property="og:image" content={image} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.png" />
+    <link rel="alternate" type="application/rss+xml" title="Shapers Church sermons" href="/podcast.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Newsreader:ital@1&display=swap"
+    />
+  </head>
+  <body>
+    <div class="glow" aria-hidden="true"></div>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/">Shapers <span>Church</span></a>
+      <nav aria-label="Main">
+        <ul>
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href} aria-current={path === item.href || path.startsWith(`${item.href}/`) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <a class="button small" href="/connect">Connect</a>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div>
+        <strong>Shapers Church</strong>
+        <p>8 Mellis Road, Rivonia, Sandton, Johannesburg</p>
+        <p><a href="mailto:info@shaperschurch.com">info@shaperschurch.com</a></p>
+      </div>
+      <div>
+        <p>Building productive people for the kingdom of God.</p>
+        <p><a href="/privacy">Privacy notice</a> · <a href="/podcast.xml">Sermon podcast</a></p>
+      </div>
+    </footer>
+  </body>
+</html>

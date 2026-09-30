@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import { get, type Schemas } from '../lib/api';
+import { longDate, renderMarkdown } from '../lib/format';
+
+const notice = await get<Schemas['PrivacyNoticeDto'] | null>('/api/privacy/notice', null);
+---
+
+<Base title="Privacy notice" description="How Shapers Church looks after your personal information.">
+  <article class="section prose">
+    {
+      notice ? (
+        <>
+          <p class="small muted">
+            Version {notice.version}, from {longDate(notice.effectiveFrom)}
+          </p>
+          <div set:html={renderMarkdown(notice.markdown)} />
+        </>
+      ) : (
+        <p>Our privacy notice is being updated. Email info@shaperschurch.com for a copy.</p>
+      )
+    }
+  </article>
+</Base>

@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getAll, type Schemas } from '../../lib/api';
+import { longDate, minutes } from '../../lib/format';
+
+const sermons = await getAll<Schemas['SermonSummaryDto']>('/api/media/sermons');
+---
+
+<Base title="Sermons" description="Sermons from Shapers Church in Rivonia: watch, listen or subscribe to the podcast.">
+  <section class="section">
+    <h1>Sermons</h1>
+    <p class="muted">
+      Watch or listen, or subscribe to <a href="/podcast.xml">the podcast</a>. The Shapers Church app lets you download sermons to listen without
+      using data.
+    </p>
+    <input type="search" id="filter" placeholder="Search by title, speaker or scripture" aria-label="Search sermons" />
+    {sermons.length === 0 && <p class="muted">Sermons will appear here as they are published.</p>}
+    <div class="grid" id="sermons">
+      {
+        sermons.map((s) => (
+          <a class="glass card" href={`/sermons/${s.slug}`} data-search={`${s.title} ${s.speakers.join(' ')} ${s.scripture.join(' ')} ${s.seriesTitle ?? ''}`.toLowerCase()}>
+            {s.thumbnailUrl && <img src={s.thumbnailUrl} alt="" loading="lazy" />}
+            {s.seriesTitle && <span class="label">{s.seriesTitle}</span>}
+            <strong>{s.title}</strong>
+            <span class="small muted">
+              {[s.speakers.join(', '), longDate(s.preachedOn), minutes(s.audioDurationSeconds)].filter(Boolean).join(' · ')}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  const input = document.getElementById('filter') as HTMLInputElement | null;
+  input?.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    document.querySelectorAll<HTMLElement>('#sermons [data-search]').forEach((card) => {
+      card.hidden = q.length > 0 && !(card.dataset.search ?? '').includes(q);
+    });
+  });
+</script>

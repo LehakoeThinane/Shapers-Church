@@ -23,6 +23,7 @@ TestResults/
 # Node
 node_modules/
 dist/
+.astro/
 *.tsbuildinfo
 .vite/
 
