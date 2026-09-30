@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
+import type * as NotificationsModule from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
@@ -49,13 +49,27 @@ export const usePushStore = create<PushState>()(
   ),
 );
 
-if (Platform.OS !== 'web') {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
-  });
+let loaded: typeof NotificationsModule | null = null;
+
+/**
+ * The notifications library, loaded only where push works. Merely importing it crashes Expo Go on Android
+ * (its push support was removed there), so it is never loaded unless this is our own app build.
+ */
+function notifications(): typeof NotificationsModule | null {
+  if (!pushSupported) return null;
+  if (!loaded) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    loaded = require('expo-notifications') as typeof NotificationsModule;
+    loaded.setNotificationHandler({
+      handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
+    });
+  }
+  return loaded;
 }
 
 async function registerThisPhone(): Promise<boolean> {
+  const Notifications = notifications();
+  if (!Notifications) return false;
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', { name: 'Shapers Church', importance: Notifications.AndroidImportance.DEFAULT });
   }
@@ -68,7 +82,8 @@ async function registerThisPhone(): Promise<boolean> {
 
 /** Asks the phone for permission, records the member's consent, and registers the phone. */
 export async function enablePush(): Promise<boolean> {
-  if (!pushSupported) return false;
+  const Notifications = notifications();
+  if (!Notifications) return false;
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') return false;
   unwrap(
@@ -91,7 +106,7 @@ export function usePushPermission() {
   return useQuery({
     queryKey: ['push-permission'],
     enabled: pushSupported,
-    queryFn: async () => (await Notifications.getPermissionsAsync()).status,
+    queryFn: async () => (await notifications()!.getPermissionsAsync()).status,
   });
 }
 
@@ -104,7 +119,8 @@ export function usePushLifecycle() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!pushSupported || status !== 'signedIn') return;
+    const Notifications = notifications();
+    if (!Notifications || status !== 'signedIn') return;
     void (async () => {
       if ((await Notifications.getPermissionsAsync()).status === 'granted') {
         await registerThisPhone().catch(() => undefined);
@@ -113,8 +129,9 @@ export function usePushLifecycle() {
   }, [status]);
 
   useEffect(() => {
-    if (Platform.OS === 'web') return;
-    const open = (response: Notifications.NotificationResponse | null) => {
+    const Notifications = notifications();
+    if (!Notifications) return;
+    const open = (response: NotificationsModule.NotificationResponse | null) => {
       const link = response?.notification.request.content.data?.link;
       if (typeof link === 'string' && link.startsWith('/')) router.push(link as never);
     };
