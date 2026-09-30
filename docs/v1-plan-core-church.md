@@ -1,6 +1,6 @@
 # V1 plan, part 2: finishing Core church
 
-Status: **Approved (2026-09-30).** Decisions are recorded at the end; building starts with slice D.
+Status: **Approved (2026-09-30).** Decisions are recorded at the end. Slice D (Prayer) is built. Slice E (Notifications) is built except SMS and WhatsApp, which wait for providers; see [ADR 0011](decisions/0011-communications.md).
 
 ## Where we are
 
