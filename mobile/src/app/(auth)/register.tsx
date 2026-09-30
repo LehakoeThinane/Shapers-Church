@@ -6,11 +6,10 @@ import { AuthScreen } from '@/components/auth-screen';
 import { PrimaryButton } from '@/components/glass';
 import { AppText, Field } from '@/components/text';
 import { api, deviceName, errorMessage, startSession, unwrap } from '@/lib/api';
+import { currentNoticeVersion } from '@/lib/privacy';
 import { useTheme } from '@/theme/theme';
 import { text } from '@/theme/type';
 
-/** Bump when the privacy notice changes, so consent records show which version people agreed to. */
-const PRIVACY_NOTICE_VERSION = '2026-09';
 
 const optionalConsents = [
   { purpose: 'communications.whatsapp', label: 'WhatsApp messages from the church' },
@@ -43,7 +42,7 @@ export default function RegisterScreen() {
             lastName,
             email: email || null,
             campusId: null,
-            policyVersion: PRIVACY_NOTICE_VERSION,
+            policyVersion: await currentNoticeVersion(),
             consents: [
               { purpose: 'processing.church_record', granted: keepRecord },
               ...optionalConsents.map((c) => ({ purpose: c.purpose, granted: !!channels[c.purpose] })),
@@ -78,6 +77,11 @@ export default function RegisterScreen() {
         onChange={setKeepRecord}
         trackColor={palette.color.accent}
       />
+      <Pressable accessibilityRole="link" onPress={() => router.push('/privacy-notice')}>
+        <AppText tone="interactive" style={text.callout}>
+          Read how we look after your information
+        </AppText>
+      </Pressable>
       <AppText tone="secondary" style={text.callout}>
         How may we contact you? You can change this any time.
       </AppText>

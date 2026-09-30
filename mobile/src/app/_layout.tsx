@@ -11,6 +11,7 @@ import { AppState } from 'react-native';
 
 import { api, ApiError, restoreSession, unwrap, useSession } from '@/lib/api';
 import { usePushLifecycle } from '@/lib/notifications';
+import { usePrivacyReview } from '@/lib/privacy';
 import { ThemeProvider, usePaletteStore, useTheme } from '@/theme/theme';
 
 void SplashScreen.preventAutoHideAsync();
@@ -66,6 +67,7 @@ export default function RootLayout() {
 function Navigator() {
   const { palette } = useTheme();
   usePushLifecycle();
+  usePrivacyReview();
   return (
     <>
       <StatusBar style={palette.appearance === 'dark' ? 'light' : 'dark'} />
@@ -77,6 +79,7 @@ function Navigator() {
         <Stack.Screen name="inbox" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="prayer" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="tickets" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="privacy-notice" options={{ presentation: 'modal' }} />
         <Stack.Screen name="profile" options={{ presentation: 'modal' }} />
         <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />
       </Stack>

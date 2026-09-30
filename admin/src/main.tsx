@@ -17,6 +17,7 @@ import { ConnectCardsPage } from './pages/ConnectCardsPage';
 import { CheckInPage, EventAttendeesPage, EventEditorPage, EventsPage } from './pages/EventPages';
 import { PrayerPage } from './pages/PrayerPage';
 import { PrivacyPage } from './pages/PrivacyPage';
+import { BreachesPage } from './pages/BreachesPage';
 import { AnnouncementEditorPage, AnnouncementsPage } from './pages/AnnouncementPages';
 import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
 import './index.css';
@@ -63,6 +64,7 @@ const router = createBrowserRouter([
       { path: 'announcements/:id', element: <AnnouncementEditorPage /> },
       { path: 'prayer', element: <PrayerPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'breaches', element: <BreachesPage /> },
       { path: 'connect', element: <ConnectCardsPage /> },
       { path: 'church', element: <ChurchPage /> },
       { path: 'access', element: <RolesPage /> },

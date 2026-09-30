@@ -20,6 +20,7 @@ const nav: { to: string; label: string; permission: string | readonly string[] |
   { to: '/church', label: 'Campuses & ministries', permission: null },
   { to: '/access', label: 'Roles & access', permission: Permissions.usersView },
   { to: '/privacy', label: 'Privacy requests', permission: Permissions.privacyRequests },
+  { to: '/breaches', label: 'Breach register', permission: Permissions.privacyBreaches },
   { to: '/audit', label: 'Audit log', permission: Permissions.auditView },
   { to: '/security', label: 'Security', permission: null },
 ];

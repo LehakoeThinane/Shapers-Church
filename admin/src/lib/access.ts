@@ -51,4 +51,5 @@ export const Permissions = {
   announcementsSend: 'communications.announcements.send',
   announcementsApprove: 'communications.announcements.approve',
   privacyRequests: 'privacy.requests.manage',
+  privacyBreaches: 'privacy.breaches.manage',
 } as const;

@@ -1,6 +1,6 @@
 # V1 plan, part 2: finishing Core church
 
-Status: **Approved (2026-09-30).** Decisions are recorded at the end. Slice D (Prayer) is built. Slice E (Notifications) is built except SMS and WhatsApp, which wait for providers; see [ADR 0011](decisions/0011-communications.md).
+Status: **Approved (2026-09-30).** Decisions are recorded at the end. Slice D (Prayer) is built. Slice E (Notifications) is built except SMS and WhatsApp, which wait for providers; see [ADR 0011](decisions/0011-communications.md). Slice F (POPIA) is built with the retention periods approved on 2026-09-30; see [ADR 0012](decisions/0012-privacy-rights-and-retention.md).
 
 ## Where we are
 

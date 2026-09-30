@@ -240,6 +240,12 @@ function YourData() {
         )}
         {submit.error && <AppText tone="danger">{errorMessage(submit.error)}</AppText>}
 
+        <Pressable accessibilityRole="link" onPress={() => router.push('/privacy-notice')}>
+          <AppText tone="interactive" style={text.headline}>
+            Read our privacy notice
+          </AppText>
+        </Pressable>
+
         {requests.data?.map((r) => (
           <View key={r.id} style={styles.flex}>
             <AppText style={text.callout}>{requestLabel(r)}</AppText>
