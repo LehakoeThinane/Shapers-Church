@@ -16,3 +16,4 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0010](0010-event-registration.md) | Event registration: seat locking, guest email codes and tickets | Accepted |
 | [0011](0011-communications.md) | One Communications module for every message | Accepted |
 | [0012](0012-privacy-rights-and-retention.md) | Privacy rights, erasure and retention | Accepted |
+| [0013](0013-public-website.md) | A static public website built from the API | Accepted |
