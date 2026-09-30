@@ -13,6 +13,8 @@ public interface ICommunicationsDb
 
     DbSet<Notification> Notifications { get; }
 
+    DbSet<Announcement> Announcements { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
@@ -44,6 +46,8 @@ public sealed class CommunicationsPermissionProvider : IPermissionProvider
     public IEnumerable<PermissionDefinition> GetPermissions() =>
     [
         new(CommunicationsPermissions.DeliveriesView, "communications", "See the notification delivery log", IsSensitive: true),
+        new(CommunicationsPermissions.AnnouncementsSend, "communications", "Write announcements and send them to a ministry"),
+        new(CommunicationsPermissions.AnnouncementsApprove, "communications", "Approve announcements for a campus or the whole church"),
     ];
 }
 

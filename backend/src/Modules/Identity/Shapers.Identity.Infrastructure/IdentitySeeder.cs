@@ -7,6 +7,7 @@ using Shapers.Identity.Contracts;
 using Shapers.Identity.Domain;
 using Shapers.Events.Contracts;
 using Shapers.Media.Contracts;
+using Shapers.Communications.Contracts;
 using Shapers.Prayer.Contracts;
 using Shapers.People.Contracts;
 using Shapers.Platform.Authorization;
@@ -35,12 +36,17 @@ public static class SystemRoles
                 PeoplePermissions.ProfilesView, PeoplePermissions.ProfilesEdit, PeoplePermissions.ProfilesMerge,
                 ChurchPermissions.MinistriesManage, IdentityPermissions.UsersView, IdentityPermissions.GrantsManage,
                 PrayerPermissions.RequestsView, PrayerPermissions.RequestsModerate,
+                CommunicationsPermissions.AnnouncementsSend, CommunicationsPermissions.AnnouncementsApprove,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [
                 PeoplePermissions.ProfilesView, PeoplePermissions.ProfilesEdit, ChurchPermissions.MinistriesManage,
+                CommunicationsPermissions.AnnouncementsSend,
             ]),
-            [MinistryLeader] = ("Leads a ministry; can see the people in it.", [PeoplePermissions.ProfilesView]),
+            [MinistryLeader] = ("Leads a ministry; can see the people in it and send it announcements.",
+            [
+                PeoplePermissions.ProfilesView, CommunicationsPermissions.AnnouncementsSend,
+            ]),
             [EventsTeam] = ("Plans events, manages registrations and runs the door.",
             [
                 EventsPermissions.Edit, EventsPermissions.Publish, EventsPermissions.RegistrationsView, EventsPermissions.RegistrationsManage, EventsPermissions.CheckIn,

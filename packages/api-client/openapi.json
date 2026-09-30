@@ -4339,6 +4339,261 @@
           }
         }
       }
+    },
+    "/api/admin/announcements": {
+      "get": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "ListAnnouncements",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnnouncementDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "CreateAnnouncement",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}": {
+      "get": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "GetAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "UpdateAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/submit": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "SubmitAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/approve": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "ApproveAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/return": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "ReturnAnnouncementToDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnAnnouncementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/announcements/{id}/cancel": {
+      "post": {
+        "tags": [
+          "Announcements"
+        ],
+        "operationId": "CancelAnnouncement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnouncementDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4488,6 +4743,125 @@
           }
         }
       },
+      "AnnouncementDto": {
+        "required": [
+          "id",
+          "title",
+          "body",
+          "link",
+          "scope",
+          "sendEmail",
+          "sendAt",
+          "status",
+          "needsApproval",
+          "createdByMe",
+          "createdAt",
+          "updatedAt",
+          "approvedAt",
+          "returnNote",
+          "sentAt",
+          "audience",
+          "delivered"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "sendEmail": {
+            "type": "boolean"
+          },
+          "sendAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnnouncementStatus"
+          },
+          "needsApproval": {
+            "type": "boolean"
+          },
+          "createdByMe": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "approvedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "returnNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "sentAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "audience": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AudienceDto"
+              }
+            ]
+          },
+          "delivered": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DeliveryCountsDto"
+              }
+            ]
+          }
+        }
+      },
+      "AnnouncementStatus": {
+        "enum": [
+          "Draft",
+          "AwaitingApproval",
+          "Queued",
+          "Sent",
+          "Cancelled"
+        ]
+      },
       "AnswerRequest": {
         "required": [
           "note"
@@ -4608,6 +4982,28 @@
             "additionalProperties": {
               "type": "string"
             }
+          }
+        }
+      },
+      "AudienceDto": {
+        "required": [
+          "people",
+          "withApp",
+          "byEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "people": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "withApp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "byEmail": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -5433,6 +5829,33 @@
               "string"
             ],
             "format": "date-time"
+          }
+        }
+      },
+      "DeliveryCountsDto": {
+        "required": [
+          "inbox",
+          "pushed",
+          "emailed",
+          "failed"
+        ],
+        "type": "object",
+        "properties": {
+          "inbox": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pushed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emailed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "failed": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -7549,6 +7972,20 @@
           }
         }
       },
+      "ReturnAnnouncementRequest": {
+        "required": [
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "ReviewRequest": {
         "required": [
           "wallText",
@@ -7601,6 +8038,44 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "SaveAnnouncementRequest": {
+        "required": [
+          "title",
+          "body",
+          "link",
+          "scope",
+          "sendEmail",
+          "sendAt"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "sendEmail": {
+            "type": "boolean"
+          },
+          "sendAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },
@@ -9035,6 +9510,9 @@
     },
     {
       "name": "Notifications"
+    },
+    {
+      "name": "Announcements"
     }
   ]
 }

@@ -19,6 +19,7 @@ public static class CommunicationsInfrastructure
         services.AddModuleDbContext<CommunicationsDbContext>(configuration, CommunicationsDbContext.SchemaName, typeof(Shapers.Communications.Contracts.CommunicationsPermissions).Assembly);
         services.AddScoped<ICommunicationsDb>(sp => sp.GetRequiredService<CommunicationsDbContext>());
         services.Configure<PushOptions>(configuration.GetSection(PushOptions.SectionName));
+        services.Configure<CommunicationsOptions>(configuration.GetSection(CommunicationsOptions.SectionName));
         services.AddSingleton<IPermissionProvider, CommunicationsPermissionProvider>();
 
         if (string.Equals(configuration[$"{PushOptions.SectionName}:Provider"], "Log", StringComparison.OrdinalIgnoreCase))
@@ -38,11 +39,16 @@ public static class CommunicationsInfrastructure
         services.AddScoped<MemberNotifications>();
         services.AddScoped<DeliveryJob>();
         services.AddScoped<DeliveryLog>();
+        services.AddScoped<Unsubscribe>();
+        services.AddScoped<AnnouncementService>();
+        services.AddScoped<AnnouncementDispatchJob>();
         services.AddScoped<IIntegrationEventHandler<LivestreamStartedIntegrationEvent>, NotifyLivestreamStarted>();
         services.AddScoped<IIntegrationEventHandler<SermonPublishedIntegrationEvent>, NotifySermonPublished>();
         services.AddScoped<IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>, NotifyWaitlistPromoted>();
         services.AddScoped<IIntegrationEventHandler<PrayerRequestApprovedIntegrationEvent>, NotifyPrayerApproved>();
 
+        services.AddSingleton(new RecurringJobDefinition("communications-announcements", "* * * * *", (sp, ct) =>
+            sp.GetRequiredService<AnnouncementDispatchJob>().RunAsync(ct)));
         services.AddSingleton(new RecurringJobDefinition("communications-deliver", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<DeliveryJob>().RunAsync(ct)));
         return services;

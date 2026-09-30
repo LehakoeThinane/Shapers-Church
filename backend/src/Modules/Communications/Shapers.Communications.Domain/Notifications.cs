@@ -230,7 +230,7 @@ public sealed class Delivery
 public sealed class Notification : AggregateRoot<Guid>
 {
     public const int MaxTitle = 120;
-    public const int MaxBody = 500;
+    public const int MaxBody = 2000;
 
     private readonly List<Delivery> _deliveries = [];
 

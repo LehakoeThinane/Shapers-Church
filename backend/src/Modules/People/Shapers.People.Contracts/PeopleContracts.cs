@@ -56,6 +56,9 @@ public interface IPeopleDirectory
     /// <summary>Everyone who shares a household with this person, excluding them.</summary>
     Task<IReadOnlyList<HouseholdMemberSummary>> GetHouseholdMembersAsync(Guid personId, CancellationToken cancellationToken = default);
 
+    /// <summary>Active people whose record is in this scope or below it, e.g. everyone at a campus.</summary>
+    Task<IReadOnlyList<PersonSummary>> InScopeAsync(string scope, CancellationToken cancellationToken = default);
+
     /// <summary>Which of these people currently consent to a purpose (their latest decision is "yes").</summary>
     Task<IReadOnlySet<Guid>> WithConsentAsync(IReadOnlyCollection<Guid> personIds, string purpose, CancellationToken cancellationToken = default);
 }

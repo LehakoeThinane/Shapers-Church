@@ -80,6 +80,21 @@ public sealed class PeopleDirectory(IPeopleDb db, TimeProvider clock) : IPeopleD
         return latest.Where(c => c.Granted).Select(c => c.PersonId).ToHashSet();
     }
 
+    public async Task<IReadOnlyList<PersonSummary>> InScopeAsync(string scope, CancellationToken cancellationToken = default)
+    {
+        var below = LikePattern.Escape(scope) + ".%";
+        return await db.Persons.AsNoTracking()
+            .Where(p => p.Status == PersonStatus.Active && (p.Scope == scope || EF.Functions.Like(p.Scope, below)))
+            .Select(p => new PersonSummary(
+                p.Id,
+                (p.PreferredName ?? p.FirstName) + " " + p.LastName,
+                p.Scope,
+                p.Status.ToString(),
+                p.MergedIntoId,
+                p.Contacts.Where(c => c.Type == ContactType.Email).OrderByDescending(c => c.IsPrimary).Select(c => c.Value).FirstOrDefault()))
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyDictionary<Guid, PersonSummary>> GetManyAsync(IReadOnlyCollection<Guid> personIds, CancellationToken cancellationToken = default) =>
         await db.Persons.AsNoTracking()
             .Where(p => personIds.Contains(p.Id))

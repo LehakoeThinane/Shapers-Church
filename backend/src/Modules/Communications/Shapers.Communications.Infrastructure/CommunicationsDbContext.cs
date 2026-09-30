@@ -17,6 +17,8 @@ public sealed class CommunicationsDbContext(DbContextOptions<CommunicationsDbCon
 
     public DbSet<Notification> Notifications => Set<Notification>();
 
+    public DbSet<Announcement> Announcements => Set<Announcement>();
+
     Task<int> ICommunicationsDb.SaveChangesAsync(CancellationToken cancellationToken) => SaveChangesAsync(cancellationToken);
 
     protected override void ConfigureModel(ModelBuilder modelBuilder)
@@ -40,6 +42,23 @@ public sealed class CommunicationsDbContext(DbContextOptions<CommunicationsDbCon
             b.HasKey(p => new { p.PersonId, p.Topic, p.Channel });
             b.Property(p => p.Topic).HasConversion<string>().HasMaxLength(20);
             b.Property(p => p.Channel).HasConversion<string>().HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<Announcement>(b =>
+        {
+            b.ToTable("announcements");
+            b.Property(a => a.Id).ValueGeneratedNever();
+            b.Property(a => a.Title).HasMaxLength(Announcement.MaxTitle);
+            b.Property(a => a.Body).HasMaxLength(Announcement.MaxBody);
+            b.Property(a => a.Link).HasMaxLength(300);
+            b.Property(a => a.Scope).HasMaxLength(512);
+            b.Property(a => a.ReturnNote).HasMaxLength(500);
+            b.Property(a => a.Status).HasConversion<string>().HasMaxLength(20);
+            b.Ignore(a => a.NeedsApproval);
+            b.Ignore(a => a.SourceKey);
+            b.HasIndex(a => a.Status);
+            b.HasIndex(a => a.Scope).HasOperators("text_pattern_ops");
+            b.Property<uint>("xmin").IsRowVersion();
         });
 
         modelBuilder.Entity<Notification>(b =>

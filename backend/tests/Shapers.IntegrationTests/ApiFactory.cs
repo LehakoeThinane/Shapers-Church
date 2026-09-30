@@ -60,6 +60,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Auth:Security:RequireMfaForSensitivePermissions", RequireMfa ? "true" : "false");
         builder.UseSetting("Security:HashKey", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));
         builder.UseSetting("RateLimits:AuthPerMinute", "10000");
+        builder.UseSetting("Communications:QuietHours", "false");
+        builder.UseSetting("Communications:PublicApiUrl", "https://api.test");
         builder.UseSetting("Media:Storage:LocalPath", _mediaPath);
         builder.ConfigureServices(services =>
         {

@@ -75,9 +75,9 @@ public sealed class NotificationRulesTests
     }
 
     [Fact]
-    public void Long_text_is_shortened_to_fit_a_lock_screen()
+    public void Long_text_is_shortened_to_fit_the_inbox()
     {
-        var n = Notification.Create(Guid.NewGuid(), Topic.Sermons, new string('t', 200), new string('b', 800), null, "k", false, [], DateTimeOffset.UtcNow);
+        var n = Notification.Create(Guid.NewGuid(), Topic.Sermons, new string('t', 200), new string('b', 2500), null, "k", false, [], DateTimeOffset.UtcNow);
         Assert.Equal(Notification.MaxTitle, n.Title.Length);
         Assert.Equal(Notification.MaxBody, n.Body.Length);
         Assert.EndsWith("…", n.Body, StringComparison.Ordinal);

@@ -8,6 +8,7 @@
     <ProjectReference Include="../../Media/Shapers.Media.Contracts/Shapers.Media.Contracts.csproj" />
     <ProjectReference Include="../../Events/Shapers.Events.Contracts/Shapers.Events.Contracts.csproj" />
     <ProjectReference Include="../../Prayer/Shapers.Prayer.Contracts/Shapers.Prayer.Contracts.csproj" />
+    <ProjectReference Include="../../Communications/Shapers.Communications.Contracts/Shapers.Communications.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Shapers.Identity.Tests" />

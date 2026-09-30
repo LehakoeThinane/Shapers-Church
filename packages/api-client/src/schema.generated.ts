@@ -1940,6 +1940,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListAnnouncements"];
+        put?: never;
+        post: operations["CreateAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetAnnouncement"];
+        put: operations["UpdateAnnouncement"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SubmitAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ApproveAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReturnAnnouncementToDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/announcements/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelAnnouncement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1976,6 +2072,33 @@ export interface components {
                 [key: string]: string;
             };
         };
+        AnnouncementDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            body: string;
+            link: null | string;
+            scope: string;
+            sendEmail: boolean;
+            /** Format: date-time */
+            sendAt: null | string;
+            status: components["schemas"]["AnnouncementStatus"];
+            needsApproval: boolean;
+            createdByMe: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            approvedAt: null | string;
+            returnNote: null | string;
+            /** Format: date-time */
+            sentAt: null | string;
+            audience: null | components["schemas"]["AudienceDto"];
+            delivered: null | components["schemas"]["DeliveryCountsDto"];
+        };
+        /** @enum {unknown} */
+        AnnouncementStatus: "Draft" | "AwaitingApproval" | "Queued" | "Sent" | "Cancelled";
         AnswerRequest: {
             note: null | string;
         };
@@ -2010,6 +2133,14 @@ export interface components {
             answers: {
                 [key: string]: string;
             };
+        };
+        AudienceDto: {
+            /** Format: int32 */
+            people: number;
+            /** Format: int32 */
+            withApp: number;
+            /** Format: int32 */
+            byEmail: number;
         };
         AudioDto: {
             /** Format: uuid */
@@ -2215,6 +2346,16 @@ export interface components {
             order: number;
             /** Format: date-time */
             shownAt: null | string;
+        };
+        DeliveryCountsDto: {
+            /** Format: int32 */
+            inbox: number;
+            /** Format: int32 */
+            pushed: number;
+            /** Format: int32 */
+            emailed: number;
+            /** Format: int32 */
+            failed: number;
         };
         DeliveryLogDto: {
             /** Format: uuid */
@@ -2766,6 +2907,9 @@ export interface components {
             expiresAt: string;
             maskedPhone: string;
         };
+        ReturnAnnouncementRequest: {
+            note: null | string;
+        };
         ReviewRequest: {
             wallText: null | string;
             note: null | string;
@@ -2777,6 +2921,15 @@ export interface components {
             description: null | string;
             isSystem: boolean;
             permissions: string[];
+        };
+        SaveAnnouncementRequest: {
+            title: string;
+            body: string;
+            link: null | string;
+            scope: string;
+            sendEmail: boolean;
+            /** Format: date-time */
+            sendAt: null | string;
         };
         SaveEventRequest: {
             title: string;
@@ -6263,6 +6416,190 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    ListAnnouncements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"][];
+                };
+            };
+        };
+    };
+    CreateAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAnnouncementRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    GetAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    UpdateAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAnnouncementRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    SubmitAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    ApproveAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    ReturnAnnouncementToDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReturnAnnouncementRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    CancelAnnouncement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnouncementDto"];
+                };
             };
         };
     };
