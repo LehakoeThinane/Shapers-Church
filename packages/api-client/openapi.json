@@ -5174,6 +5174,26 @@
         }
       }
     },
+    "/api/admin/content/import-wordpress": {
+      "post": {
+        "tags": [
+          "Content admin"
+        ],
+        "operationId": "ImportWordPress",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/content/pages": {
       "get": {
         "tags": [
@@ -7726,6 +7746,35 @@
           "Adult",
           "Child"
         ]
+      },
+      "ImportResult": {
+        "required": [
+          "postsImported",
+          "pagesImported",
+          "alreadyImported",
+          "skipped"
+        ],
+        "type": "object",
+        "properties": {
+          "postsImported": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pagesImported": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alreadyImported": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "skipped": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "ImportResultDto": {
         "required": [

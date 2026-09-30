@@ -50,8 +50,41 @@ export function ContentPage() {
           </Button>
         ))}
       </div>
+      {tab === 'pages' && can(access, Permissions.contentPublish) && <ImportCard />}
       {tab === 'pages' ? <PagesList /> : <PostsList kind={tab} />}
     </>
+  );
+}
+
+/** One-off: bring the old WordPress site's articles and pages across. Safe to run again. */
+function ImportCard() {
+  const queryClient = useQueryClient();
+  const run = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/content/import-wordpress')),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['content'] }),
+  });
+  const result = run.data;
+  return (
+    <Card title="Bring content across from the old website">
+      <div className="stack">
+        <p className="small muted">
+          Copies the blog articles (published, with their original dates) and the pages (as drafts, so you can check details like the address
+          before publishing). Old addresses redirect to the new ones. Running it again only adds anything new.
+        </p>
+        <ErrorNote error={run.error} />
+        {result && (
+          <p className="small">
+            Imported {result.postsImported} articles and {result.pagesImported} pages
+            {result.alreadyImported > 0 && `; ${result.alreadyImported} were already here`}. Review the new drafts below.
+          </p>
+        )}
+        <div>
+          <Button busy={run.isPending} onClick={() => run.mutate()}>
+            Import from shaperschurch.com
+          </Button>
+        </div>
+      </div>
+    </Card>
   );
 }
 

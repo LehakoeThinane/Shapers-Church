@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Shapers.Communications.Application;
+using Shapers.Content.Application;
 using Shapers.Identity.Application;
 using Shapers.Media.Application;
 using Shapers.Platform.Email;
@@ -68,6 +69,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.AddSingleton<ISmsSender>(Sms);
             services.AddSingleton<IEmailSender>(Email);
             services.AddSingleton<IPushSender>(Push);
+            services.AddSingleton<IWordPressSource, FakeWordPress>();
             services.AddSingleton<IYouTubeClient, FakeYouTubeClient>();
         });
     }

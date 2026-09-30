@@ -77,6 +77,14 @@ public static class ContentInfrastructure
         services.AddSingleton<IPermissionProvider, ContentPermissionProvider>();
         services.Configure<SiteRebuildOptions>(configuration.GetSection(SiteRebuildOptions.SectionName));
         services.AddHttpClient("site-rebuild", c => c.Timeout = TimeSpan.FromSeconds(15));
+        services.Configure<WordPressOptions>(configuration.GetSection(WordPressOptions.SectionName));
+        services.AddHttpClient<IWordPressSource, WordPressHttpSource>((sp, c) =>
+        {
+            var site = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<WordPressOptions>>().Value.SiteUrl;
+            c.BaseAddress = new Uri(site.TrimEnd('/') + "/");
+            c.Timeout = TimeSpan.FromSeconds(60);
+        });
+        services.AddScoped<WordPressImporter>();
 
         services.AddScoped<ContentAdminService>();
         services.AddScoped<PublicContentService>();

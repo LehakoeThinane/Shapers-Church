@@ -2324,6 +2324,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/content/import-wordpress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImportWordPress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/content/pages": {
         parameters: {
             query?: never;
@@ -3046,6 +3062,15 @@ export interface components {
         };
         /** @enum {unknown} */
         HouseholdRole: "Adult" | "Child";
+        ImportResult: {
+            /** Format: int32 */
+            postsImported: number;
+            /** Format: int32 */
+            pagesImported: number;
+            /** Format: int32 */
+            alreadyImported: number;
+            skipped: string[];
+        };
         ImportResultDto: {
             /** Format: int32 */
             found: number;
@@ -7715,6 +7740,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RedirectDto"][];
+                };
+            };
+        };
+    };
+    ImportWordPress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResult"];
                 };
             };
         };

@@ -39,6 +39,10 @@ public sealed class ContentModule : IModule
 
         var admin = endpoints.MapGroup("/api/admin/content").WithTags("Content admin").RequireAuthorization();
 
+        admin.MapPost("/import-wordpress", (WordPressImporter importer, CancellationToken ct) => importer.ImportAsync(ct))
+            .WithName("ImportWordPress")
+            .RequirePermission(ContentPermissions.Publish);
+
         var pages = admin.MapGroup("/pages");
         pages.MapGet("/", (ContentAdminService s, CancellationToken ct) => s.PagesAsync(ct)).WithName("AdminListPages").RequirePermission(ContentPermissions.Edit);
         pages.MapGet("/{id:guid}", async (Guid id, ContentAdminService s, CancellationToken ct) => (await s.PageAsync(id, ct)).ToHttp())
