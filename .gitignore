@@ -38,3 +38,8 @@ android/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Firebase and Apple push config for app builds: supplied through EAS environment variables, never committed
+google-services.json
+GoogleService-Info.plist
+*-firebase-adminsdk-*.json

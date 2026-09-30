@@ -13,6 +13,7 @@
     "lint": "pnpm -r lint && pnpm check:colours",
     "test": "pnpm -r test",
     "admin": "pnpm --filter @shapers/admin dev",
-    "mobile": "pnpm --filter @shapers/mobile start"
+    "mobile": "pnpm --filter @shapers/mobile start",
+    "mobile:go": "pnpm --filter @shapers/mobile start:go"
   }
 }
