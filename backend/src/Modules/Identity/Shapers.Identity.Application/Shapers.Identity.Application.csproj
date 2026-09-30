@@ -10,6 +10,7 @@
     <ProjectReference Include="../../Prayer/Shapers.Prayer.Contracts/Shapers.Prayer.Contracts.csproj" />
     <ProjectReference Include="../../Communications/Shapers.Communications.Contracts/Shapers.Communications.Contracts.csproj" />
     <ProjectReference Include="../../Privacy/Shapers.Privacy.Contracts/Shapers.Privacy.Contracts.csproj" />
+    <ProjectReference Include="../../Content/Shapers.Content.Contracts/Shapers.Content.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Shapers.Identity.Tests" />

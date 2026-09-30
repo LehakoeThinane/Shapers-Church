@@ -8,6 +8,7 @@ using Shapers.Identity.Domain;
 using Shapers.Events.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Communications.Contracts;
+using Shapers.Content.Contracts;
 using Shapers.Prayer.Contracts;
 using Shapers.Privacy.Contracts;
 using Shapers.People.Contracts;
@@ -27,6 +28,7 @@ public static class SystemRoles
     public const string DoorVolunteer = "Door volunteer";
     public const string PrayerTeam = "Prayer team";
     public const string InformationOfficer = "Information Officer";
+    public const string ContentTeam = "Content team";
 
     /// <summary>Built-in roles. The church administrator always holds every permission in the catalogue.</summary>
     public static IReadOnlyDictionary<string, (string Description, IReadOnlyList<string> Permissions)> Definitions(PermissionCatalog catalog) =>
@@ -54,6 +56,7 @@ public static class SystemRoles
                 EventsPermissions.Edit, EventsPermissions.Publish, EventsPermissions.RegistrationsView, EventsPermissions.RegistrationsManage, EventsPermissions.CheckIn,
             ]),
             [DoorVolunteer] = ("Checks people in at events. Sees names only.", [EventsPermissions.CheckIn]),
+            [ContentTeam] = ("Writes and publishes the website pages, news and blog.", [ContentPermissions.Edit, ContentPermissions.Publish]),
             [InformationOfficer] = ("POPIA: handles correction and deletion requests and checks who read sensitive records.",
             [
                 PrivacyPermissions.RequestsManage, PrivacyPermissions.BreachesManage, PlatformPermissions.AuditView,
