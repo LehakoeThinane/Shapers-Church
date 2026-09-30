@@ -94,7 +94,7 @@ jobs:
       - name: Build admin portal
         run: pnpm --filter @shapers/admin build
 
-      - name: Build website (without the API: checks it compiles)
+      - name: Build website without the API (checks it compiles)
         run: pnpm --filter @shapers/web build
         env:
           ALLOW_OFFLINE_BUILD: 1
