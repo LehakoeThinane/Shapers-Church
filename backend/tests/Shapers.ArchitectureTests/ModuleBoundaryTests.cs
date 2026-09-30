@@ -9,7 +9,7 @@ namespace Shapers.ArchitectureTests;
 /// </summary>
 public sealed class ModuleBoundaryTests
 {
-    private static readonly string[] ModuleNames = ["Identity", "People", "Church", "Media", "Events"];
+    private static readonly string[] ModuleNames = ["Identity", "People", "Church", "Media", "Events", "Prayer"];
 
     public static readonly TheoryData<string> Modules = new(ModuleNames);
 

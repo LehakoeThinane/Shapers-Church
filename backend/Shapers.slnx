@@ -15,6 +15,13 @@
     <Project Path="src/Modules/Church/Shapers.Church.Domain/Shapers.Church.Domain.csproj" />
     <Project Path="src/Modules/Church/Shapers.Church.Infrastructure/Shapers.Church.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Prayer/">
+    <Project Path="src/Modules/Prayer/Shapers.Prayer.Api/Shapers.Prayer.Api.csproj" />
+    <Project Path="src/Modules/Prayer/Shapers.Prayer.Application/Shapers.Prayer.Application.csproj" />
+    <Project Path="src/Modules/Prayer/Shapers.Prayer.Contracts/Shapers.Prayer.Contracts.csproj" />
+    <Project Path="src/Modules/Prayer/Shapers.Prayer.Domain/Shapers.Prayer.Domain.csproj" />
+    <Project Path="src/Modules/Prayer/Shapers.Prayer.Infrastructure/Shapers.Prayer.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Events/">
     <Project Path="src/Modules/Events/Shapers.Events.Api/Shapers.Events.Api.csproj" />
     <Project Path="src/Modules/Events/Shapers.Events.Application/Shapers.Events.Application.csproj" />
@@ -50,6 +57,7 @@
   </Folder>
   <Folder Name="/tests/Modules/">
     <Project Path="tests/Modules/Shapers.Events.Tests/Shapers.Events.Tests.csproj" />
+    <Project Path="tests/Modules/Shapers.Prayer.Tests/Shapers.Prayer.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Identity.Tests/Shapers.Identity.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Media.Tests/Shapers.Media.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.People.Tests/Shapers.People.Tests.csproj" />

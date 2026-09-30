@@ -1652,6 +1652,182 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/prayer/wall": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PrayerWall"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prayer/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SubmitPrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prayer/requests/{id}/prayed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["IPrayed"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/prayer-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyPrayerRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/prayer-requests/{id}/answered": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkPrayerAnswered"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/prayer-requests/{id}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WithdrawPrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PrayerReviewQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPrayerRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ApprovePrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/{id}/keep-with-pastors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["KeepPrayerWithPastors"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/prayer/{id}/take-down": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TakeDownPrayerRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1687,6 +1863,9 @@ export interface components {
             answers: null | {
                 [key: string]: string;
             };
+        };
+        AnswerRequest: {
+            note: null | string;
         };
         AssetDto: {
             /** Format: uuid */
@@ -2158,6 +2337,25 @@ export interface components {
             palette: string;
             permissions: components["schemas"]["PermissionScopesDto"][];
         };
+        MyPrayerRequestDto: {
+            /** Format: uuid */
+            id: string;
+            text: string;
+            wallText: null | string;
+            visibility: components["schemas"]["PrayerVisibility"];
+            anonymous: boolean;
+            status: components["schemas"]["PrayerStatus"];
+            reviewNote: null | string;
+            /** Format: int32 */
+            prayedCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            wallUntil: null | string;
+            /** Format: date-time */
+            answeredAt: null | string;
+            answerNote: null | string;
+        };
         OrganisationDto: {
             /** Format: uuid */
             id: string;
@@ -2278,6 +2476,49 @@ export interface components {
             /** Format: int32 */
             positionSeconds: number;
         };
+        PrayerAdminDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            personName: string;
+            text: string;
+            wallText: null | string;
+            visibility: components["schemas"]["PrayerVisibility"];
+            anonymous: boolean;
+            status: components["schemas"]["PrayerStatus"];
+            source: components["schemas"]["PrayerSource"];
+            scope: string;
+            /** Format: int32 */
+            prayedCount: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            reviewedAt: null | string;
+            reviewNote: null | string;
+            /** Format: date-time */
+            answeredAt: null | string;
+            answerNote: null | string;
+        };
+        /** @enum {unknown} */
+        PrayerSource: "App" | "ConnectCard";
+        /** @enum {unknown} */
+        PrayerStatus: "AwaitingReview" | "OnWall" | "WithPastors" | "Closed";
+        /** @enum {unknown} */
+        PrayerVisibility: "Wall" | "PastorsOnly";
+        PrayerWallItemDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            text: string;
+            /** Format: date-time */
+            sharedAt: string;
+            /** Format: int32 */
+            prayedCount: number;
+            iPrayed: boolean;
+            isMine: boolean;
+            answered: boolean;
+        };
         PreferencesRequest: {
             palette: string;
         };
@@ -2364,6 +2605,10 @@ export interface components {
             /** Format: date-time */
             expiresAt: string;
             maskedPhone: string;
+        };
+        ReviewRequest: {
+            wallText: null | string;
+            note: null | string;
         };
         RoleDto: {
             /** Format: uuid */
@@ -2623,6 +2868,12 @@ export interface components {
             effectiveDate: string;
             /** Format: date-time */
             recordedAt: string;
+        };
+        SubmitPrayerRequest: {
+            text: string;
+            shareOnWall: boolean;
+            anonymous: boolean;
+            consent: boolean;
         };
         TicketDto: {
             /** Format: uuid */
@@ -5423,6 +5674,258 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TicketDto"][];
+                };
+            };
+        };
+    };
+    PrayerWall: {
+        parameters: {
+            query?: {
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerWallItemDto"][];
+                };
+            };
+        };
+    };
+    SubmitPrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitPrayerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"];
+                };
+            };
+        };
+    };
+    IPrayed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                };
+            };
+        };
+    };
+    MyPrayerRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"][];
+                };
+            };
+        };
+    };
+    MarkPrayerAnswered: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"];
+                };
+            };
+        };
+    };
+    WithdrawPrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPrayerRequestDto"];
+                };
+            };
+        };
+    };
+    PrayerReviewQueue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"][];
+                };
+            };
+        };
+    };
+    ListPrayerRequests: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PrayerStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"][];
+                };
+            };
+        };
+    };
+    ApprovePrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"];
+                };
+            };
+        };
+    };
+    KeepPrayerWithPastors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"];
+                };
+            };
+        };
+    };
+    TakeDownPrayerRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerAdminDto"];
                 };
             };
         };
