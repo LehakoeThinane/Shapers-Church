@@ -48,4 +48,6 @@ export const Permissions = {
   eventsCheckIn: 'events.checkin',
   prayerView: 'prayer.requests.view',
   prayerModerate: 'prayer.requests.moderate',
+  announcementsSend: 'communications.announcements.send',
+  announcementsApprove: 'communications.announcements.approve',
 } as const;

@@ -14,3 +14,4 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0008](0008-popia-audit-and-consent.md) | Append-only audit log and consent records | Accepted |
 | [0009](0009-hosting-region.md) | Host in Azure South Africa North | Accepted |
 | [0010](0010-event-registration.md) | Event registration: seat locking, guest email codes and tickets | Accepted |
+| [0011](0011-communications.md) | One Communications module for every message | Accepted |
