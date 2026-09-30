@@ -52,4 +52,6 @@ export const Permissions = {
   announcementsApprove: 'communications.announcements.approve',
   privacyRequests: 'privacy.requests.manage',
   privacyBreaches: 'privacy.breaches.manage',
+  contentEdit: 'content.edit',
+  contentPublish: 'content.publish',
 } as const;

@@ -75,6 +75,7 @@ function Navigator() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="sermon/[slug]" options={{ headerShown: true, headerTransparent: true, headerTitle: '', headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="series/[slug]" options={{ headerShown: true, headerTransparent: true, headerTitle: '', headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="post/[slug]" options={{ headerShown: true, headerTransparent: true, headerTitle: '', headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="event/[slug]" options={{ headerShown: true, headerTransparent: true, headerTitle: '', headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="inbox" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="prayer" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
