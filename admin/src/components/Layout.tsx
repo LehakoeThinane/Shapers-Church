@@ -2,30 +2,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
 import type { PalettePreference } from '@shapers/tokens';
 import { api } from '../lib/api';
-import { can, Permissions, useAccess } from '../lib/access';
+import { useAccess } from '../lib/access';
 import { usePalette } from '../lib/palette-context';
+import { allowed, productFor, productGroups } from '../lib/products';
 import { scopeLabel, useScope } from '../lib/scope-context';
 import { Button, Loading, Select } from './ui';
-
-// An item shows when the user holds any of its permissions.
-const nav: { to: string; label: string; permission: string | readonly string[] | null }[] = [
-  { to: '/people', label: 'People', permission: Permissions.peopleView },
-  { to: '/events', label: 'Events', permission: [Permissions.eventsEdit, Permissions.eventsCheckIn] },
-  { to: '/content', label: 'Content', permission: [Permissions.contentEdit, Permissions.contentPublish] },
-  { to: '/announcements', label: 'Announcements', permission: [Permissions.announcementsSend, Permissions.announcementsApprove] },
-  { to: '/prayer', label: 'Prayer', permission: [Permissions.prayerView, Permissions.prayerModerate] },
-  { to: '/connect', label: 'Connect cards', permission: Permissions.peopleView },
-  { to: '/duplicates', label: 'Duplicates', permission: Permissions.peopleMerge },
-  { to: '/sermons', label: 'Sermons', permission: Permissions.mediaEdit },
-  { to: '/livestreams', label: 'Livestream', permission: Permissions.livestreamManage },
-  { to: '/chat', label: 'Live chat', permission: Permissions.chatModerate },
-  { to: '/church', label: 'Campuses & ministries', permission: null },
-  { to: '/access', label: 'Roles & access', permission: Permissions.usersView },
-  { to: '/privacy', label: 'Privacy requests', permission: Permissions.privacyRequests },
-  { to: '/breaches', label: 'Breach register', permission: Permissions.privacyBreaches },
-  { to: '/audit', label: 'Audit log', permission: Permissions.auditView },
-  { to: '/security', label: 'Security', permission: null },
-];
 
 export function Layout() {
   const { data: access, isPending, isError } = useAccess();
@@ -37,6 +18,8 @@ export function Layout() {
 
   if (isPending) return <Loading />;
   if (isError || !access) return <Navigate to={`/login?next=${encodeURIComponent(location.pathname)}`} replace />;
+
+  const current = productFor(location.pathname);
 
   const signOut = async () => {
     await api.POST('/api/auth/staff/logout');
@@ -51,16 +34,45 @@ export function Layout() {
           <span className="brand-mark">Shapers</span>
           <span className="muted small">Church admin</span>
         </div>
-        <nav>
-          {nav
-            .filter((item) => item.permission === null || (typeof item.permission === 'string' ? [item.permission] : item.permission).some((p) => can(access, p)))
-            .map((item) => (
-              <NavLink key={item.to} to={item.to} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-                {item.label}
-              </NavLink>
-            ))}
+        <nav aria-label="Products">
+          <NavLink to="/" end className={({ isActive }) => `nav-link nav-home${isActive ? ' active' : ''}`}>
+            Home
+          </NavLink>
+          {productGroups.map((group) => {
+            const products = group.products.filter((p) => p.status === 'live' && allowed(access, p.permission));
+            if (products.length === 0) return null;
+            return (
+              <div key={group.title} className="nav-group">
+                <span className="nav-group-title">{group.title}</span>
+                {products.map((p) => {
+                  const isCurrent = current?.key === p.key;
+                  const links = (p.links ?? []).filter((l) => allowed(access, l.permission === undefined ? p.permission : l.permission));
+                  return (
+                    <div key={p.key}>
+                      <NavLink to={p.to!} className={`nav-link nav-product${isCurrent ? ' active' : ''}`}>
+                        <span className="nav-icon">{p.icon}</span>
+                        {p.name}
+                      </NavLink>
+                      {isCurrent && links.length > 1 && (
+                        <div className="nav-sub">
+                          {links.map((l) => (
+                            <NavLink key={l.to} to={l.to} end={l.to === p.to} className={({ isActive }) => `nav-link nav-sub-link${isActive ? ' active' : ''}`}>
+                              {l.label}
+                            </NavLink>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
         </nav>
         <div className="sidebar-footer">
+          <NavLink to="/security" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+            My security
+          </NavLink>
           <label className="field">
             <span className="field-label">Palette</span>
             <Select value={preference} onChange={(e) => setPreference(e.target.value as PalettePreference)}>

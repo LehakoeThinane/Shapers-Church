@@ -22,6 +22,7 @@ import { ContentPage, PageEditorPage, PostEditorPage } from './pages/ContentPage
 import { AnnouncementEditorPage, AnnouncementsPage } from './pages/AnnouncementPages';
 import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
 import { ChatConsolePage, ChatStreamsPage } from './pages/ChatModerationPage';
+import { HomePage } from './pages/HomePage';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -45,7 +46,7 @@ const router = createBrowserRouter([
       </ScopeProvider>
     ),
     children: [
-      { index: true, element: <Navigate to="/people" replace /> },
+      { index: true, element: <HomePage /> },
       { path: 'people', element: <PeoplePage /> },
       { path: 'people/new', element: <NewPersonPage /> },
       { path: 'people/:id', element: <PersonPage /> },
@@ -79,7 +80,7 @@ const router = createBrowserRouter([
       { path: 'access', element: <RolesPage /> },
       { path: 'audit', element: <AuditPage /> },
       { path: 'security', element: <SecurityPage /> },
-      { path: '*', element: <Navigate to="/people" replace /> },
+      { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
 ]);
