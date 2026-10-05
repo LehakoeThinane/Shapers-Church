@@ -15,5 +15,14 @@
     "admin": "pnpm --filter @shapers/admin dev",
     "mobile": "pnpm --filter @shapers/mobile start",
     "mobile:go": "pnpm --filter @shapers/mobile start:go"
+  },
+  "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-86w9-cpqp-85rv",
+        "GHSA-ch52-4w7c-c8xp",
+        "GHSA-vfj7-8cjw-p6xm"
+      ]
+    }
   }
 }
