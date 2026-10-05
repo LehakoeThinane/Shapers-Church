@@ -3,8 +3,15 @@ import { ApiError, createCookieClient, unwrap, type Schemas } from '@shapers/api
 export { ApiError, unwrap };
 export type { Schemas };
 
+/**
+ * Where the API lives. Empty in development (the Vite dev server proxies /api). In production the portal is at
+ * admin.shaperschurch.com and the API at api.shaperschurch.com: the same site, so the session cookie still works.
+ */
+export const apiBaseUrl = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+
 /** Session-cookie client. A 401 anywhere outside sign-in means the session ended: go to the sign-in page. */
 export const api = createCookieClient({
+  baseUrl: apiBaseUrl,
   onUnauthorized: () => {
     const { pathname, search } = window.location;
     if (!pathname.startsWith('/login') && !pathname.startsWith('/set-password')) {

@@ -107,14 +107,11 @@ cd web
 $env:API_URL = "http://127.0.0.1:5080"; pnpm dev      # http://localhost:4321
 ```
 
-Deployment (Azure Static Web Apps behind Cloudflare, see ADR 0009):
+The **Website** workflow builds from the live API and deploys every hour, whenever website code changes on `main`, and within minutes of new content being published.
 
-1. Create an Azure Static Web App (Free or Standard plan) with **Other** as the build preset and no GitHub link. Copy its deployment token.
-2. In GitHub → Settings → Secrets and variables → Actions, add the secret `AZURE_STATIC_WEB_APPS_API_TOKEN` and the variable `WEBSITE_API_URL` (the public API address, e.g. `https://api.shaperschurch.com`).
-3. Add the website's address to the API's `Cors:Origins` so browsers may call it.
-4. Point `shaperschurch.com` at the Static Web App in Cloudflare once you're ready to switch over from WordPress.
+## Production
 
-The **Website** workflow then builds from the live API and deploys every hour, whenever website code changes on `main`, and within minutes of new content being published. For that last one, set `Content:SiteRebuild:Url` to `https://api.github.com/repos/LehakoeThinane/Shapers-Church/dispatches` and `Content:SiteRebuild:Token` to a fine-grained GitHub token with *Contents: read and write* on this repository (in Key Vault, never in the repo).
+Everything runs in Azure South Africa North, defined in `infra/azure/main.bicep` and deployed with `infra/azure/deploy.ps1`. After that, merges to `main` deploy automatically once CI passes. The full guide (first deployment, DNS records, rollback, backups, costs and the go-live checklist) is in [docs/deployment.md](docs/deployment.md). The decisions behind it are in [ADR 0015](docs/decisions/0015-production-deployment.md).
 
 ## Everyday commands
 

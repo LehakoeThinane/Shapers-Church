@@ -76,8 +76,16 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
 
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
 {
-    // Behind Cloudflare / Azure the client IP arrives in X-Forwarded-For. Trusted proxies are configured per environment.
+    // Behind Cloudflare / Azure the client IP arrives in X-Forwarded-For. By default only a proxy on this machine
+    // is trusted. In Azure Container Apps the platform's ingress is the only way in, so its headers are trusted
+    // (ForwardedHeaders:TrustPlatformProxy); otherwise every visitor would share one IP for rate limits and audit.
     o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    if (builder.Configuration.GetValue("ForwardedHeaders:TrustPlatformProxy", false))
+    {
+        o.KnownIPNetworks.Clear();
+        o.KnownProxies.Clear();
+        o.ForwardLimit = 1;
+    }
 });
 
 builder.Services.AddOpenTelemetry()

@@ -1,0 +1,60 @@
+name: Deploy admin portal
+
+# After CI passes on main: build the admin portal against the live API and upload it to Azure Static Web Apps
+# (admin.shaperschurch.com). Until the token and API address exist, it builds but doesn't deploy.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-admin
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and deploy
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CONFIGURED: ${{ secrets.AZURE_STATIC_WEB_APPS_ADMIN_TOKEN != '' && vars.API_URL != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm --filter @shapers/admin build
+        env:
+          VITE_API_URL: ${{ vars.API_URL }}
+
+      - name: Not configured yet
+        if: env.CONFIGURED != 'true'
+        run: echo "Set the API_URL variable and the AZURE_STATIC_WEB_APPS_ADMIN_TOKEN secret to deploy. See docs/deployment.md."
+
+      - name: Deploy to Azure Static Web Apps
+        if: env.CONFIGURED == 'true'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_ADMIN_TOKEN }}
+          action: upload
+          app_location: admin/dist
+          skip_app_build: true
+          skip_api_build: true
