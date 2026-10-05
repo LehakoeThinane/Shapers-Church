@@ -219,6 +219,18 @@ resource mediaContainer 'Microsoft.Storage/storageAccounts/blobServices/containe
   properties: { publicAccess: 'Blob' }
 }
 
+// The keys that protect staff sign-in cookies, kept across restarts and deployments.
+resource files 'Microsoft.Storage/storageAccounts/fileServices@2023-05-01' = {
+  parent: storage
+  name: 'default'
+}
+
+resource keysShare 'Microsoft.Storage/storageAccounts/fileServices/shares@2023-05-01' = {
+  parent: files
+  name: 'api-keys'
+  properties: { shareQuota: 1 }
+}
+
 // ---------- Email ----------
 
 resource emailService 'Microsoft.Communication/emailServices@2023-04-01' = {
@@ -381,6 +393,19 @@ resource appsEnvironment 'Microsoft.App/managedEnvironments@2024-10-02-preview' 
   }
 }
 
+resource keysStorage 'Microsoft.App/managedEnvironments/storages@2024-10-02-preview' = {
+  parent: appsEnvironment
+  name: 'api-keys'
+  properties: {
+    azureFile: {
+      accountName: storage.name
+      accountKey: storage.listKeys().keys[0].value
+      shareName: keysShare.name
+      accessMode: 'ReadWrite'
+    }
+  }
+}
+
 var secretRefs = [for secretName in secretNames: {
   name: secretName
   keyVaultUrl: 'https://${vault.name}${environment().suffixes.keyvaultDns}/secrets/${secretName}'
@@ -399,6 +424,7 @@ var baseEnv = [
   { name: 'Media__Storage__ConnectionString', secretRef: 'storage-connection-string' }
   { name: 'Email__ConnectionString', secretRef: 'email-connection-string' }
   { name: 'Email__From', value: emailFrom }
+  { name: 'DataProtection__KeysPath', value: '/app/App_Data/keys' }
 ]
 var optionalEnv = concat(
   empty(youTubeApiKey) ? [] : [{ name: 'Media__YouTube__ApiKey', secretRef: 'youtube-api-key' }],
@@ -434,6 +460,7 @@ resource api 'Microsoft.App/containerApps@2025-01-01' = if (deployApi) {
           image: apiImage
           resources: { cpu: json('0.5'), memory: '1Gi' }
           env: concat(baseEnv, optionalEnv)
+          volumeMounts: [{ volumeName: 'api-keys', mountPath: '/app/App_Data/keys' }]
           probes: [
             // Migrations run on start, so the first start gets a few minutes.
             { type: 'Startup', httpGet: { path: '/health/live', port: 8080 }, periodSeconds: 10, failureThreshold: 30 }
@@ -442,6 +469,7 @@ resource api 'Microsoft.App/containerApps@2025-01-01' = if (deployApi) {
           ]
         }
       ]
+      volumes: [{ name: 'api-keys', storageType: 'AzureFile', storageName: keysStorage.name }]
       // One always-on copy: background jobs and live chat must keep running, and live chat has no
       // backplane yet for more than one copy (see docs/deployment.md before raising maxReplicas).
       scale: { minReplicas: 1, maxReplicas: 1 }

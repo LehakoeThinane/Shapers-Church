@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -87,6 +88,15 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
         o.ForwardLimit = 1;
     }
 });
+
+// The keys that protect staff sign-in cookies and set-password links. Without a folder they live in memory, so
+// every restart would sign staff out; servers set DataProtection:KeysPath to a persistent folder.
+var dataProtection = builder.Services.AddDataProtection().SetApplicationName("shapers");
+var keysPath = builder.Configuration["DataProtection:KeysPath"];
+if (!string.IsNullOrWhiteSpace(keysPath))
+{
+    dataProtection.PersistKeysToFileSystem(new DirectoryInfo(keysPath));
+}
 
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(r => r.AddService("shapers-api"))
