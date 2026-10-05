@@ -63,13 +63,23 @@ public static class IdentityInfrastructure
             await db.RefreshTokens.Where(t => t.ExpiresAt < now.AddDays(-30)).ExecuteDeleteAsync(ct);
         }));
 
+        // "Log" writes codes to the console (development and tests only). "Disabled" is for a deployment without
+        // an SMS provider yet: member SMS sign-in answers with a clear message. Anything else is a mistake, and
+        // must never fall back to logging codes.
         var smsProvider = configuration["Sms:Provider"] ?? "Log";
-        if (smsProvider == "Log" && !environment.IsDevelopment() && !environment.IsEnvironment("Testing"))
+        switch (smsProvider)
         {
-            throw new InvalidOperationException("Sms:Provider 'Log' is for development only. Configure a real SMS provider.");
+            case "Log" when environment.IsDevelopment() || environment.IsEnvironment("Testing"):
+                services.AddScoped<ISmsSender, LoggingSmsSender>();
+                break;
+            case "Log":
+                throw new InvalidOperationException("Sms:Provider 'Log' is for development only. Configure a real SMS provider, or 'Disabled'.");
+            case "Disabled":
+                services.AddScoped<ISmsSender, DisabledSmsSender>();
+                break;
+            default:
+                throw new InvalidOperationException($"Sms:Provider '{smsProvider}' is not supported. Use 'Disabled' until a provider is added.");
         }
-
-        services.AddScoped<ISmsSender, LoggingSmsSender>();
 
         services
             .AddIdentityCore<User>(o =>
