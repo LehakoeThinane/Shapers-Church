@@ -1,0 +1,110 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { church } from '../lib/church';
+
+// The church's statement of belief, as published on the previous website.
+const beliefs = [
+  { text: 'We believe in God the Father, the Son (Jesus) and the Holy Spirit.', ref: 'Matthew 28:19' },
+  { text: 'We believe that Jesus died for our sins, that He rose from the dead and sits at the right hand of the Father, advocating for us.', ref: 'Romans 8:34' },
+  { text: 'We believe in speaking in tongues when the Holy Spirit comes upon you.', ref: 'Acts 19:6' },
+  { text: 'We believe in fasting as Jesus did, to grow closer to God as we withhold bread.', ref: 'Matthew 6:17' },
+  { text: 'We believe in full-immersion water baptism, just as John the Baptist facilitated for Jesus.', ref: 'John 1:33' },
+  { text: 'We believe in the God of the miraculous and the God of the principles of Christ.', ref: 'Matthew 19:26' },
+  { text: 'We believe that we are made in the image of God, both man and woman.', ref: 'Genesis 1:27' },
+  { text: 'We believe in praying in the name of Jesus only, and in no other name.', ref: 'John 15:16' },
+  { text: 'We believe that the church is the bride of Jesus Christ and is critical for our growth, journey and fellowship.', ref: null },
+  { text: 'We believe in tithing and offering as a critical part of Christian life.', ref: 'Malachi 3:10' },
+  { text: 'We believe in the responsibility God gave mankind to be fruitful and have dominion.', ref: 'Genesis 1:26' },
+];
+---
+
+<Base title="About us" description="Shapers Church was founded in 2011 by Pastor Israel and Pastor Nana Phiri to build productive people for the kingdom of God.">
+  <PageHeader
+    eyebrow="About us"
+    title="Building productive people"
+    accent="for the kingdom of God."
+    intro={`Founded in Johannesburg in ${church.founded}, Shapers Church helps people discover their purpose in God and live fulfilled lives by serving their generation.`}
+  />
+
+  <section class="band band-paper">
+    <div class="wrap split">
+      <div class="portrait">
+        <img src="/images/pastor-israel-phiri.jpg" alt="Pastor Israel Phiri" width="554" height="832" />
+        <p class="portrait-caption muted"><strong>Pastor Israel Phiri</strong>, co-founder and Senior Pastor</p>
+      </div>
+      <div class="prose">
+        <span class="eyebrow">Our senior pastor</span>
+        <h2>Pastor Israel <span class="serif">Phiri</span></h2>
+        <p>
+          Pastor Israel Phiri is the co-founder and Senior Pastor of Shapers Church. He and his wife, Pastor Nana Phiri, founded Shapers Church
+          {` in ${church.founded} `}in Johannesburg, South Africa.
+        </p>
+        <p>
+          Pastor Israel received his call into ministry in 2002 and began to serve under Bishop Tudor Bismark at New Life Covenant Church, where
+          Bishop Bismark personally trained, mentored and ordained him for the work of the ministry.
+        </p>
+        <p>
+          He is passionate about people discovering and walking in their God-ordained purposes, and living fulfilled lives through serving their
+          generation. He sees leadership as the key to unlocking potential in individuals, families, churches, businesses and nations.
+        </p>
+        <p>
+          A dynamic teacher of the Word, he strongly believes in prophetic prayer, strategic thinking and relentless action as catalysts of
+          success. His ministry will challenge and stretch you to grow in every area of life: spiritual, family, academic, intellectual, financial,
+          business and career.
+        </p>
+        <p>Pastor Israel and Pastor Nana have two children, Bokang and Ikaneng, and live in Johannesburg.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-dark band-glow">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Our mission</span>
+          <h2>Purpose. Pursuit. <span class="serif">Partner. Produce.</span></h2>
+          <p class="lead">
+            We are a church called to build productive people for the kingdom of God: people who know their purpose, pursue God, serve in His
+            church and bear fruit in the church and the marketplace.
+          </p>
+        </div>
+        <a class="button" href="/growth-track">Start the Growth Track</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-paper" id="beliefs">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">What we believe</span>
+          <h2>Our statement <span class="serif">of faith.</span></h2>
+        </div>
+      </div>
+      <ol class="beliefs">
+        {
+          beliefs.map((b) => (
+            <li>
+              <div>
+                {b.text}
+                {b.ref && <cite>{b.ref}</cite>}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band-dark band-glow cta">
+    <div class="wrap">
+      <h2>Come and see. <span class="serif">You belong here.</span></h2>
+      <p class="lead">{church.sunday.day} at {church.sunday.time} · {church.address}</p>
+      <div class="row">
+        <a class="button" href="/contact#visit">Plan your visit</a>
+        <a class="button ghost" href="/sermons">Watch a message</a>
+      </div>
+    </div>
+  </section>
+</Base>

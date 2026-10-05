@@ -1,15 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
 ---
 
 <Base title="Page not found">
-  <section class="section">
-    <h1>We couldn&apos;t find that page</h1>
-    <p class="muted">It may have moved when we updated our website.</p>
-    <div class="row">
+  <PageHeader eyebrow="404" title="We couldn't find" accent="that page." intro="It may have moved when we updated our website.">
+    <div class="row" style="margin-top: 2rem">
       <a class="button" href="/">Home</a>
-      <a class="button secondary" href="/sermons">Sermons</a>
-      <a class="button secondary" href="/events">Events</a>
+      <a class="button ghost" href="/sermons">Sermons</a>
+      <a class="button ghost" href="/contact">Contact us</a>
     </div>
-  </section>
+  </PageHeader>
 </Base>

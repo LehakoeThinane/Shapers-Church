@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Share from '../../components/Share.astro';
 import { get, type Schemas } from '../../lib/api';
 import { dayAndTime, renderMarkdown, time } from '../../lib/format';
 
@@ -13,31 +14,62 @@ const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURICom
 ---
 
 <Base title={e.title} description={e.summary ?? undefined} image={e.imageUrl}>
-  <article class="section">
-    {e.imageUrl && <img src={e.imageUrl} alt="" style="border-radius: var(--radius-xl); aspect-ratio: 16/9; object-fit: cover" />}
-    <div>
-      <span class="label">{dayAndTime(e.startsAt)} – {time(e.endsAt)}</span>
-      <h1>{e.title}</h1>
-      {
-        e.location && (
-          <p class="muted">
-            {e.location.name}
-            {e.location.address && (
-              <>
-                {', '}
-                {mapLink ? <a href={mapLink} rel="noopener" target="_blank">{e.location.address}</a> : e.location.address}
-              </>
-            )}
-          </p>
-        )
-      }
+  <section class="band band-dark band-glow detail-hero">
+    <div class="wrap">
+      <a class="back-link" href="/events">All events</a>
+      <div class:list={['event-head', { 'has-image': e.imageUrl }]}>
+        <div>
+          <span class="eyebrow">Event</span>
+          <h1>{e.title}</h1>
+          {e.summary && <p class="lead">{e.summary}</p>}
+          <ul class="chips chips-large">
+            <li>{dayAndTime(e.startsAt)} – {time(e.endsAt)}</li>
+            {
+              e.location && (
+                <li>
+                  {mapLink ? (
+                    <a href={mapLink} rel="noopener" target="_blank">
+                      {e.location.name} ↗
+                    </a>
+                  ) : (
+                    e.location.name
+                  )}
+                </li>
+              )
+            }
+          </ul>
+          <div class="row" style="margin-top: 1.5rem">
+            {e.registrationRequired && <a class="button" href="#booking">Book your place</a>}
+            <button
+              class="button ghost"
+              type="button"
+              id="add-to-calendar"
+              data-title={e.title}
+              data-start={e.startsAt}
+              data-end={e.endsAt}
+              data-location={[e.location?.name, e.location?.address].filter(Boolean).join(', ')}
+              data-url={new URL(`/events/${e.slug}`, Astro.site).toString()}
+            >
+              Add to calendar
+            </button>
+          </div>
+        </div>
+        {e.imageUrl && <img class="event-image" src={e.imageUrl} alt="" />}
+      </div>
     </div>
-    {e.summary && <p class="prose">{e.summary}</p>}
-    {e.description && <div class="prose" set:html={renderMarkdown(e.description)} />}
+  </section>
 
+  <section class="band band-raised">
+    <div class="wrap detail-layout">
+      <div class="detail-main">
+        {e.description ? <div class="prose" set:html={renderMarkdown(e.description)} /> : <p class="lead">{e.summary ?? 'More details soon.'}</p>}
+        <div style="margin-top: 2rem">
+          <Share title={e.title} path={`/events/${e.slug}`} />
+        </div>
+      </div>
     {
       e.registrationRequired && (
-        <section class="glass stack" id="booking" data-slug={e.slug} data-max={e.maxPerRegistration} data-questions={JSON.stringify(e.questions)}>
+        <section class="glass stack detail-side" id="booking" data-slug={e.slug} data-max={e.maxPerRegistration} data-questions={JSON.stringify(e.questions)}>
           <h2>Book your place</h2>
           <p class="muted" id="seats" aria-live="polite">Checking availability…</p>
 
@@ -83,12 +115,43 @@ const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURICom
         </section>
       )
     }
-  </article>
+    </div>
+  </section>
 </Base>
 
 <script>
   import { getJson, post } from '../../scripts/live';
   import type { Schemas } from '@shapers/api-client';
+
+  // "Add to calendar" downloads a standard .ics file, which every phone and calendar app can open.
+  const calendar = document.getElementById('add-to-calendar') as HTMLButtonElement | null;
+  calendar?.addEventListener('click', () => {
+    const d = calendar.dataset;
+    const stamp = (iso: string) => new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const text = (value: string) => value.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Shapers Church//Website//EN',
+      'BEGIN:VEVENT',
+      `UID:${stamp(d.start!)}-${encodeURIComponent(d.title!)}@shaperschurch.com`,
+      `DTSTAMP:${stamp(new Date().toISOString())}`,
+      `DTSTART:${stamp(d.start!)}`,
+      `DTEND:${stamp(d.end!)}`,
+      `SUMMARY:${text(d.title!)}`,
+      d.location ? `LOCATION:${text(d.location)}` : '',
+      `URL:${d.url}`,
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ]
+      .filter(Boolean)
+      .join('\r\n');
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    link.download = 'shapers-church-event.ics';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
 
   const box = document.getElementById('booking');
   if (box) {

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
 ---
 
 <!--
@@ -8,10 +9,11 @@ import Base from '../../layouts/Base.astro';
   The key is never sent anywhere except our API.
 -->
 <Base title="Your booking" description="Your Shapers Church event booking." noindex>
+  <PageHeader eyebrow="Your booking" title="Your booking" titleId="title">
+    <p class="lead" id="status" aria-live="polite">Loading your booking…</p>
+  </PageHeader>
   <section class="section" id="ticket-page">
-    <h1 id="title">Your booking</h1>
-    <p class="muted" id="status" aria-live="polite">Loading your booking…</p>
-    <div class="grid" id="tickets"></div>
+    <div class="tickets" id="tickets"></div>
     <div class="row">
       <button class="button secondary" id="cancel" hidden>Cancel my booking</button>
     </div>

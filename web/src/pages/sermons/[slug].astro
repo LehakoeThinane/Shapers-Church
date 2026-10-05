@@ -1,56 +1,130 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import Share from '../../components/Share.astro';
 import { get, getAll, type Schemas } from '../../lib/api';
-import { longDate, renderMarkdown } from '../../lib/format';
+import { longDate, minutes, renderMarkdown } from '../../lib/format';
 
 export async function getStaticPaths() {
   const sermons = await getAll<Schemas['SermonSummaryDto']>('/api/media/sermons');
-  return sermons.map((s) => ({ params: { slug: s.slug } }));
+  return sermons.map((s) => ({ params: { slug: s.slug }, props: { all: sermons } }));
 }
 
 const { slug } = Astro.params;
+const { all } = Astro.props as { all: Schemas['SermonSummaryDto'][] };
 const sermon = await get<Schemas['SermonDetailDto'] | null>(`/api/media/sermons/${slug}`, null);
 if (!sermon) return Astro.redirect('/sermons');
 const video = sermon.video;
+const speakers = sermon.speakers.map((s) => s.name).join(', ');
+// Other messages from the same series first, then the most recent ones.
+const more = [
+  ...all.filter((s) => s.slug !== slug && sermon.series && s.seriesSlug === sermon.series.slug),
+  ...all.filter((s) => s.slug !== slug && (!sermon.series || s.seriesSlug !== sermon.series.slug)),
+].slice(0, 3);
 ---
 
-<Base title={sermon.title} description={sermon.summary ?? `A sermon by ${sermon.speakers.map((s) => s.name).join(', ')}.`} image={video?.thumbnailUrl}>
-  <article class="section">
-    <div>
-      {sermon.series && <span class="label">{sermon.series.title}</span>}
+<Base title={sermon.title} description={sermon.summary ?? `A sermon by ${speakers}.`} image={video?.thumbnailUrl}>
+  <section class="band band-dark band-glow detail-hero">
+    <div class="wrap">
+      <a class="back-link" href="/sermons">All sermons</a>
+      {sermon.series && <span class="eyebrow">{sermon.series.title}</span>}
       <h1>{sermon.title}</h1>
-      <p class="muted">
-        {sermon.speakers.map((s) => s.name).join(', ')} · {longDate(sermon.preachedOn)}
-        {sermon.scripture.length > 0 && ` · ${sermon.scripture.map((s) => s.display).join('; ')}`}
+      <p class="detail-meta">
+        <span>{speakers}</span>
+        <span>{longDate(sermon.preachedOn)}</span>
+        {sermon.audio?.durationSeconds && <span>{minutes(sermon.audio.durationSeconds)}</span>}
       </p>
+
+      <div class="detail-layout">
+        <div class="detail-main">
+          {
+            video ? (
+              <div class="video video-glow">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${video.externalId}`}
+                  title={sermon.title}
+                  loading="lazy"
+                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                />
+              </div>
+            ) : (
+              <Cover title={sermon.title} kicker="Message" />
+            )
+          }
+        </div>
+
+        <aside class="detail-side">
+          {
+            sermon.audio && (
+              <div class="glass stack">
+                <span class="label">Listen</span>
+                <audio controls preload="none" src={sermon.audio.url} style="width: 100%" />
+                <span class="small muted">Audio uses far less data than video.</span>
+              </div>
+            )
+          }
+          {
+            sermon.scripture.length > 0 && (
+              <div class="glass stack">
+                <span class="label">Scripture</span>
+                <ul class="chips">
+                  {sermon.scripture.map((s) => (
+                    <li>{s.display}</li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+          {
+            sermon.notesPdfUrl && (
+              <div class="glass stack">
+                <span class="label">Notes</span>
+                <a class="button ghost small" href={sermon.notesPdfUrl}>Download the notes (PDF)</a>
+              </div>
+            )
+          }
+          <div class="glass">
+            <Share title={sermon.title} path={`/sermons/${sermon.slug}`} />
+          </div>
+        </aside>
+      </div>
     </div>
+  </section>
 
-    {
-      video && (
-        <div class="video">
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${video.externalId}`}
-            title={sermon.title}
-            loading="lazy"
-            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          />
+  {
+    (sermon.summary || sermon.notes) && (
+      <section class="band band-paper">
+        <div class="wrap prose-wrap">
+          <span class="eyebrow">About this message</span>
+          {sermon.summary && <p class="lead">{sermon.summary}</p>}
+          {sermon.notes && <div class="prose" set:html={renderMarkdown(sermon.notes)} />}
         </div>
-      )
-    }
+      </section>
+    )
+  }
 
-    {
-      sermon.audio && (
-        <div class="glass stack">
-          <strong>Listen</strong>
-          <audio controls preload="none" src={sermon.audio.url} style="width: 100%" />
-          <span class="small muted">Audio uses much less data than video.</span>
+  {
+    more.length > 0 && (
+      <section class="band band-raised">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Keep listening</h2>
+            <a class="arrow-link" href="/sermons">All sermons</a>
+          </div>
+          <div class="grid three">
+            {more.map((s) => (
+              <a class="card" href={`/sermons/${s.slug}`}>
+                <Cover src={s.thumbnailUrl} title={s.title} kicker={s.seriesTitle ?? 'Message'} />
+                <strong>{s.title}</strong>
+                <span class="muted">
+                  {s.speakers.join(', ')} · {longDate(s.preachedOn)}
+                </span>
+              </a>
+            ))}
+          </div>
         </div>
-      )
-    }
-
-    {sermon.summary && <p class="prose">{sermon.summary}</p>}
-    {sermon.notes && <div class="prose" set:html={renderMarkdown(sermon.notes)} />}
-    {sermon.notesPdfUrl && <a class="button secondary" href={sermon.notesPdfUrl}>Download the notes (PDF)</a>}
-  </article>
+      </section>
+    )
+  }
 </Base>

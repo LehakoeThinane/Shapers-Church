@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { church } from '../lib/church';
+---
+
+<Base title="Give" description="Give your tithes and offerings to Shapers Church by EFT, by card or in person.">
+  <PageHeader
+    eyebrow="Give"
+    title="Generosity builds"
+    accent="productive people."
+    intro="Thank you for giving. Your tithes and offerings fund our services, the Growth Track, outreach and the work of the church in Rivonia and beyond."
+  />
+
+  <section class="band band-raised">
+    <div class="wrap">
+      <div class="ways">
+        <div class="way">
+          <span class="label">Online</span>
+          <h3>Give by card</h3>
+          <p class="muted">Pay securely with your bank card through Yoco. Add a note to say whether it is your tithe or an offering.</p>
+          <a class="button" href={church.giving.cardUrl} rel="noopener" target="_blank">Give by card</a>
+        </div>
+        <div class="way">
+          <span class="label">Bank transfer</span>
+          <h3>Give by EFT</h3>
+          <p class="muted">Use the banking details below. Put your name and “Tithe” or “Offering” as the reference.</p>
+          <a class="button ghost" href="#eft">Banking details</a>
+        </div>
+        <div class="way">
+          <span class="label">In person</span>
+          <h3>On a Sunday</h3>
+          <p class="muted">Give during the service at {church.shortAddress}, every {church.sunday.day.replace(/s$/, '')} at {church.sunday.time}.</p>
+          <a class="button ghost" href={church.mapsUrl} rel="noopener" target="_blank">Get directions</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-dark band-glow" id="eft">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Banking details</span>
+        <h2>Give by <span class="serif">EFT.</span></h2>
+        <p class="lead">
+          Shapers Church is a Section 18A-approved public benefit organisation. If you need a tax certificate for your giving, email{' '}
+          <a href={`mailto:${church.email}?subject=Section%2018A%20certificate`}>{church.email}</a>.
+        </p>
+        <p class="quote">“Bring ye all the tithes into the storehouse.” Malachi 3:10 (KJV)</p>
+      </div>
+      <div class="give-panel">
+        <dl class="bank">
+          <dt>Bank</dt>
+          <dd>{church.giving.bank}</dd>
+          <dt>Account name</dt>
+          <dd>{church.giving.accountName}</dd>
+          <dt>Account number</dt>
+          <dd>{church.giving.accountNumber}</dd>
+          <dt>Branch code</dt>
+          <dd>{church.giving.branchCode}</dd>
+          <dt>SWIFT code</dt>
+          <dd>{church.giving.swift}</dd>
+          <dt>Reference</dt>
+          <dd>Your name + Tithe or Offering</dd>
+        </dl>
+        <button class="button small ghost" type="button" id="copy" data-copy={church.giving.accountNumber.replace(/\s/g, '')}>Copy account number</button>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const button = document.getElementById('copy') as HTMLButtonElement | null;
+  button?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(button.dataset.copy ?? '');
+      button.textContent = 'Copied';
+    } catch {
+      button.textContent = 'Copy it from the details above';
+    }
+  });
+</script>

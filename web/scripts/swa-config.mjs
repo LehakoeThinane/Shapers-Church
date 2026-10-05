@@ -18,6 +18,18 @@ try {
   if (!offlineAllowed) throw new Error(`Couldn't read redirects from ${apiUrl}: ${error}`);
 }
 
+// The old site's main pages now live at purpose-built pages; these win over anything the API lists.
+const sitePages = [
+  { from: '/about-us', to: '/about' },
+  { from: '/shapers-growth-track', to: '/growth-track' },
+  { from: '/contact-us', to: '/contact' },
+  { from: '/giving', to: '/give' },
+  { from: '/shapers-blog', to: '/blog' },
+];
+const normalise = (path) => path.replace(/\/$/, '') || '/';
+const fixed = new Set(sitePages.map((r) => r.from));
+redirects = [...sitePages, ...redirects.filter((r) => !fixed.has(normalise(r.from)))];
+
 // Astro may inline small scripts; hash them so the policy can allow exactly those and nothing else.
 const inlineHashes = new Set();
 const { createHash } = await import('node:crypto');
@@ -58,6 +70,8 @@ const config = {
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    // A preview copy (e.g. on the temporary azurestaticapps.net address) stays out of search results.
+    ...(process.env.PREVIEW === '1' ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
   },
   mimeTypes: { '.json': 'application/json' },
 };

@@ -1,0 +1,23 @@
+---
+// The Shapers cube and wordmark, drawn as SVG so it stays sharp at any size and takes the current text colour.
+interface Props {
+  /** "stacked" puts the wordmark under the cube, as on the church's printed material. */
+  layout?: 'inline' | 'stacked';
+  class?: string;
+}
+
+const { layout = 'inline', class: className } = Astro.props;
+---
+
+<span class:list={['logo', `logo-${layout}`, className]}>
+  <svg class="logo-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <g fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M79 21.5 50 7 12 26v48l38 19 38-19V26L50 45 12 26" />
+      <path d="M50 56v37" />
+    </g>
+  </svg>
+  <span class="logo-word">
+    <span class="logo-name">Shapers</span>
+    <span class="logo-sub">Church</span>
+  </span>
+</span>

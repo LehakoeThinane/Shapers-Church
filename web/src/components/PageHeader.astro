@@ -1,0 +1,29 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  /** Optional words set in the serif italic after the title. */
+  accent?: string;
+  intro?: string;
+  image?: string;
+  /** For pages whose script fills in the title once it has loaded. */
+  titleId?: string;
+}
+
+const { eyebrow, title, accent, intro, image, titleId } = Astro.props;
+---
+
+<header class:list={['page-header', 'band', 'band-dark', { 'has-image': image }]}>
+  <div class="wrap page-header-inner">
+    <div class="page-header-text">
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h1 id={titleId}>
+        {title}
+        {accent && <span class="serif"> {accent}</span>}
+      </h1>
+      {intro && <p class="lead">{intro}</p>}
+      <slot />
+    </div>
+    {image && <img class="page-header-image" src={image} alt="" />}
+  </div>
+</header>

@@ -1,0 +1,29 @@
+---
+// A card's picture. When a post or sermon has no image, a branded cover takes its place, so cards never show
+// an empty grey box. The title sits under the cover on the card, so the cover itself only carries the cube.
+interface Props {
+  src?: string | null;
+  title: string;
+  kicker?: string;
+}
+
+const { src, title, kicker } = Astro.props;
+// Vary the glow from card to card so a row of covers doesn't look identical.
+const hue = [...title].reduce((sum, c) => sum + c.charCodeAt(0), 0) % 4;
+---
+
+{
+  src ? (
+    <img class="cover" src={src} alt="" loading="lazy" />
+  ) : (
+    <div class:list={['cover', 'cover-fallback', `cover-${hue}`]} aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M79 21.5 50 7 12 26v48l38 19 38-19V26L50 45 12 26" />
+          <path d="M50 56v37" />
+        </g>
+      </svg>
+      {kicker && <span>{kicker}</span>}
+    </div>
+  )
+}

@@ -1,14 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
 ---
 
 <Base title="Watch live" description="Watch Shapers Church services online.">
+  <PageHeader eyebrow="Watch live" title="Church," accent="wherever you are.">
+    <p class="lead" id="state" aria-live="polite">Checking whether we're live…</p>
+  </PageHeader>
   <section class="section">
-    <h1>Watch live</h1>
-    <p class="muted" id="state" aria-live="polite">Checking whether we're live…</p>
     <div class="video" id="player" hidden></div>
     <div class="row" id="actions" hidden>
-      <a class="button" id="give" href="/giving">Give</a>
+      <a class="button" id="give" href="/give">Give</a>
       <a class="button secondary" href="/connect">Connect with us</a>
     </div>
     <section class="chat" id="chat" hidden aria-labelledby="chat-heading">

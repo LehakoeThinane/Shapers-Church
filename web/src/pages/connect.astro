@@ -1,11 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
 ---
 
 <Base title="Connect" description="New to Shapers Church, or want someone to get in touch? Let us know.">
-  <section class="section">
-    <h1>Connect with us</h1>
-    <p class="muted prose">New here, made a decision to follow Jesus, need prayer or want to get involved? Tell us and someone from the church will be in touch this week.</p>
+  <PageHeader
+    eyebrow="Connect"
+    title="Let's get"
+    accent="connected."
+    intro="New here, made a decision to follow Jesus, need prayer or want to get involved? Tell us and someone from the church will be in touch this week."
+  />
+  <section class="section" style="max-width: 760px">
     <form class="glass stack" id="connect">
       <div class="row">
         <label>First name<input name="firstName" required maxlength="60" autocomplete="given-name" /></label>
@@ -45,6 +50,12 @@ import Base from '../layouts/Base.astro';
 
   const form = document.getElementById('connect') as HTMLFormElement;
   const error = document.getElementById('error')!;
+
+  // Links from the Growth Track page ask to enrol.
+  if (new URLSearchParams(location.search).get('interest') === 'growth-track') {
+    form.querySelector<HTMLInputElement>('input[name="reason"][value="MoreInfo"]')!.checked = true;
+    form.querySelector<HTMLTextAreaElement>('textarea[name="message"]')!.value = "I'd like to join the next Shapers Growth Track.";
+  }
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     error.textContent = '';
