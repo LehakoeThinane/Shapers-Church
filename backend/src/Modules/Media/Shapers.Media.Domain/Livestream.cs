@@ -54,7 +54,37 @@ public sealed class Livestream : AggregateRoot<Guid>
 
     public DateTimeOffset UpdatedAt { get; private set; }
 
+    /// <summary>Slow mode: how long each person waits between chat messages.</summary>
+    public int ChatSlowSeconds { get; private set; } = ChatRules.DefaultSlowSeconds;
+
+    /// <summary>When on, every member's message waits for a moderator before anyone sees it.</summary>
+    public bool ChatApprovalRequired { get; private set; }
+
     public IReadOnlyList<ScriptureCue> Cues => _cues;
+
+    /// <summary>
+    /// Chat opens 15 minutes before the scheduled start and closes 30 minutes after the service ends. A service
+    /// nobody marked live stops taking messages three hours after its start time.
+    /// </summary>
+    public bool IsChatOpen(DateTimeOffset now) => Status switch
+    {
+        LivestreamStatus.Live => true,
+        LivestreamStatus.Scheduled => now >= ScheduledStart - ChatRules.OpensBeforeStart && now <= ScheduledStart + ChatRules.UnstartedLimit,
+        LivestreamStatus.Ended => EndedAt is { } ended && now <= ended + ChatRules.ClosesAfterEnd,
+        _ => false,
+    };
+
+    public void SetChatRules(int slowSeconds, bool approvalRequired, DateTimeOffset now)
+    {
+        if (slowSeconds < ChatRules.DefaultSlowSeconds || slowSeconds > ChatRules.MaxSlowSeconds)
+        {
+            throw new DomainRuleException("media.chat_slow_mode", $"Slow mode can be between {ChatRules.DefaultSlowSeconds} and {ChatRules.MaxSlowSeconds} seconds.");
+        }
+
+        ChatSlowSeconds = slowSeconds;
+        ChatApprovalRequired = approvalRequired;
+        UpdatedAt = now;
+    }
 
     public ScriptureCue? CurrentCue => _cues.SingleOrDefault(c => c.Id == CurrentCueId);
 

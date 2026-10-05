@@ -120,6 +120,16 @@ internal sealed partial class LoggingSmsSender(ILogger<LoggingSmsSender> logger)
     private static partial void LogSms(ILogger logger, string phone, string message);
 }
 
+/// <summary>
+/// For a deployment that has no SMS provider yet: the API runs, staff sign in as usual, and members asking
+/// for an SMS code are told it isn't available instead of the code going anywhere.
+/// </summary>
+internal sealed class DisabledSmsSender : ISmsSender
+{
+    public Task SendAsync(string phoneE164, string message, CancellationToken cancellationToken) =>
+        throw new DomainRuleException("identity.sms_unavailable", "Signing in with a code by SMS isn't available yet. Please try again soon.");
+}
+
 /// <summary>Adds the person link to cookie sessions, matching the claims in mobile access tokens.</summary>
 internal sealed class ShapersClaimsPrincipalFactory(UserManager<User> users, IOptions<IdentityOptions> options)
     : UserClaimsPrincipalFactory<User>(users, options)

@@ -16,4 +16,7 @@ public interface IUserDirectory
 
     /// <summary>Which of these people already have a login.</summary>
     Task<IReadOnlySet<Guid>> PeopleWithUsersAsync(IReadOnlyCollection<Guid> personIds, CancellationToken cancellationToken = default);
+
+    /// <summary>People whose current grants give them <paramref name="permission"/> over <paramref name="scope"/>, e.g. to alert them.</summary>
+    Task<IReadOnlyList<Guid>> PeopleWithPermissionAsync(string permission, string scope, CancellationToken cancellationToken = default);
 }

@@ -12,9 +12,10 @@ See [docs/overview.md](docs/overview.md) for the vision, modules and roadmap, an
 
 | Path | What |
 |---|---|
-| `backend/` | ASP.NET Core (.NET 10) modular monolith: `src/Modules/{Church,People,Identity}`, shared `BuildingBlocks`, and the `Host/Shapers.Api` composition root |
+| `backend/` | ASP.NET Core (.NET 10) modular monolith: one folder per module in `src/Modules`, shared `BuildingBlocks`, and the `Host/Shapers.Api` composition root |
 | `admin/` | Admin portal (React + Vite + TypeScript) |
 | `mobile/` | Member app (Expo + Expo Router, native tabs, Liquid Glass) |
+| `web/` | Public website (Astro, static), to replace shaperschurch.com |
 | `packages/tokens` | Midnight and Rose theme tokens, generated from `design/tokens/tokens.json` |
 | `packages/api-client` | Typed API client, generated from the backend's OpenAPI document |
 | `design/` | Mockup (`shapers-glass.html`), token source and brand assets |
@@ -94,6 +95,23 @@ Build and install:
 - `npx eas-cli build --profile development --platform android` builds an APK. Open the link it prints on the phone to install it. Start the dev server with `pnpm mobile` and open the project from the installed app.
 - `npx eas-cli build --profile preview --platform android` builds a stand-alone APK with the app code inside. Use it when the Wi-Fi is too unreliable to load the code from your PC: only the small API calls travel over the network.
 - iPhone builds need an Apple Developer account (paid) and registering the test devices (`npx eas-cli device:create`).
+
+## Public website
+
+The website in `web/` is built from the API ahead of time (sermons, events, blog, pages) and served as static files, so it's fast and cheap. Live status, seats left, guest bookings and tickets are fetched in the visitor's browser.
+
+Locally, with the API running:
+
+```powershell
+cd web
+$env:API_URL = "http://127.0.0.1:5080"; pnpm dev      # http://localhost:4321
+```
+
+The **Website** workflow builds from the live API and deploys every hour, whenever website code changes on `main`, and within minutes of new content being published.
+
+## Production
+
+Everything runs in Azure South Africa North, defined in `infra/azure/main.bicep` and deployed with `infra/azure/deploy.ps1`. After that, merges to `main` deploy automatically once CI passes. The full guide (first deployment, DNS records, rollback, backups, costs and the go-live checklist) is in [docs/deployment.md](docs/deployment.md). The decisions behind it are in [ADR 0015](docs/decisions/0015-production-deployment.md).
 
 ## Everyday commands
 

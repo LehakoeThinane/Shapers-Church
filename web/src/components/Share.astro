@@ -1,0 +1,46 @@
+---
+// Share links for a sermon, post or event. WhatsApp first: it is how most people pass things on here.
+// On phones that support it, "Share" opens the system share sheet instead of the copy-link button.
+interface Props {
+  title: string;
+  path: string;
+}
+
+const { title, path } = Astro.props;
+const url = new URL(path, Astro.site).toString();
+const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`;
+const facebook = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+---
+
+<div class="share" data-share-url={url} data-share-title={title}>
+  <span class="label">Share</span>
+  <div class="share-buttons">
+    <a class="share-button" href={whatsapp} rel="noopener" target="_blank">WhatsApp</a>
+    <a class="share-button" href={facebook} rel="noopener" target="_blank">Facebook</a>
+    <button class="share-button" type="button" data-share-copy>Copy link</button>
+  </div>
+</div>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-share-url]')) {
+    const button = box.querySelector<HTMLButtonElement>('[data-share-copy]')!;
+    const url = box.dataset.shareUrl!;
+    const title = box.dataset.shareTitle!;
+    if (typeof navigator.share === 'function' && matchMedia('(pointer: coarse)').matches) {
+      button.textContent = 'More…';
+    }
+    button.addEventListener('click', async () => {
+      try {
+        if (typeof navigator.share === 'function' && matchMedia('(pointer: coarse)').matches) {
+          await navigator.share({ title, url });
+          return;
+        }
+        await navigator.clipboard.writeText(url);
+        button.textContent = 'Link copied';
+        setTimeout(() => (button.textContent = 'Copy link'), 2000);
+      } catch {
+        // The visitor closed the share sheet, or the clipboard isn't available: nothing to do.
+      }
+    });
+  }
+</script>

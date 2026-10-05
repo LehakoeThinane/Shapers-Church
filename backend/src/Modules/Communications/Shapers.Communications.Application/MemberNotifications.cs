@@ -130,3 +130,37 @@ public sealed class MemberNotifications(ICommunicationsDb db, IPeopleDirectory p
         return Result.Success();
     }
 }
+
+/// <summary>A person's phones, notification settings and inbox, for export and erasure.</summary>
+public sealed class CommunicationsPersonalData(ICommunicationsDb db) : Shapers.Platform.Privacy.IPersonalDataSource
+{
+    public string Name => "Notifications";
+
+    public async Task<object?> ExportAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var phones = await db.Devices.AsNoTracking().Where(d => d.PersonId == personId)
+            .Select(d => new { d.Platform, d.Name, d.RegisteredAt, d.LastSeenAt, d.DisabledAt }).ToListAsync(cancellationToken);
+        var settings = await db.Preferences.AsNoTracking().Where(p => p.PersonId == personId)
+            .Select(p => new { Topic = p.Topic.ToString(), Channel = p.Channel.ToString(), p.Enabled }).ToListAsync(cancellationToken);
+        var inbox = await db.Notifications.AsNoTracking().Where(n => n.PersonId == personId).OrderBy(n => n.CreatedAt)
+            .Select(n => new { n.CreatedAt, Topic = n.Topic.ToString(), n.Title, n.Body, n.ReadAt }).ToListAsync(cancellationToken);
+        return phones.Count + settings.Count + inbox.Count == 0 ? null : new { Phones = phones, Settings = settings, Inbox = inbox };
+    }
+
+    public async Task<int> EraseAsync(Guid personId, CancellationToken cancellationToken) =>
+        await db.Notifications.Where(n => n.PersonId == personId).ExecuteDeleteAsync(cancellationToken)
+        + await db.Preferences.Where(p => p.PersonId == personId).ExecuteDeleteAsync(cancellationToken)
+        + await db.Devices.Where(d => d.PersonId == personId).ExecuteDeleteAsync(cancellationToken);
+}
+
+/// <summary>Nightly: inbox items and their delivery records are deleted after a year.</summary>
+public sealed class NotificationRetentionJob(ICommunicationsDb db, TimeProvider clock)
+{
+    public static readonly TimeSpan Retention = TimeSpan.FromDays(365);
+
+    public Task<int> RunAsync(CancellationToken cancellationToken)
+    {
+        var cutoff = clock.GetUtcNow() - Retention;
+        return db.Notifications.Where(n => n.CreatedAt < cutoff).ExecuteDeleteAsync(cancellationToken);
+    }
+}

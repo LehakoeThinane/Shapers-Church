@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+---
+
+<Base title="Page not found">
+  <PageHeader eyebrow="404" title="We couldn't find" accent="that page." intro="It may have moved when we updated our website.">
+    <div class="row" style="margin-top: 2rem">
+      <a class="button" href="/">Home</a>
+      <a class="button ghost" href="/sermons">Sermons</a>
+      <a class="button ghost" href="/contact">Contact us</a>
+    </div>
+  </PageHeader>
+</Base>

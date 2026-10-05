@@ -13,6 +13,8 @@
     <ProjectReference Include="../../Modules/Media/Shapers.Media.Api/Shapers.Media.Api.csproj" />
     <ProjectReference Include="../../Modules/Events/Shapers.Events.Api/Shapers.Events.Api.csproj" />
     <ProjectReference Include="../../Modules/Prayer/Shapers.Prayer.Api/Shapers.Prayer.Api.csproj" />
+    <ProjectReference Include="../../Modules/Content/Shapers.Content.Api/Shapers.Content.Api.csproj" />
+    <ProjectReference Include="../../Modules/Privacy/Shapers.Privacy.Api/Shapers.Privacy.Api.csproj" />
     <ProjectReference Include="../../Modules/Communications/Shapers.Communications.Api/Shapers.Communications.Api.csproj" />
   </ItemGroup>
   <ItemGroup>

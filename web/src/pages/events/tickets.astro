@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+---
+
+<!--
+  Guests reach this from the link in their confirmation email: /events/tickets/{id}?key=...
+  The hosting rewrites every /events/tickets/* address to this page; the script reads the ID and key.
+  The key is never sent anywhere except our API.
+-->
+<Base title="Your booking" description="Your Shapers Church event booking." noindex>
+  <PageHeader eyebrow="Your booking" title="Your booking" titleId="title">
+    <p class="lead" id="status" aria-live="polite">Loading your booking…</p>
+  </PageHeader>
+  <section class="section" id="ticket-page">
+    <div class="tickets" id="tickets"></div>
+    <div class="row">
+      <button class="button secondary" id="cancel" hidden>Cancel my booking</button>
+    </div>
+    <p class="error" id="error" role="alert"></p>
+  </section>
+</Base>
+
+<script>
+  import QRCode from 'qrcode';
+  import { getJson, post } from '../../scripts/live';
+  import type { Schemas } from '@shapers/api-client';
+
+  const url = new URL(window.location.href);
+  const id = url.pathname.split('/').filter(Boolean)[2] ?? url.searchParams.get('id') ?? '';
+  const key = url.searchParams.get('key') ?? '';
+  const title = document.getElementById('title')!;
+  const status = document.getElementById('status')!;
+  const tickets = document.getElementById('tickets')!;
+  const cancel = document.getElementById('cancel') as HTMLButtonElement;
+  const error = document.getElementById('error')!;
+  const when = (iso: string) =>
+    new Intl.DateTimeFormat('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }).format(new Date(iso));
+
+  async function show() {
+    if (!id || !key) {
+      status.textContent = 'This link is incomplete. Please open it again from your confirmation email.';
+      return;
+    }
+    try {
+      const r = await getJson<Schemas['RegistrationDto']>(`/api/events/registrations/${id}?key=${encodeURIComponent(key)}`);
+      title.textContent = r.eventTitle;
+      status.textContent =
+        r.status === 'Cancelled'
+          ? 'This booking has been cancelled.'
+          : r.status === 'Waitlisted'
+            ? `You're number ${r.waitlistPosition} on the waiting list. We'll email you if a seat opens.`
+            : `${when(r.startsAt)}${r.location ? ` · ${r.location.name}` : ''}. Show these at the door.`;
+      tickets.replaceChildren();
+      if (r.status === 'Confirmed') {
+        for (const t of r.tickets) {
+          const card = document.createElement('div');
+          card.className = 'ticket';
+          const canvas = document.createElement('canvas');
+          await QRCode.toCanvas(canvas, `SHAPERS-T:${t.code}`, { width: 200, margin: 1 });
+          const name = document.createElement('strong');
+          name.textContent = t.name;
+          const code = document.createElement('code');
+          code.textContent = t.checkedInAt ? 'Checked in' : t.code;
+          card.append(canvas, name, code);
+          tickets.append(card);
+        }
+      }
+      cancel.hidden = r.status === 'Cancelled' || r.tickets.some((t) => t.checkedInAt);
+    } catch {
+      status.textContent = "We couldn't find this booking. The link may be wrong, or the booking was removed.";
+    }
+  }
+
+  cancel.addEventListener('click', async () => {
+    if (!confirm('Cancel your booking? Your place will go to the next person waiting.')) return;
+    error.textContent = '';
+    cancel.disabled = true;
+    try {
+      await post(`/api/events/registrations/${id}/cancel?key=${encodeURIComponent(key)}`, {});
+      await show();
+    } catch (e) {
+      error.textContent = (e as Error).message;
+    } finally {
+      cancel.disabled = false;
+    }
+  });
+
+  void show();
+</script>

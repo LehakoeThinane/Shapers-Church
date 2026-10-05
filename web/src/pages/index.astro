@@ -1,0 +1,297 @@
+---
+import Base from '../layouts/Base.astro';
+import Cover from '../components/Cover.astro';
+import { get, type Schemas } from '../lib/api';
+import { church, growthTrack } from '../lib/church';
+import { dayAndTime, longDate } from '../lib/format';
+
+const [sermons, events, posts] = await Promise.all([
+  get<Schemas['PagedResultOfSermonSummaryDto']>('/api/media/sermons?pageSize=4', { items: [], total: 0, page: 1, pageSize: 4 }),
+  get<Schemas['EventDto'][]>('/api/events', []),
+  get<Schemas['PostPageDto']>('/api/content/posts?pageSize=3', { items: [], total: 0, page: 1, pageSize: 3 }),
+]);
+const [latest, ...recent] = sermons.items;
+---
+
+<Base>
+  <section class="hero">
+    <h1 class="visually-hidden">Shapers Church, Rivonia: building productive people for the kingdom of God</h1>
+    <img class="hero-image" src="/images/providence-2026.jpg" alt="The Providence of God: Shapers Church 2026" width="1600" height="900" fetchpriority="high" />
+  </section>
+
+  <section class="times" aria-label="Service times">
+    <div class="wrap times-grid">
+      <div>
+        <span class="label">Sunday service</span>
+        <strong>{church.sunday.day} at {church.sunday.time}</strong>
+        <a class="muted" href={church.mapsUrl} rel="noopener" target="_blank">{church.shortAddress} ↗</a>
+      </div>
+      <div>
+        <span class="label">Midweek</span>
+        <strong>{church.midweek.day} at {church.midweek.time}</strong>
+        <span class="muted">Midweek meeting {church.midweek.where}</span>
+      </div>
+      <div>
+        <span class="label">Online</span>
+        <strong>Watch live or catch up</strong>
+        <span class="muted" id="live-status" aria-live="polite">Every message, any time</span>
+      </div>
+      <div class="times-actions">
+        <a class="button" href="/contact#visit">Plan your visit</a>
+        <a class="button ghost" href="/live" id="live-button">Watch online</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-paper">
+    <div class="wrap split">
+      <div class="portrait">
+        <img src="/images/pastor-israel-phiri.jpg" alt="Pastor Israel Phiri" width="554" height="832" loading="lazy" />
+        <p class="portrait-caption muted"><strong>Pastor Israel Phiri</strong>, Senior Pastor</p>
+      </div>
+      <div>
+        <span class="eyebrow">Shapers Church · Rivonia, Johannesburg</span>
+        <h2>Building productive people <span class="serif">for the kingdom of God.</span></h2>
+        <p class="lead">
+          A church for purpose, spiritual growth and personal development. Pastor Israel and Pastor Nana Phiri founded Shapers Church in Johannesburg in
+          {` ${church.founded} `}to help people discover their God-given purpose and live it out: in their faith, families, careers and communities.
+        </p>
+        <p class="quote">Pastor Israel sees leadership as the key to unlocking potential in individuals, families, churches, businesses and nations.</p>
+        <div class="row">
+          <a class="button dark" href="/about">Our story</a>
+          <a class="button secondary" href="/about#beliefs">What we believe</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-dark band-glow" id="growth-track">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Shapers Growth Track</span>
+          <h2>Your next step <span class="serif">starts here.</span></h2>
+          <p class="lead">
+            Two weeks to help you discover your purpose in God, pursue Him, find your place in the church and become productive in every area of
+            life.
+          </p>
+        </div>
+        <a class="button" href="/growth-track">Join the Growth Track</a>
+      </div>
+      <ol class="steps">
+        {
+          growthTrack.map((s) => (
+            <li>
+              <h3>{s.step}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band-raised">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Messages</span>
+          <h2>Faith comes by hearing.</h2>
+        </div>
+        <a class="arrow-link" href="/sermons">All sermons</a>
+      </div>
+      {
+        latest ? (
+          <>
+            <a class="feature" href={`/sermons/${latest.slug}`}>
+              <Cover src={latest.thumbnailUrl} title={latest.title} kicker="Latest message" />
+              <div class="feature-body">
+                <span class="label">Latest message{latest.seriesTitle && ` · ${latest.seriesTitle}`}</span>
+                <h3>{latest.title}</h3>
+                <p class="muted">
+                  {[latest.speakers.join(', '), longDate(latest.preachedOn), latest.scripture.join('; ')].filter(Boolean).join(' · ')}
+                </p>
+                <span class="play">Watch now</span>
+              </div>
+            </a>
+            {recent.length > 0 && (
+              <div class="grid three">
+                {recent.map((s) => (
+                  <a class="card" href={`/sermons/${s.slug}`}>
+                    <Cover src={s.thumbnailUrl} title={s.title} kicker={s.seriesTitle ?? 'Message'} />
+                    <strong>{s.title}</strong>
+                    <span class="muted">
+                      {s.speakers.join(', ')} · {longDate(s.preachedOn)}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <a class="feature" href="/sermons">
+            <img class="cover" src="/images/numbers-11.jpg" alt="" loading="lazy" />
+            <div class="feature-body">
+              <span class="label">Sermons</span>
+              <h3>Watch and listen to recent messages</h3>
+              <span class="play">Go to sermons</span>
+            </div>
+          </a>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="band band-paper">
+    <div class="wrap">
+      {
+        events.length > 0 && (
+          <div style="margin-bottom: 88px">
+            <div class="section-head">
+              <div>
+                <span class="eyebrow">Coming up</span>
+                <h2>
+                  Be part of it. <span class="serif">Book your seat.</span>
+                </h2>
+              </div>
+              <a class="arrow-link" href="/events">All events</a>
+            </div>
+            <div class="grid three">
+              {events.slice(0, 3).map((e) => (
+                <a class="card" href={`/events/${e.slug}`}>
+                  <Cover src={e.imageUrl} title={e.title} kicker="Event" />
+                  <span class="label">{dayAndTime(e.startsAt)}</span>
+                  <strong>{e.title}</strong>
+                  {e.summary && <span class="muted">{e.summary}</span>}
+                </a>
+              ))}
+            </div>
+          </div>
+        )
+      }
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Coming up &amp; recent highlights</span>
+          <h2>Life at Shapers</h2>
+        </div>
+        <a class="arrow-link" href="/events">All events</a>
+      </div>
+      <div class="posters">
+        <figure class="poster">
+          <img src="/images/water-baptism-2026.jpg" alt="Shapers Church Water Baptism, 25 October 2026" loading="lazy" width="940" height="788" />
+          <figcaption>
+            <span class="label">Coming up · Sunday 25 October 2026</span>
+            <strong>Water Baptism</strong>
+            <span class="muted">Ready to be baptised? <a href="/connect">Let us know</a> and we&apos;ll help you register.</span>
+          </figcaption>
+        </figure>
+        <figure class="poster">
+          <img src="/images/conference-2026.jpg" alt="2026 Shapers Conference poster with Pastor Israel Phiri" loading="lazy" width="960" height="1199" />
+          <figcaption>
+            <span class="label">3–5 September 2026</span>
+            <strong>Shapers Conference 2026</strong>
+            <span class="muted">The servant songs of Isaiah</span>
+          </figcaption>
+        </figure>
+        <figure class="poster">
+          <img src="/images/epa-2026.jpg" alt="Expository Preaching Academy 2026 poster" loading="lazy" width="960" height="960" />
+          <figcaption>
+            <span class="label">22 August 2026</span>
+            <strong>Expository Preaching Academy</strong>
+            <span class="muted">Preaching the Psalms</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-dark band-glow" id="give">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Give</span>
+        <h2>Partner with what God is doing.</h2>
+        <p class="lead">
+          Your tithes and offerings build productive people: they fund our Sunday services, the Growth Track, outreach and the work of the church
+          in Rivonia and beyond.
+        </p>
+        <div class="row">
+          <a class="button" href={church.giving.cardUrl} rel="noopener" target="_blank">Give by card</a>
+          <a class="button ghost" href="/give">More ways to give</a>
+        </div>
+      </div>
+      <div class="give-panel">
+        <span class="label">Give by EFT</span>
+        <dl class="bank" style="margin-top: 18px">
+          <dt>Bank</dt>
+          <dd>{church.giving.bank}</dd>
+          <dt>Account name</dt>
+          <dd>{church.giving.accountName}</dd>
+          <dt>Account number</dt>
+          <dd>{church.giving.accountNumber}</dd>
+          <dt>Branch code</dt>
+          <dd>{church.giving.branchCode}</dd>
+          <dt>Reference</dt>
+          <dd>Your name + Tithe or Offering</dd>
+        </dl>
+        <p class="small muted" style="margin: 0">Shapers Church is a Section 18A-approved public benefit organisation.</p>
+      </div>
+    </div>
+  </section>
+
+  {
+    posts.items.length > 0 && (
+      <section class="band band-paper">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Shapers blog</span>
+              <h2>
+                Let&apos;s grow. <span class="serif">Let&apos;s uplift.</span>
+              </h2>
+            </div>
+            <a class="arrow-link" href="/blog">Read the blog</a>
+          </div>
+          <div class="grid three">
+            {posts.items.map((p) => (
+              <a class="card" href={`/blog/${p.slug}`}>
+                <Cover src={p.coverImageUrl} title={p.title} kicker="Blog" />
+                <span class="label">{longDate(p.publishedAt)}</span>
+                <strong>{p.title}</strong>
+                {p.summary && <span class="muted">{p.summary}</span>}
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="band band-dark band-glow cta">
+    <div class="wrap">
+      <span class="eyebrow">You&apos;re welcome here</span>
+      <h2>Come as you are. <span class="serif">We&apos;d love to meet you.</span></h2>
+      <p class="lead">{church.sunday.day} at {church.sunday.time} · {church.address}</p>
+      <div class="row">
+        <a class="button" href={church.mapsUrl} rel="noopener" target="_blank">Get directions</a>
+        <a class="button ghost" href="/connect">I&apos;m new: say hello</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { liveNow } from '../scripts/live';
+
+  // Whether a service is on right now changes by the minute, so the browser asks the API directly.
+  void liveNow().then((live) => {
+    const status = document.getElementById('live-status');
+    const button = document.getElementById('live-button');
+    if (!status || !button || !live?.stream) return;
+    if (live.state === 'Live') {
+      button.textContent = '● Live now: watch';
+      status.textContent = `${live.stream.title} is streaming now.`;
+    } else if (live.state === 'Upcoming') {
+      status.textContent = `Next online service: ${new Intl.DateTimeFormat('en-ZA', { weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }).format(new Date(live.stream.scheduledStart))}.`;
+    }
+  });
+</script>

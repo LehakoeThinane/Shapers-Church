@@ -56,8 +56,20 @@ public interface IPeopleDirectory
     /// <summary>Everyone who shares a household with this person, excluding them.</summary>
     Task<IReadOnlyList<HouseholdMemberSummary>> GetHouseholdMembersAsync(Guid personId, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Guests who never became more than a name: created from a connect card before the cutoff, with no verified
+    /// contact, household or login-linked record. Retention erases them after 90 days.
+    /// </summary>
+    Task<IReadOnlyList<Guid>> UnverifiedGuestsCreatedBeforeAsync(DateTimeOffset cutoff, CancellationToken cancellationToken = default);
+
+    /// <summary>The privacy-notice version of the person's latest decision on keeping a church record, if any.</summary>
+    Task<string?> ChurchRecordNoticeVersionAsync(Guid personId, CancellationToken cancellationToken = default);
+
     /// <summary>Active people whose record is in this scope or below it, e.g. everyone at a campus.</summary>
     Task<IReadOnlyList<PersonSummary>> InScopeAsync(string scope, CancellationToken cancellationToken = default);
+
+    /// <summary>Under 18 by date of birth, or recorded as a child in a household. Unknown age counts as an adult.</summary>
+    Task<bool> IsMinorAsync(Guid personId, CancellationToken cancellationToken = default);
 
     /// <summary>Which of these people currently consent to a purpose (their latest decision is "yes").</summary>
     Task<IReadOnlySet<Guid>> WithConsentAsync(IReadOnlyCollection<Guid> personIds, string purpose, CancellationToken cancellationToken = default);

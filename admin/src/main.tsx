@@ -16,8 +16,12 @@ import { SermonsPage } from './pages/SermonsPage';
 import { ConnectCardsPage } from './pages/ConnectCardsPage';
 import { CheckInPage, EventAttendeesPage, EventEditorPage, EventsPage } from './pages/EventPages';
 import { PrayerPage } from './pages/PrayerPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { BreachesPage } from './pages/BreachesPage';
+import { ContentPage, PageEditorPage, PostEditorPage } from './pages/ContentPages';
 import { AnnouncementEditorPage, AnnouncementsPage } from './pages/AnnouncementPages';
 import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
+import { ChatConsolePage, ChatStreamsPage } from './pages/ChatModerationPage';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -52,15 +56,24 @@ const router = createBrowserRouter([
       { path: 'sermons/:id', element: <SermonEditorPage /> },
       { path: 'livestreams', element: <LivestreamsPage /> },
       { path: 'livestreams/:id', element: <LivestreamConsolePage /> },
+      { path: 'chat', element: <ChatStreamsPage /> },
+      { path: 'chat/:id', element: <ChatConsolePage /> },
       { path: 'events', element: <EventsPage /> },
       { path: 'events/new', element: <EventEditorPage /> },
       { path: 'events/:id', element: <EventEditorPage /> },
       { path: 'events/:id/attendees', element: <EventAttendeesPage /> },
       { path: 'events/:id/check-in', element: <CheckInPage /> },
+      { path: 'content', element: <ContentPage /> },
+      { path: 'content/pages/new', element: <PageEditorPage /> },
+      { path: 'content/pages/:id', element: <PageEditorPage /> },
+      { path: 'content/posts/new', element: <PostEditorPage /> },
+      { path: 'content/posts/:id', element: <PostEditorPage /> },
       { path: 'announcements', element: <AnnouncementsPage /> },
       { path: 'announcements/new', element: <AnnouncementEditorPage /> },
       { path: 'announcements/:id', element: <AnnouncementEditorPage /> },
       { path: 'prayer', element: <PrayerPage /> },
+      { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'breaches', element: <BreachesPage /> },
       { path: 'connect', element: <ConnectCardsPage /> },
       { path: 'church', element: <ChurchPage /> },
       { path: 'access', element: <RolesPage /> },

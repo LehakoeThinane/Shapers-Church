@@ -58,6 +58,9 @@ internal sealed class AuditLog(
     IHttpContextAccessor httpContextAccessor,
     TimeProvider clock) : IAuditLog
 {
+    /// <summary>Five full years (1827 days covers any two leap days), matching the database rule in the AllowAuditRetention migration.</summary>
+    public static readonly TimeSpan Retention = TimeSpan.FromDays(1827);
+
     public async Task RecordAsync(AuditRecord record, CancellationToken cancellationToken)
     {
         var http = httpContextAccessor.HttpContext;

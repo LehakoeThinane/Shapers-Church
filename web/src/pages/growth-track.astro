@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { church, growthTrack } from '../lib/church';
+---
+
+<Base title="Shapers Growth Track" description="A two-week track to help you discover your purpose in God, pursue Him, partner with the church and produce fruit.">
+  <PageHeader
+    eyebrow="Shapers Growth Track"
+    title="Grow deeper."
+    accent="Become productive."
+    intro="Our two-week Growth Track helps you discover your purpose in God, learn to live in pursuit of Him, partner and serve in our community of believers, and begin to produce fruit both in the church and in the marketplace."
+  >
+    <div class="row" style="margin-top: 2rem">
+      <a class="button" href="/connect?interest=growth-track">Enrol in the Growth Track</a>
+      <a class="button ghost" href="#steps">What we cover</a>
+    </div>
+  </PageHeader>
+
+  <section class="band band-raised" id="steps">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Four steps</span>
+          <h2>What we <span class="serif">teach.</span></h2>
+        </div>
+      </div>
+      <ol class="steps">
+        {
+          growthTrack.map((s) => (
+            <li>
+              <h3>{s.step}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band-paper">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Who it's for</span>
+        <h2>New here, or ready <span class="serif">to go deeper.</span></h2>
+        <p class="lead">
+          The Growth Track is for anyone who calls Shapers home, or wants to: whether you have just given your life to Jesus, are new to the
+          church, or have been around for a while and want to find your place.
+        </p>
+      </div>
+      <div class="info-grid">
+        <div>
+          <h3>Two weeks</h3>
+          <p class="muted">A short, focused track covering the four steps.</p>
+        </div>
+        <div>
+          <h3>Then, your next step</h3>
+          <p class="muted">When you finish, we help you join a group and find where you can serve.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-dark band-glow cta">
+    <div class="wrap">
+      <h2>Ready to <span class="serif">grow?</span></h2>
+      <p class="lead">Let us know and we'll contact you with the dates of the next Growth Track.</p>
+      <div class="row">
+        <a class="button" href="/connect?interest=growth-track">Enrol now</a>
+        <a class="button ghost" href={`mailto:${church.email}?subject=Shapers%20Growth%20Track`}>Email us</a>
+      </div>
+    </div>
+  </section>
+</Base>

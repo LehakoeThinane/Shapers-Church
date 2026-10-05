@@ -7,6 +7,7 @@ import { WebView } from 'react-native-webview';
 
 import { ConnectForm } from '@/components/connect-form';
 import { Glass, PrimaryButton } from '@/components/glass';
+import { LiveChat } from '@/components/live-chat';
 import { Screen } from '@/components/screen';
 import { Notes } from '@/components/sermon-bits';
 import { AppText, Icon } from '@/components/text';
@@ -15,8 +16,8 @@ import { useMediaSettings, useSermons } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
 import { serif, text } from '@/theme/type';
 
-type Panel = 'Notes' | 'Bible' | 'Prayer' | 'Connect';
-const panels: Panel[] = ['Notes', 'Bible', 'Prayer', 'Connect'];
+type Panel = 'Chat' | 'Notes' | 'Bible' | 'Prayer' | 'Connect';
+const panels: Panel[] = ['Chat', 'Notes', 'Bible', 'Prayer', 'Connect'];
 
 export default function LiveScreen() {
   const live = useLiveNow();
@@ -39,7 +40,7 @@ function LiveNow({ stream }: { stream: PublicStream }) {
   const { palette } = useTheme();
   const lowData = useMediaSettings((s) => s.lowData);
   const [loadVideo, setLoadVideo] = useState(!lowData);
-  const [panel, setPanel] = useState<Panel>('Notes');
+  const [panel, setPanel] = useState<Panel>('Chat');
 
   return (
     <Screen>
@@ -98,6 +99,8 @@ function LiveNow({ stream }: { stream: PublicStream }) {
         ))}
       </Glass>
 
+      {panel === 'Chat' && <LiveChat livestreamId={stream.id} onPrayer={() => setPanel('Prayer')} />}
+
       {panel === 'Notes' &&
         (stream.notes ? (
           <Glass style={styles.card}>
@@ -142,6 +145,7 @@ function LiveNow({ stream }: { stream: PublicStream }) {
 
 function Upcoming({ stream }: { stream: PublicStream }) {
   const [now, setNow] = useState(Date.now());
+  const [praying, setPraying] = useState(false);
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(t);
@@ -158,6 +162,11 @@ function Upcoming({ stream }: { stream: PublicStream }) {
         <AppText tone="secondary">Join us live here. We'll be starting soon.</AppText>
       </Glass>
       <GiveButton url={stream.giveUrl} wide />
+      <AppText style={text.headline}>Chat</AppText>
+      <LiveChat livestreamId={stream.id} onPrayer={() => setPraying(true)} />
+      {praying && (
+        <ConnectForm reasons={['Prayer']} initial={['Prayer']} messageLabel="How can we pray for you? (Only the pastoral team sees this.)" source="livestream" sourceId={stream.id} />
+      )}
       <Glass style={styles.card}>
         <AppText style={text.headline}>New to Shapers?</AppText>
         <AppText tone="secondary">We'd love to meet you. Let us know you're watching.</AppText>

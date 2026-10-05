@@ -84,6 +84,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/privacy/notice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PrivacyNotice"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/audit": {
         parameters: {
             query?: never;
@@ -1364,6 +1380,166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/media/live/{livestreamId}/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLiveChat"];
+        put?: never;
+        post: operations["PostLiveChat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/media/live/{livestreamId}/chat/{messageId}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportLiveChatMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListChatStreams"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/words": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetChatWordList"];
+        put: operations["SetChatWordList"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/sanctions/{sanctionId}/lift": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LiftChatSanction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ModerateChat"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/messages/{messageId}/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HideChatMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/messages/{messageId}/show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ShowChatMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/sanctions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SanctionChatter"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/chat/{livestreamId}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SetChatRules"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events": {
         parameters: {
             query?: never;
@@ -2036,6 +2212,486 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/privacy-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyPrivacyStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/data-export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DownloadMyData"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/privacy-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyPrivacyRequests"];
+        put?: never;
+        post: operations["SubmitPrivacyRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPrivacyRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/requests/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CompletePrivacyRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/requests/{id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DeclinePrivacyRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListBreaches"];
+        put?: never;
+        post: operations["RecordBreach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateBreach"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches/{id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CloseBreach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/privacy/breaches/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReopenBreach"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/menu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SiteMenu"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/pages/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetPage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPosts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/posts/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetPost"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/news": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CurrentNews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/redirects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LegacyRedirects"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/import-wordpress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImportWordPress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminListPages"];
+        put?: never;
+        post: operations["CreatePage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminGetPage"];
+        put: operations["UpdatePage"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PublishPage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SchedulePage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages/{id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnpublishPage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchivePage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminListPosts"];
+        put?: never;
+        post: operations["CreatePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminGetPost"];
+        put: operations["UpdatePost"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PublishPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SchedulePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts/{id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnpublishPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchivePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2172,6 +2828,35 @@ export interface components {
             sharedKey: string;
             authenticatorUri: string;
         };
+        BreachDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string;
+            /** Format: date-time */
+            discoveredAt: string;
+            /** Format: date-time */
+            occurredAt: null | string;
+            dataInvolved: null | string;
+            /** Format: int32 */
+            peopleAffected: null | number;
+            specialInformation: boolean;
+            containment: null | string;
+            /** Format: date-time */
+            regulatorNotifiedAt: null | string;
+            /** Format: date-time */
+            peopleNotifiedAt: null | string;
+            status: components["schemas"]["BreachStatus"];
+            notificationOverdue: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            closedAt: null | string;
+        };
+        /** @enum {unknown} */
+        BreachStatus: "Open" | "Closed";
         CampusDto: {
             /** Format: uuid */
             id: string;
@@ -2192,6 +2877,63 @@ export interface components {
         };
         /** @enum {unknown} */
         Channel: "Push" | "Email";
+        /** @enum {unknown} */
+        ChatBlock: "SignIn" | "Closed" | "Under18" | "TimedOut" | "Banned" | null;
+        /** @enum {unknown} */
+        ChatHoldReason: "Approval" | "WordList" | "Reports" | null;
+        ChatMeDto: {
+            canPost: boolean;
+            blocked: null | components["schemas"]["ChatBlock"];
+            isModerator: boolean;
+        };
+        ChatMessageDto: {
+            /** Format: uuid */
+            id: string;
+            author: string;
+            fromTeam: boolean;
+            text: string;
+            /** Format: date-time */
+            sentAt: string;
+            /** @default false */
+            pending: boolean;
+            /** @default false */
+            mine: boolean;
+        };
+        /** @enum {unknown} */
+        ChatMessageStatus: "Visible" | "Held" | "Hidden";
+        ChatRoomDto: {
+            /** Format: uuid */
+            livestreamId: string;
+            rules: components["schemas"]["ChatRulesDto"];
+            messages: components["schemas"]["ChatMessageDto"][];
+            me: components["schemas"]["ChatMeDto"];
+        };
+        ChatRulesDto: {
+            open: boolean;
+            /** Format: int32 */
+            slowSeconds: number;
+            approvalRequired: boolean;
+        };
+        ChatRulesRequest: {
+            /** Format: int32 */
+            slowSeconds: number;
+            approvalRequired: boolean;
+        };
+        ChatSanctionDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            name: string;
+            kind: components["schemas"]["ChatSanctionKind"];
+            reason: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            livestreamId: string;
+        };
+        /** @enum {unknown} */
+        ChatSanctionKind: "Timeout" | "Ban";
         /** @enum {unknown} */
         CheckInOutcome: "CheckedIn" | "AlreadyCheckedIn" | "NotConfirmed";
         CheckInRequest: {
@@ -2283,6 +3025,8 @@ export interface components {
         };
         /** @enum {unknown} */
         ContactType: "Email" | "Mobile" | "WhatsApp";
+        /** @enum {unknown} */
+        ContentStatus: "Draft" | "Scheduled" | "Published" | "Archived";
         ContinueListeningDto: {
             sermon: components["schemas"]["SermonSummaryDto"];
             /** Format: int32 */
@@ -2346,6 +3090,31 @@ export interface components {
             order: number;
             /** Format: date-time */
             shownAt: null | string;
+        };
+        DataRequestAdminDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            personName: string;
+            type: components["schemas"]["DataRequestType"];
+            details: null | string;
+            status: components["schemas"]["DataRequestStatus"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            dueAt: string;
+            overdue: boolean;
+            /** Format: date-time */
+            decidedAt: null | string;
+            response: null | string;
+        };
+        /** @enum {unknown} */
+        DataRequestStatus: "Open" | "Completed" | "Declined";
+        /** @enum {unknown} */
+        DataRequestType: "Correction" | "Deletion";
+        DecideDataRequest: {
+            response: null | string;
         };
         DeliveryCountsDto: {
             /** Format: int32 */
@@ -2510,6 +3279,15 @@ export interface components {
         };
         /** @enum {unknown} */
         HouseholdRole: "Adult" | "Child";
+        ImportResult: {
+            /** Format: int32 */
+            postsImported: number;
+            /** Format: int32 */
+            pagesImported: number;
+            /** Format: int32 */
+            alreadyImported: number;
+            skipped: string[];
+        };
         ImportResultDto: {
             /** Format: int32 */
             found: number;
@@ -2584,6 +3362,10 @@ export interface components {
             isDefault: boolean;
             isActive: boolean;
         };
+        MenuItemDto: {
+            title: string;
+            slug: string;
+        };
         MergeRequest: {
             /** Format: uuid */
             survivorId: string;
@@ -2600,6 +3382,41 @@ export interface components {
             campusId: null | string;
             isActive: boolean;
         };
+        ModChatMessageDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            personId: string;
+            author: string;
+            fromTeam: boolean;
+            text: string;
+            /** Format: date-time */
+            sentAt: string;
+            status: components["schemas"]["ChatMessageStatus"];
+            holdReason: null | components["schemas"]["ChatHoldReason"];
+            /** Format: int32 */
+            reports: number;
+            /** Format: date-time */
+            moderatedAt: null | string;
+        };
+        ModChatStreamDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            status: components["schemas"]["LivestreamStatus"];
+            /** Format: date-time */
+            scheduledStart: string;
+            chatOpen: boolean;
+        };
+        ModeratorRoomDto: {
+            /** Format: uuid */
+            livestreamId: string;
+            title: string;
+            status: components["schemas"]["LivestreamStatus"];
+            rules: components["schemas"]["ChatRulesDto"];
+            messages: components["schemas"]["ModChatMessageDto"][];
+            sanctions: components["schemas"]["ChatSanctionDto"][];
+        };
         MoveCampusRequest: {
             /** Format: uuid */
             campusId: string;
@@ -2615,6 +3432,18 @@ export interface components {
             mfaRequiredForSensitive: boolean;
             palette: string;
             permissions: components["schemas"]["PermissionScopesDto"][];
+        };
+        MyDataRequestDto: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["DataRequestType"];
+            details: null | string;
+            status: components["schemas"]["DataRequestStatus"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            decidedAt: null | string;
+            response: null | string;
         };
         MyPrayerRequestDto: {
             /** Format: uuid */
@@ -2658,6 +3487,15 @@ export interface components {
             website: null | string;
             isSection18AApproved: boolean;
         };
+        PageAdminDto: {
+            page: components["schemas"]["PageDto"];
+            status: components["schemas"]["ContentStatus"];
+            /** Format: date-time */
+            publishAt: null | string;
+            /** Format: date-time */
+            publishedAt: null | string;
+            legacyPath: null | string;
+        };
         PagedResultOfAuditEntryDto: {
             items: components["schemas"]["AuditEntryDto"][];
             /** Format: int32 */
@@ -2693,6 +3531,18 @@ export interface components {
             pageSize: number;
             /** Format: int32 */
             total: number;
+        };
+        PageDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            slug: string;
+            summary: null | string;
+            body: string;
+            /** Format: int32 */
+            menuOrder: null | number;
+            /** Format: date-time */
+            updatedAt: string;
         };
         PermissionDto: {
             key: string;
@@ -2761,10 +3611,61 @@ export interface components {
         /** @enum {unknown} */
         PersonSource: "Admin" | "SelfRegistration" | "VisitorCard" | "EventRegistration" | "Giving" | "Import";
         /** @enum {unknown} */
-        PersonStatus: "Active" | "Inactive" | "Deceased" | "Merged";
+        PersonStatus: "Active" | "Inactive" | "Deceased" | "Merged" | "Erased";
         PlaybackUpdateRequest: {
             /** Format: int32 */
             positionSeconds: number;
+        };
+        PostAdminDto: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["PostKind"];
+            title: string;
+            slug: string;
+            summary: null | string;
+            body: string;
+            author: null | string;
+            coverImageUrl: null | string;
+            /** Format: date */
+            showUntil: null | string;
+            status: components["schemas"]["ContentStatus"];
+            /** Format: date-time */
+            publishAt: null | string;
+            /** Format: date-time */
+            publishedAt: null | string;
+            /** Format: date-time */
+            updatedAt: string;
+            legacyPath: null | string;
+        };
+        PostChatRequest: {
+            text: string;
+        };
+        PostDto: {
+            post: components["schemas"]["PostSummaryDto"];
+            body: string;
+        };
+        /** @enum {unknown} */
+        PostKind: "Blog" | "News";
+        PostPageDto: {
+            items: components["schemas"]["PostSummaryDto"][];
+            /** Format: int32 */
+            total: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+        };
+        PostSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["PostKind"];
+            title: string;
+            slug: string;
+            summary: null | string;
+            author: null | string;
+            coverImageUrl: null | string;
+            /** Format: date-time */
+            publishedAt: string;
         };
         PrayerAdminDto: {
             /** Format: uuid */
@@ -2818,6 +3719,17 @@ export interface components {
         PreferencesRequest: {
             palette: string;
         };
+        PrivacyNoticeDto: {
+            version: string;
+            /** Format: date */
+            effectiveFrom: string;
+            markdown: string;
+        };
+        PrivacyStatusDto: {
+            currentVersion: string;
+            acceptedVersion: null | string;
+            needsReview: boolean;
+        };
         PublicLivestreamDto: {
             /** Format: uuid */
             id: string;
@@ -2853,6 +3765,10 @@ export interface components {
         };
         RecoveryCodes: {
             codes: string[];
+        };
+        RedirectDto: {
+            from: string;
+            to: string;
         };
         RefreshRequest: {
             refreshToken: string;
@@ -2922,6 +3838,13 @@ export interface components {
             isSystem: boolean;
             permissions: string[];
         };
+        SanctionRequest: {
+            /** Format: uuid */
+            personId: string;
+            kind: components["schemas"]["ChatSanctionKind"];
+            reason: null | string;
+            hideMessages: boolean;
+        };
         SaveAnnouncementRequest: {
             title: string;
             body: string;
@@ -2930,6 +3853,23 @@ export interface components {
             sendEmail: boolean;
             /** Format: date-time */
             sendAt: null | string;
+        };
+        SaveBreachRequest: {
+            title: string;
+            description: string;
+            /** Format: date-time */
+            discoveredAt: string;
+            /** Format: date-time */
+            occurredAt: null | string;
+            dataInvolved: null | string;
+            /** Format: int32 */
+            peopleAffected: null | number;
+            specialInformation: boolean;
+            containment: null | string;
+            /** Format: date-time */
+            regulatorNotifiedAt: null | string;
+            /** Format: date-time */
+            peopleNotifiedAt: null | string;
         };
         SaveEventRequest: {
             title: string;
@@ -2963,6 +3903,25 @@ export interface components {
             notes: null | string;
             giveUrl: null | string;
             scope: null | string;
+        };
+        SavePageRequest: {
+            title: string;
+            slug: null | string;
+            summary: null | string;
+            body: string;
+            /** Format: int32 */
+            menuOrder: null | number;
+        };
+        SavePostRequest: {
+            kind: components["schemas"]["PostKind"];
+            title: string;
+            slug: null | string;
+            summary: null | string;
+            body: string;
+            author: null | string;
+            coverImageUrl: null | string;
+            /** Format: date */
+            showUntil: null | string;
         };
         SaveRoleRequest: {
             name: string;
@@ -3187,6 +4146,10 @@ export interface components {
             /** Format: date-time */
             recordedAt: string;
         };
+        SubmitDataRequest: {
+            type: components["schemas"]["DataRequestType"];
+            details: null | string;
+        };
         SubmitPrayerRequest: {
             text: string;
             shareOnWall: boolean;
@@ -3262,6 +4225,9 @@ export interface components {
         };
         /** @enum {unknown} */
         VideoProvider: "YouTube";
+        WordListDto: {
+            terms: string[];
+        };
     };
     responses: never;
     parameters: never;
@@ -3375,6 +4341,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DeliveryLogDto"][];
+                };
+            };
+        };
+    };
+    PrivacyNotice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrivacyNoticeDto"];
                 };
             };
         };
@@ -5545,6 +6531,275 @@ export interface operations {
             };
         };
     };
+    GetLiveChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatRoomDto"];
+                };
+            };
+        };
+    };
+    PostLiveChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostChatRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatMessageDto"];
+                };
+            };
+        };
+    };
+    ReportLiveChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+                messageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ListChatStreams: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModChatStreamDto"][];
+                };
+            };
+        };
+    };
+    GetChatWordList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WordListDto"];
+                };
+            };
+        };
+    };
+    SetChatWordList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WordListDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WordListDto"];
+                };
+            };
+        };
+    };
+    LiftChatSanction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sanctionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ModerateChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModeratorRoomDto"];
+                };
+            };
+        };
+    };
+    HideChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+                messageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ShowChatMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+                messageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SanctionChatter: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SanctionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatSanctionDto"];
+                };
+            };
+        };
+    };
+    SetChatRules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                livestreamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatRulesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatRulesDto"];
+                };
+            };
+        };
+    };
     ListEvents: {
         parameters: {
             query?: never;
@@ -6599,6 +7854,816 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AnnouncementDto"];
+                };
+            };
+        };
+    };
+    MyPrivacyStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrivacyStatusDto"];
+                };
+            };
+        };
+    };
+    DownloadMyData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MyPrivacyRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyDataRequestDto"][];
+                };
+            };
+        };
+    };
+    SubmitPrivacyRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitDataRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyDataRequestDto"];
+                };
+            };
+        };
+    };
+    ListPrivacyRequests: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["DataRequestStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataRequestAdminDto"][];
+                };
+            };
+        };
+    };
+    CompletePrivacyRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideDataRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataRequestAdminDto"];
+                };
+            };
+        };
+    };
+    DeclinePrivacyRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideDataRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataRequestAdminDto"];
+                };
+            };
+        };
+    };
+    ListBreaches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"][];
+                };
+            };
+        };
+    };
+    RecordBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveBreachRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
+                };
+            };
+        };
+    };
+    UpdateBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveBreachRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
+                };
+            };
+        };
+    };
+    CloseBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
+                };
+            };
+        };
+    };
+    ReopenBreach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BreachDto"];
+                };
+            };
+        };
+    };
+    SiteMenu: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MenuItemDto"][];
+                };
+            };
+        };
+    };
+    ListPages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageDto"][];
+                };
+            };
+        };
+    };
+    GetPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageDto"];
+                };
+            };
+        };
+    };
+    ListPosts: {
+        parameters: {
+            query?: {
+                kind?: components["schemas"]["PostKind"];
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostPageDto"];
+                };
+            };
+        };
+    };
+    GetPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostDto"];
+                };
+            };
+        };
+    };
+    CurrentNews: {
+        parameters: {
+            query?: {
+                count?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostSummaryDto"][];
+                };
+            };
+        };
+    };
+    LegacyRedirects: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RedirectDto"][];
+                };
+            };
+        };
+    };
+    ImportWordPress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResult"];
+                };
+            };
+        };
+    };
+    AdminListPages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"][];
+                };
+            };
+        };
+    };
+    CreatePage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePageRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    AdminGetPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    UpdatePage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePageRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    PublishPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    SchedulePage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    UnpublishPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    ArchivePage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    AdminListPosts: {
+        parameters: {
+            query?: {
+                kind?: components["schemas"]["PostKind"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"][];
+                };
+            };
+        };
+    };
+    CreatePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePostRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    AdminGetPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    UpdatePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePostRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    PublishPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    SchedulePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    UnpublishPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    ArchivePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
                 };
             };
         };

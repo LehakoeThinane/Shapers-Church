@@ -2,7 +2,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
-const roots = ['admin/src', 'mobile/src'];
+const roots = ['admin/src', 'mobile/src', 'web/src'];
 const pattern = /#[0-9a-fA-F]{3,8}\b|\brgba?\s*\(|\bhsla?\s*\(/;
 const problems = [];
 

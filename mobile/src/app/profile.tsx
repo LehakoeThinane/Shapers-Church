@@ -1,13 +1,15 @@
 import { space, type PalettePreference } from '@shapers/tokens';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
 import { Glass, PrimaryButton } from '@/components/glass';
 import { GlowBackground } from '@/components/glow-background';
-import { AppText } from '@/components/text';
-import { api, signOut, unwrap, useSession } from '@/lib/api';
+import { AppText, Field } from '@/components/text';
+import { api, errorMessage, signOut, unwrap, useSession } from '@/lib/api';
 import { enablePush, pushSupported, releasePush, topicLabels, usePreferences, usePushPermission, useSetPreference } from '@/lib/notifications';
+import { downloadMyData, requestLabel, useMyPrivacyRequests, useSubmitPrivacyRequest } from '@/lib/privacy';
 import { formatMinutes, useDownloads, useMediaSettings } from '@/lib/media';
 import { useTheme } from '@/theme/theme';
 import { text } from '@/theme/type';
@@ -81,6 +83,7 @@ export default function ProfileScreen() {
         </View>
 
         {status === 'signedIn' && <NotificationSettings />}
+        {status === 'signedIn' && <YourData />}
 
         <View style={styles.section}>
           <AppText style={text.title}>Data</AppText>
@@ -142,6 +145,118 @@ export default function ProfileScreen() {
           </Pressable>
         )}
       </ScrollView>
+    </View>
+  );
+}
+
+function YourData() {
+  const requests = useMyPrivacyRequests();
+  const submit = useSubmitPrivacyRequest();
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [correction, setCorrection] = useState('');
+  const [correcting, setCorrecting] = useState(false);
+  const openDeletion = requests.data?.some((r) => r.type === 'Deletion' && r.status === 'Open');
+
+  return (
+    <View style={styles.section}>
+      <AppText style={text.title}>Your data</AppText>
+      <Glass style={styles.card}>
+        <AppText tone="secondary">
+          See everything Shapers Church holds about you, ask us to correct it, or ask us to delete it. Our Information Officer answers
+          within 30 days.
+        </AppText>
+
+        <Pressable
+          accessibilityRole="button"
+          disabled={downloading}
+          onPress={() => {
+            setDownloading(true);
+            setDownloadError(null);
+            downloadMyData()
+              .catch((e: unknown) => setDownloadError(errorMessage(e)))
+              .finally(() => setDownloading(false));
+          }}>
+          <AppText tone="interactive" style={text.headline}>
+            {downloading ? 'Preparing your data…' : 'Download my data'}
+          </AppText>
+        </Pressable>
+        {downloadError && <AppText tone="danger">{downloadError}</AppText>}
+
+        {correcting ? (
+          <View style={styles.section}>
+            <Field multiline value={correction} onChangeText={setCorrection} maxLength={2000} placeholder="What needs correcting?" style={styles.textArea} />
+            <View style={styles.switchRow}>
+              <Pressable
+                accessibilityRole="button"
+                disabled={!correction.trim() || submit.isPending}
+                onPress={() =>
+                  submit.mutate(
+                    { type: 'Correction', details: correction },
+                    {
+                      onSuccess: () => {
+                        setCorrection('');
+                        setCorrecting(false);
+                      },
+                    },
+                  )
+                }>
+                <AppText tone="interactive" style={text.headline}>
+                  Send
+                </AppText>
+              </Pressable>
+              <Pressable accessibilityRole="button" onPress={() => setCorrecting(false)}>
+                <AppText tone="tertiary" style={text.callout}>
+                  Cancel
+                </AppText>
+              </Pressable>
+            </View>
+          </View>
+        ) : (
+          <Pressable accessibilityRole="button" onPress={() => setCorrecting(true)}>
+            <AppText tone="interactive" style={text.headline}>
+              Ask us to correct something
+            </AppText>
+          </Pressable>
+        )}
+
+        {!openDeletion && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() =>
+              Alert.alert(
+                'Delete your account and data?',
+                'Our Information Officer will delete your login, prayer requests, notifications and church record. Event bookings are kept without your name. This can\u2019t be undone.',
+                [
+                  { text: 'Keep my account', style: 'cancel' },
+                  { text: 'Ask to delete', style: 'destructive', onPress: () => submit.mutate({ type: 'Deletion', details: null }) },
+                ],
+              )
+            }>
+            <AppText tone="danger" style={text.headline}>
+              Delete my account and data
+            </AppText>
+          </Pressable>
+        )}
+        {submit.error && <AppText tone="danger">{errorMessage(submit.error)}</AppText>}
+
+        <Pressable accessibilityRole="link" onPress={() => router.push('/privacy-notice')}>
+          <AppText tone="interactive" style={text.headline}>
+            Read our privacy notice
+          </AppText>
+        </Pressable>
+
+        {requests.data?.map((r) => (
+          <View key={r.id} style={styles.flex}>
+            <AppText style={text.callout}>{requestLabel(r)}</AppText>
+            {r.response && (
+              <AppText tone="tertiary" style={text.caption}>
+                {r.response}
+              </AppText>
+            )}
+          </View>
+        ))}
+      </Glass>
     </View>
   );
 }
@@ -210,4 +325,5 @@ const styles = StyleSheet.create({
   center: { textAlign: 'center' },
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   flex: { flex: 1, gap: 2 },
+  textArea: { height: 100, paddingTop: 14, textAlignVertical: 'top' },
 });

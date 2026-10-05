@@ -1,0 +1,253 @@
+---
+import Base from '../../layouts/Base.astro';
+import Share from '../../components/Share.astro';
+import { get, type Schemas } from '../../lib/api';
+import { dayAndTime, renderMarkdown, time } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const events = await get<Schemas['EventDto'][]>('/api/events', []);
+  return events.map((e) => ({ params: { slug: e.slug }, props: { event: e } }));
+}
+
+const { event: e } = Astro.props as { event: Schemas['EventDto'] };
+const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURIComponent(e.location.address)}` : null;
+---
+
+<Base title={e.title} description={e.summary ?? undefined} image={e.imageUrl}>
+  <section class="band band-dark band-glow detail-hero">
+    <div class="wrap">
+      <a class="back-link" href="/events">All events</a>
+      <div class:list={['event-head', { 'has-image': e.imageUrl }]}>
+        <div>
+          <span class="eyebrow">Event</span>
+          <h1>{e.title}</h1>
+          {e.summary && <p class="lead">{e.summary}</p>}
+          <ul class="chips chips-large">
+            <li>{dayAndTime(e.startsAt)} – {time(e.endsAt)}</li>
+            {
+              e.location && (
+                <li>
+                  {mapLink ? (
+                    <a href={mapLink} rel="noopener" target="_blank">
+                      {e.location.name} ↗
+                    </a>
+                  ) : (
+                    e.location.name
+                  )}
+                </li>
+              )
+            }
+          </ul>
+          <div class="row" style="margin-top: 1.5rem">
+            {e.registrationRequired && <a class="button" href="#booking">Book your place</a>}
+            <button
+              class="button ghost"
+              type="button"
+              id="add-to-calendar"
+              data-title={e.title}
+              data-start={e.startsAt}
+              data-end={e.endsAt}
+              data-location={[e.location?.name, e.location?.address].filter(Boolean).join(', ')}
+              data-url={new URL(`/events/${e.slug}`, Astro.site).toString()}
+            >
+              Add to calendar
+            </button>
+          </div>
+        </div>
+        {e.imageUrl && <img class="event-image" src={e.imageUrl} alt="" />}
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-raised">
+    <div class="wrap detail-layout">
+      <div class="detail-main">
+        {e.description ? <div class="prose" set:html={renderMarkdown(e.description)} /> : <p class="lead">{e.summary ?? 'More details soon.'}</p>}
+        <div style="margin-top: 2rem">
+          <Share title={e.title} path={`/events/${e.slug}`} />
+        </div>
+      </div>
+    {
+      e.registrationRequired && (
+        <section class="glass stack detail-side" id="booking" data-slug={e.slug} data-max={e.maxPerRegistration} data-questions={JSON.stringify(e.questions)}>
+          <h2>Book your place</h2>
+          <p class="muted" id="seats" aria-live="polite">Checking availability…</p>
+
+          <form class="stack" id="step-email" hidden>
+            <p class="small muted">We&apos;ll email you a code to confirm your address. Members can also book in the Shapers Church app.</p>
+            <label>
+              Email
+              <input type="email" name="email" required autocomplete="email" />
+            </label>
+            <button class="button" type="submit">Send me a code</button>
+          </form>
+
+          <form class="stack" id="step-details" hidden>
+            <label>
+              The 6-digit code we emailed you
+              <input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autocomplete="one-time-code" />
+            </label>
+            <div class="row">
+              <label>First name<input name="firstName" required maxlength="60" autocomplete="given-name" /></label>
+              <label>Last name<input name="lastName" required maxlength="60" autocomplete="family-name" /></label>
+            </div>
+            <label>Mobile (optional)<input name="mobile" type="tel" autocomplete="tel" /></label>
+            {
+              e.maxPerRegistration > 1 && (
+                <label>
+                  Also coming (one name per line, up to {e.maxPerRegistration - 1})
+                  <textarea name="others" rows="3" />
+                </label>
+              )
+            }
+            <div id="questions" class="stack"></div>
+            <label class="check">
+              <input type="checkbox" name="consent" required />
+              <span>
+                Shapers Church may keep my details to manage this booking and follow up. <a href="/privacy">How we look after your information</a>.
+              </span>
+            </label>
+            <button class="button" type="submit">Book</button>
+          </form>
+
+          <div id="done" hidden aria-live="polite"></div>
+          <p class="error" id="error" role="alert"></p>
+        </section>
+      )
+    }
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { getJson, post } from '../../scripts/live';
+  import type { Schemas } from '@shapers/api-client';
+
+  // "Add to calendar" downloads a standard .ics file, which every phone and calendar app can open.
+  const calendar = document.getElementById('add-to-calendar') as HTMLButtonElement | null;
+  calendar?.addEventListener('click', () => {
+    const d = calendar.dataset;
+    const stamp = (iso: string) => new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const text = (value: string) => value.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Shapers Church//Website//EN',
+      'BEGIN:VEVENT',
+      `UID:${stamp(d.start!)}-${encodeURIComponent(d.title!)}@shaperschurch.com`,
+      `DTSTAMP:${stamp(new Date().toISOString())}`,
+      `DTSTART:${stamp(d.start!)}`,
+      `DTEND:${stamp(d.end!)}`,
+      `SUMMARY:${text(d.title!)}`,
+      d.location ? `LOCATION:${text(d.location)}` : '',
+      `URL:${d.url}`,
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ]
+      .filter(Boolean)
+      .join('\r\n');
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    link.download = 'shapers-church-event.ics';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  const box = document.getElementById('booking');
+  if (box) {
+    const slug = box.dataset.slug!;
+    const max = Number(box.dataset.max ?? '1');
+    const questions = JSON.parse(box.dataset.questions ?? '[]') as Schemas['QuestionDto'][];
+    const seats = document.getElementById('seats')!;
+    const emailForm = document.getElementById('step-email') as HTMLFormElement;
+    const detailsForm = document.getElementById('step-details') as HTMLFormElement;
+    const done = document.getElementById('done')!;
+    const error = document.getElementById('error')!;
+    let verificationId = '';
+    let email = '';
+
+    const questionBox = document.getElementById('questions')!;
+    for (const q of questions) {
+      const label = document.createElement('label');
+      label.textContent = q.required ? q.label : `${q.label} (optional)`;
+      const input = document.createElement('input');
+      input.name = `q-${q.id}`;
+      input.maxLength = 500;
+      input.required = q.required;
+      label.append(input);
+      questionBox.append(label);
+    }
+
+    // Seats change by the minute, so the page asks the API rather than trusting the build.
+    getJson<Schemas['EventDto']>(`/api/events/${slug}`)
+      .then((live) => {
+        if (!live.registrationOpen) {
+          seats.textContent = live.registrationClosedReason ?? 'Booking is closed.';
+          return;
+        }
+        seats.textContent = live.waitlistOnly
+          ? 'This event is full. You can join the waiting list and we will email you if a seat opens.'
+          : live.seatsLeft != null && live.seatsLeft <= 20
+            ? `${live.seatsLeft} seats left.`
+            : 'Booking is open.';
+        emailForm.hidden = false;
+      })
+      .catch(() => (seats.textContent = 'We could not check availability. Please try again later.'));
+
+    emailForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      error.textContent = '';
+      email = String(new FormData(emailForm).get('email') ?? '').trim();
+      try {
+        const sent = await post<Schemas['GuestCodeResponse']>(`/api/events/${slug}/guest-code`, { email });
+        verificationId = sent.verificationId;
+        emailForm.hidden = true;
+        detailsForm.hidden = false;
+        (detailsForm.elements.namedItem('code') as HTMLInputElement).focus();
+      } catch (e) {
+        error.textContent = (e as Error).message;
+      }
+    });
+
+    detailsForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      error.textContent = '';
+      const data = new FormData(detailsForm);
+      const others = String(data.get('others') ?? '')
+        .split('\n')
+        .map((n) => n.trim())
+        .filter(Boolean)
+        .slice(0, Math.max(0, max - 1));
+      const answers = Object.fromEntries(questions.map((q) => [q.id, String(data.get(`q-${q.id}`) ?? '').trim()]).filter(([, v]) => v));
+      try {
+        const notice = await getJson<Schemas['PrivacyNoticeDto']>('/api/privacy/notice');
+        const receipt = await post<Schemas['GuestRegistrationReceipt']>(`/api/events/${slug}/register-guest`, {
+          verificationId,
+          code: String(data.get('code') ?? '').trim(),
+          firstName: String(data.get('firstName') ?? '').trim(),
+          lastName: String(data.get('lastName') ?? '').trim(),
+          email,
+          mobile: String(data.get('mobile') ?? '').trim() || null,
+          otherAttendeeNames: others,
+          answers,
+          consentToKeepDetails: data.get('consent') === 'on',
+          policyVersion: notice.version,
+        });
+        const link = `/events/tickets/${receipt.registration.id}?key=${encodeURIComponent(receipt.accessKey)}`;
+        detailsForm.hidden = true;
+        done.hidden = false;
+        const heading = document.createElement('h3');
+        heading.textContent = receipt.registration.status === 'Waitlisted' ? "You're on the waiting list" : "You're booked!";
+        const text = document.createElement('p');
+        text.textContent = `We've emailed your confirmation to ${email}. Keep the email: its link lets you see your tickets or cancel.`;
+        const open = document.createElement('a');
+        open.className = 'button';
+        open.href = link;
+        open.textContent = receipt.registration.status === 'Waitlisted' ? 'See your booking' : 'Show my tickets';
+        done.replaceChildren(heading, text, open);
+      } catch (e) {
+        error.textContent = (e as Error).message;
+      }
+    });
+  }
+</script>

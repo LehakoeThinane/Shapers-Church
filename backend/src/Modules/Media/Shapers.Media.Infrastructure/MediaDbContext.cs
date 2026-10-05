@@ -25,6 +25,12 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
 
     public DbSet<Livestream> Livestreams => Set<Livestream>();
 
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+
+    public DbSet<ChatSanction> ChatSanctions => Set<ChatSanction>();
+
+    public DbSet<ChatBlockedTerm> ChatBlockedTerms => Set<ChatBlockedTerm>();
+
     Task<int> IMediaDb.SaveChangesAsync(CancellationToken cancellationToken) => SaveChangesAsync(cancellationToken);
 
     protected override void ConfigureModel(ModelBuilder modelBuilder)
@@ -143,6 +149,51 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
             b.Property<uint>("xmin").IsRowVersion();
         });
 
+        modelBuilder.Entity<ChatMessage>(b =>
+        {
+            b.ToTable("chat_messages");
+            b.Property(m => m.Id).ValueGeneratedNever();
+            b.Property(m => m.Scope).HasMaxLength(512);
+            b.Property(m => m.AuthorName).HasMaxLength(80);
+            b.Property(m => m.Text).HasMaxLength(ChatRules.MaxLength);
+            b.Property(m => m.Status).HasConversion<string>().HasMaxLength(20);
+            b.Property(m => m.HoldReason).HasConversion<string>().HasMaxLength(20);
+            b.Ignore(m => m.IsEvidence);
+            b.HasIndex(m => new { m.LivestreamId, m.SentAt });
+            b.HasIndex(m => new { m.PersonId, m.SentAt });
+            b.HasIndex(m => m.SentAt);
+            b.OwnsMany(m => m.Reports, r =>
+            {
+                r.ToTable("chat_reports");
+                r.WithOwner().HasForeignKey("MessageId");
+                // A generated key, so EF inserts new reports rather than treating them as existing rows.
+                r.Property<long>("Id").UseIdentityAlwaysColumn();
+                r.HasKey("Id");
+                r.HasIndex("MessageId", nameof(ChatReport.ReporterId)).IsUnique();
+                r.HasIndex(x => x.ReporterId);
+            });
+            b.Navigation(m => m.Reports).HasField("_reports");
+            b.Property<uint>("xmin").IsRowVersion();
+        });
+
+        modelBuilder.Entity<ChatSanction>(b =>
+        {
+            b.ToTable("chat_sanctions");
+            b.Property(s => s.Id).ValueGeneratedNever();
+            b.Property(s => s.Kind).HasConversion<string>().HasMaxLength(20);
+            b.Property(s => s.AuthorName).HasMaxLength(80);
+            b.Property(s => s.Reason).HasMaxLength(300);
+            b.Ignore(s => s.IsActive);
+            b.HasIndex(s => new { s.PersonId, s.LiftedAt });
+        });
+
+        modelBuilder.Entity<ChatBlockedTerm>(b =>
+        {
+            b.ToTable("chat_blocked_terms");
+            b.HasKey(t => t.Term);
+            b.Property(t => t.Term).HasMaxLength(60);
+        });
+
         modelBuilder.Entity<PlaybackPosition>(b =>
         {
             b.ToTable("playback_positions");
@@ -155,6 +206,7 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
     {
         SermonPublished e => [new SermonPublishedIntegrationEvent(e.SermonId, e.Title, e.Slug, e.Scope)],
         LivestreamStarted e => [new LivestreamStartedIntegrationEvent(e.LivestreamId, e.Title, e.Scope)],
+        ChatMessageReported e => [new ChatMessageReportedIntegrationEvent(e.MessageId, e.LivestreamId, e.Scope)],
         _ => [],
     };
 }

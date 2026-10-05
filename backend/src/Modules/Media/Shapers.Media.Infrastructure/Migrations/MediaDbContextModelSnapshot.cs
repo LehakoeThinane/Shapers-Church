@@ -25,11 +25,168 @@ namespace Shapers.Media.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Shapers.Media.Domain.ChatBlockedTerm", b =>
+                {
+                    b.Property<string>("Term")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("term");
+
+                    b.HasKey("Term")
+                        .HasName("pk_chat_blocked_terms");
+
+                    b.ToTable("chat_blocked_terms", "media");
+                });
+
+            modelBuilder.Entity("Shapers.Media.Domain.ChatMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("author_name");
+
+                    b.Property<bool>("FromTeam")
+                        .HasColumnType("boolean")
+                        .HasColumnName("from_team");
+
+                    b.Property<string>("HoldReason")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("hold_reason");
+
+                    b.Property<Guid>("LivestreamId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("livestream_id");
+
+                    b.Property<DateTimeOffset?>("ModeratedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("moderated_at");
+
+                    b.Property<Guid?>("ModeratedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("moderated_by");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("person_id");
+
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("scope");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("sent_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("text");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_chat_messages");
+
+                    b.HasIndex("SentAt")
+                        .HasDatabaseName("ix_chat_messages_sent_at");
+
+                    b.HasIndex("LivestreamId", "SentAt")
+                        .HasDatabaseName("ix_chat_messages_livestream_id_sent_at");
+
+                    b.HasIndex("PersonId", "SentAt")
+                        .HasDatabaseName("ix_chat_messages_person_id_sent_at");
+
+                    b.ToTable("chat_messages", "media");
+                });
+
+            modelBuilder.Entity("Shapers.Media.Domain.ChatSanction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("author_name");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("kind");
+
+                    b.Property<DateTimeOffset?>("LiftedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("lifted_at");
+
+                    b.Property<Guid?>("LiftedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("lifted_by");
+
+                    b.Property<Guid>("LivestreamId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("livestream_id");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("person_id");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("reason");
+
+                    b.HasKey("Id")
+                        .HasName("pk_chat_sanctions");
+
+                    b.HasIndex("PersonId", "LiftedAt")
+                        .HasDatabaseName("ix_chat_sanctions_person_id_lifted_at");
+
+                    b.ToTable("chat_sanctions", "media");
+                });
+
             modelBuilder.Entity("Shapers.Media.Domain.Livestream", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<bool>("ChatApprovalRequired")
+                        .HasColumnType("boolean")
+                        .HasColumnName("chat_approval_required");
+
+                    b.Property<int>("ChatSlowSeconds")
+                        .HasColumnType("integer")
+                        .HasColumnName("chat_slow_seconds");
 
                     b.Property<Guid?>("CurrentCueId")
                         .HasColumnType("uuid")
@@ -474,6 +631,49 @@ namespace Shapers.Media.Infrastructure.Migrations
                         .HasFilter("processed_at IS NULL");
 
                     b.ToTable("outbox_messages", "media");
+                });
+
+            modelBuilder.Entity("Shapers.Media.Domain.ChatMessage", b =>
+                {
+                    b.OwnsMany("Shapers.Media.Domain.ChatReport", "Reports", b1 =>
+                        {
+                            b1.Property<long>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b1.Property<long>("Id"));
+
+                            b1.Property<Guid>("MessageId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("message_id");
+
+                            b1.Property<DateTimeOffset>("ReportedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("reported_at");
+
+                            b1.Property<Guid>("ReporterId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("reporter_id");
+
+                            b1.HasKey("Id")
+                                .HasName("pk_chat_reports");
+
+                            b1.HasIndex("ReporterId")
+                                .HasDatabaseName("ix_chat_reports_reporter_id");
+
+                            b1.HasIndex("MessageId", "ReporterId")
+                                .IsUnique()
+                                .HasDatabaseName("ix_chat_reports_message_id_reporter_id");
+
+                            b1.ToTable("chat_reports", "media");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MessageId")
+                                .HasConstraintName("fk_chat_reports_chat_messages_message_id");
+                        });
+
+                    b.Navigation("Reports");
                 });
 
             modelBuilder.Entity("Shapers.Media.Domain.Livestream", b =>

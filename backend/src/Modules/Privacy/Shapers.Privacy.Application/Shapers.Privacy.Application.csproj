@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Shapers.Privacy.Domain/Shapers.Privacy.Domain.csproj" />
+    <ProjectReference Include="../Shapers.Privacy.Contracts/Shapers.Privacy.Contracts.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/Shapers.Platform/Shapers.Platform.csproj" />
+    <ProjectReference Include="../../People/Shapers.People.Contracts/Shapers.People.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shapers.Privacy.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="privacy-notice.md" LogicalName="Shapers.Privacy.Application.privacy-notice.md" />
+  </ItemGroup>
+</Project>

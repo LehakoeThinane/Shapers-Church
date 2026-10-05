@@ -1,6 +1,6 @@
 # V1 plan, part 2: finishing Core church
 
-Status: **Approved (2026-09-30).** Decisions are recorded at the end. Slice D (Prayer) is built. Slice E (Notifications) is built except SMS and WhatsApp, which wait for providers; see [ADR 0011](decisions/0011-communications.md).
+Status: **Approved (2026-09-30).** Decisions are recorded at the end. Slice D (Prayer) is built. Slice E (Notifications) is built except SMS and WhatsApp, which wait for providers; see [ADR 0011](decisions/0011-communications.md). Slice F (POPIA) is built with the retention periods approved on 2026-09-30; see [ADR 0012](decisions/0012-privacy-rights-and-retention.md). Slice G (content and the public website) is built; hosting is Azure Static Web Apps behind Cloudflare (decided 2026-09-30); see [ADR 0013](decisions/0013-public-website.md). Slice B2 (live chat) is built; see [ADR 0014](decisions/0014-live-chat.md).
 
 ## Where we are
 
@@ -129,6 +129,46 @@ Money and 18A certificates make this expensive to get wrong, so it gets its own 
   - Paid events.
   - Webhooks are authoritative.
   - Apple's in-app donation rules are checked before the iOS flow is final.
+
+## Slice B2: Live chat
+
+Status: **Approved and built (2026-09-30).** A chat beside the video during a livestream, in the app and on the website.
+
+**Who can do what:**
+- Everyone watching can read the chat. Posting needs a signed-in member with a verified phone number, so every message is traceable to a person.
+- Names show as first name and last initial ("Thabo M."). Staff and moderators carry a badge.
+- There are no private messages of any kind. The chat is one public room, so the adult–minor rule is met by design.
+- Members under 18 (by date of birth, where we have it) can read but not post in V1. Youth-safe chat arrives with Groups in V2.
+
+**Moderation (`media.chat.moderate`, a new "Chat moderator" role; campus pastors and the media team also hold it):**
+- Moderators can hide a message, time a person out for the rest of the service, or ban them from chat. Every action is audited and can be undone.
+- Members can report a message. A report alerts the moderators on duty through their inbox and push (slice E). Three reports from different people hide a message until a moderator looks at it.
+- Slow mode: one message every 5 seconds per person by default; moderators can raise it. Messages are limited to 300 characters. Links are shown as plain text.
+- A word list holds matching messages for a moderator instead of showing them.
+- Moderators can switch the chat to "moderators approve every message" if a service attracts trouble.
+
+**Privacy:**
+- Before a member's first message, a note says the chat is public and suggests the prayer form for anything personal. A "Pray for me" button beside the chat opens it.
+- Chat opens 15 minutes before a service goes live and closes 30 minutes after it ends. Old chats aren't shown to members afterwards.
+- Retention: see decision 2 below. Erasure requests delete a person's messages.
+
+**How it works:**
+- Real time through ASP.NET Core SignalR (built in, WebSockets with fallbacks). One server is enough for now. If we run more than one API instance, we add Azure SignalR Service; no code changes are needed.
+- Messages are saved before they are broadcast, so the moderator view and reports always match what people saw.
+- It lives in the Media module next to livestreams, with its own tables.
+- On the website, the chat is read-only for guests with a "Sign in in the app to join" prompt, until website sign-in exists.
+
+**Screens:**
+- App: a chat panel under the video on the Live tab.
+- Website: the same panel on /live.
+- Admin: a moderator console showing the live chat, the report queue, held messages and the people timed out or banned.
+
+**Tests:** posting rules (verified, over 18, not timed out or banned, slow mode), moderation actions and audit, the report threshold, the word list, open and close times, retention and erasure.
+
+### B2 decisions (2026-09-30)
+1. **Under-18s** read the chat but can't post in V1.
+2. **Chat retention:** ordinary messages 90 days; hidden, held or reported messages and moderation actions 1 year.
+3. **Website visitors** can read the chat; joining in needs the app.
 
 ## Cross-cutting
 

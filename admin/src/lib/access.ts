@@ -41,6 +41,7 @@ export const Permissions = {
   mediaPublish: 'media.sermons.publish',
   speakersManage: 'media.speakers.manage',
   livestreamManage: 'media.livestream.manage',
+  chatModerate: 'media.chat.moderate',
   eventsEdit: 'events.edit',
   eventsPublish: 'events.publish',
   eventsRegistrationsView: 'events.registrations.view',
@@ -50,4 +51,8 @@ export const Permissions = {
   prayerModerate: 'prayer.requests.moderate',
   announcementsSend: 'communications.announcements.send',
   announcementsApprove: 'communications.announcements.approve',
+  privacyRequests: 'privacy.requests.manage',
+  privacyBreaches: 'privacy.breaches.manage',
+  contentEdit: 'content.edit',
+  contentPublish: 'content.publish',
 } as const;

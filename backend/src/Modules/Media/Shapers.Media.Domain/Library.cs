@@ -196,11 +196,11 @@ public sealed class MediaAsset : AggregateRoot<Guid>
 
 /// <summary>
 /// Where a member got to in a sermon, so they can carry on. Personal data: kept only as the latest
-/// position and deleted after six months.
+/// position and deleted after a year (the church's retention schedule).
 /// </summary>
 public sealed class PlaybackPosition
 {
-    public static readonly TimeSpan Retention = TimeSpan.FromDays(183);
+    public static readonly TimeSpan Retention = TimeSpan.FromDays(365);
 
     private PlaybackPosition()
     {

@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { Glass, PrimaryButton } from './glass';
 import { AppText, Field } from './text';
+import { currentNoticeVersion } from '@/lib/privacy';
 import { api, errorMessage, unwrap, useSession, type Schemas } from '@/lib/api';
 import { useTheme } from '@/theme/theme';
 import { text } from '@/theme/type';
@@ -57,7 +58,7 @@ export function ConnectForm({
             source,
             sourceId: sourceId ?? null,
             consentToKeepDetails: signedIn || guest.consent,
-            policyVersion: '2026-09',
+            policyVersion: await currentNoticeVersion(),
           },
         }),
       ),

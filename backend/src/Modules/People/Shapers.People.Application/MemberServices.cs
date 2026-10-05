@@ -80,6 +80,37 @@ public sealed class PeopleDirectory(IPeopleDb db, TimeProvider clock) : IPeopleD
         return latest.Where(c => c.Granted).Select(c => c.PersonId).ToHashSet();
     }
 
+    public async Task<bool> IsMinorAsync(Guid personId, CancellationToken cancellationToken = default)
+    {
+        var person = await db.Persons.AsNoTracking().SingleOrDefaultAsync(p => p.Id == personId, cancellationToken);
+        if (person is not null && person.IsMinorOn(DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime)))
+        {
+            return true;
+        }
+
+        return await db.Households.AnyAsync(h => h.Members.Any(m => m.PersonId == personId && m.Role == HouseholdRole.Child), cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Guid>> UnverifiedGuestsCreatedBeforeAsync(DateTimeOffset cutoff, CancellationToken cancellationToken = default)
+    {
+        var inHousehold = db.Households.SelectMany(h => h.Members).Select(m => m.PersonId);
+        return await db.Persons.AsNoTracking()
+            .Where(p => p.Status == PersonStatus.Active
+                && p.Source == PersonSource.VisitorCard
+                && p.CreatedAt < cutoff
+                && !p.Contacts.Any(c => c.IsVerified)
+                && !inHousehold.Contains(p.Id))
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<string?> ChurchRecordNoticeVersionAsync(Guid personId, CancellationToken cancellationToken = default) =>
+        await db.ConsentRecords.AsNoTracking()
+            .Where(c => c.PersonId == personId && c.Purpose == ConsentPurposes.ChurchRecord && c.Granted)
+            .OrderByDescending(c => c.RecordedAt)
+            .Select(c => c.PolicyVersion)
+            .FirstOrDefaultAsync(cancellationToken);
+
     public async Task<IReadOnlyList<PersonSummary>> InScopeAsync(string scope, CancellationToken cancellationToken = default)
     {
         var below = LikePattern.Escape(scope) + ".%";
@@ -282,5 +313,84 @@ public sealed class PeopleRegistration(
         return campus is not null
             ? ScopePath.Parse(campus.Scope)
             : ScopePath.Parse((await church.GetRootScopeAsync(cancellationToken)).Path);
+    }
+}
+
+/// <summary>
+/// The church record itself: profile, contacts, households, consent history and connect cards. Erasing leaves an
+/// empty shell (so references elsewhere still resolve) and keeps consent records, which hold no personal details
+/// beyond the ID and are evidence of how the data was handled.
+/// </summary>
+public sealed class PeoplePersonalData(IPeopleDb db, TimeProvider clock) : Shapers.Platform.Privacy.IPersonalDataSource
+{
+    public string Name => "Church record";
+
+    public async Task<object?> ExportAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var person = await db.Persons.AsNoTracking().SingleOrDefaultAsync(p => p.Id == personId, cancellationToken);
+        if (person is null)
+        {
+            return null;
+        }
+
+        var households = await db.Households.AsNoTracking().Where(h => h.Members.Any(m => m.PersonId == personId)).Select(h => h.Name).ToListAsync(cancellationToken);
+        var consents = await db.ConsentRecords.AsNoTracking().Where(c => c.PersonId == personId).OrderBy(c => c.RecordedAt)
+            .Select(c => new { c.Purpose, c.Granted, c.PolicyVersion, Source = c.Source.ToString(), c.RecordedAt }).ToListAsync(cancellationToken);
+        var cards = await db.ConnectCards.AsNoTracking().Where(c => c.PersonId == personId).OrderBy(c => c.SubmittedAt)
+            .Select(c => new { c.SubmittedAt, c.Reasons, c.Message, Status = c.Status.ToString() }).ToListAsync(cancellationToken);
+        return new
+        {
+            Profile = new
+            {
+                person.FirstName,
+                person.LastName,
+                person.PreferredName,
+                person.DateOfBirth,
+                Gender = person.Gender?.ToString(),
+                Status = person.Status.ToString(),
+                person.Scope,
+                Source = person.Source.ToString(),
+                person.CreatedAt,
+            },
+            Contacts = person.Contacts.Select(c => new { Type = c.Type.ToString(), c.Value, c.IsPrimary, c.IsVerified }),
+            Households = households,
+            Consents = consents,
+            ConnectCards = cards,
+        };
+    }
+
+    public async Task<int> EraseAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var now = clock.GetUtcNow();
+        // Old duplicates merged into this person still hold their original details: erase those too.
+        var records = await db.Persons.Where(p => p.Id == personId || p.MergedIntoId == personId).ToListAsync(cancellationToken);
+        var ids = records.Select(p => p.Id).ToList();
+        records.ForEach(p => p.Erase(now));
+
+        var households = await db.Households.Where(h => h.Members.Any(m => ids.Contains(m.PersonId))).ToListAsync(cancellationToken);
+        foreach (var household in households)
+        {
+            foreach (var id in ids.Where(id => household.Members.Any(m => m.PersonId == id)))
+            {
+                household.RemoveMember(id);
+            }
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        var cards = await db.ConnectCards.Where(c => ids.Contains(c.PersonId)).ExecuteDeleteAsync(cancellationToken);
+        var duplicates = await db.DuplicateCandidates.Where(d => ids.Contains(d.PersonAId) || ids.Contains(d.PersonBId)).ExecuteDeleteAsync(cancellationToken);
+        return records.Count + households.Count + cards + duplicates;
+    }
+}
+
+/// <summary>Nightly: connect cards are deleted two years after they were filled in.</summary>
+public sealed class ConnectCardRetentionJob(IPeopleDb db, TimeProvider clock)
+{
+    public static readonly TimeSpan Retention = TimeSpan.FromDays(730);
+
+    public Task<int> RunAsync(CancellationToken cancellationToken)
+    {
+        var cutoff = clock.GetUtcNow() - Retention;
+        return db.ConnectCards.Where(c => c.SubmittedAt < cutoff).ExecuteDeleteAsync(cancellationToken);
     }
 }

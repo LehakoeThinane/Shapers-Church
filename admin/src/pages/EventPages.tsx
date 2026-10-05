@@ -3,7 +3,7 @@ import QrScanner from 'qr-scanner';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
-import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
+import { api, apiBaseUrl, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 
 type AdminEvent = Schemas['EventAdminDto'];
@@ -420,7 +420,7 @@ export function EventAttendeesPage() {
           </>
         }
         actions={
-          <a className="btn btn-secondary" href={`/api/admin/events/${id}/attendees.csv`} download>
+          <a className="btn btn-secondary" href={`${apiBaseUrl}/api/admin/events/${id}/attendees.csv`} download>
             Export CSV
           </a>
         }

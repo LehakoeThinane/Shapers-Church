@@ -25,6 +25,7 @@ public static class EventsInfrastructure
         services.AddScoped<PublicEventService>();
         services.AddScoped<RegistrationService>();
         services.AddScoped<ReminderJob>();
+        services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, EventsPersonalData>();
         services.AddScoped<IIntegrationEventHandler<EventRegisteredIntegrationEvent>, ConfirmMemberRegistration>();
         services.AddScoped<IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>, NotifyWaitlistPromotion>();
         services.AddScoped<IIntegrationEventHandler<EventCancelledIntegrationEvent>, NotifyEventCancelled>();

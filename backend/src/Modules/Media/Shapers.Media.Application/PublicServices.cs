@@ -263,3 +263,23 @@ public sealed class PodcastFeedBuilder(IMediaDb db, SermonReader reader, IFileSt
         return $"{document.Declaration}\n{document.ToString(SaveOptions.None)}";
     }
 }
+
+/// <summary>A person's listening history, for export and erasure.</summary>
+public sealed class MediaPersonalData(IMediaDb db) : Shapers.Platform.Privacy.IPersonalDataSource
+{
+    public string Name => "Listening history";
+
+    public async Task<object?> ExportAsync(Guid personId, CancellationToken cancellationToken)
+    {
+        var rows = await (from p in db.PlaybackPositions.AsNoTracking()
+                          join s in db.Sermons.AsNoTracking() on p.SermonId equals s.Id
+                          where p.PersonId == personId
+                          orderby p.UpdatedAt
+                          select new { Sermon = s.Title, p.PositionSeconds, p.Completed, p.UpdatedAt })
+            .ToListAsync(cancellationToken);
+        return rows.Count == 0 ? null : rows;
+    }
+
+    public Task<int> EraseAsync(Guid personId, CancellationToken cancellationToken) =>
+        db.PlaybackPositions.Where(p => p.PersonId == personId).ExecuteDeleteAsync(cancellationToken);
+}

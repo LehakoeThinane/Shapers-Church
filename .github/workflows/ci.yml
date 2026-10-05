@@ -47,6 +47,8 @@ jobs:
           dotnet test --no-build -c Release --project tests/Modules/Shapers.Events.Tests
           dotnet test --no-build -c Release --project tests/Modules/Shapers.Prayer.Tests
           dotnet test --no-build -c Release --project tests/Modules/Shapers.Communications.Tests
+          dotnet test --no-build -c Release --project tests/Modules/Shapers.Privacy.Tests
+          dotnet test --no-build -c Release --project tests/Modules/Shapers.Content.Tests
 
       - name: Integration tests (PostgreSQL via Testcontainers)
         run: dotnet test --no-build -c Release --project tests/Shapers.IntegrationTests
@@ -91,6 +93,12 @@ jobs:
 
       - name: Build admin portal
         run: pnpm --filter @shapers/admin build
+
+      - name: Build website without the API (checks it compiles)
+        run: pnpm --filter @shapers/web build
+        env:
+          ALLOW_OFFLINE_BUILD: 1
+          API_URL: http://127.0.0.1:9
 
       - name: Bundle member app (iOS and Android JavaScript)
         run: pnpm --filter @shapers/mobile exec expo export --platform ios --platform android --output-dir ${{ runner.temp }}/expo-export

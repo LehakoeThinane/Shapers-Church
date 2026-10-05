@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getAll, type Schemas } from '../../lib/api';
+import { longDate, minutes } from '../../lib/format';
+
+const sermons = await getAll<Schemas['SermonSummaryDto']>('/api/media/sermons');
+---
+
+<Base title="Sermons" description="Sermons from Shapers Church in Rivonia: watch, listen or subscribe to the podcast.">
+  <PageHeader
+    eyebrow="Sermons"
+    title="Faith comes by"
+    accent="hearing."
+    intro="Watch or listen to recent messages, or subscribe to the podcast. The Shapers Church app lets you download sermons to listen without using data."
+  >
+    <div class="row" style="margin-top: 2rem">
+      <a class="button" href="/live">Watch live</a>
+      <a class="button ghost" href="/podcast.xml">Podcast</a>
+    </div>
+  </PageHeader>
+
+  <section class="section">
+    <input type="search" id="filter" placeholder="Search by title, speaker or scripture" aria-label="Search sermons" />
+    {sermons.length === 0 && <p class="muted">Sermons will appear here as they are published.</p>}
+    <div class="grid" id="sermons">
+      {
+        sermons.map((s) => (
+          <a class="card" href={`/sermons/${s.slug}`} data-search={`${s.title} ${s.speakers.join(' ')} ${s.scripture.join(' ')} ${s.seriesTitle ?? ''}`.toLowerCase()}>
+            <Cover src={s.thumbnailUrl} title={s.title} kicker={s.seriesTitle ?? 'Message'} />
+            {s.seriesTitle && <span class="label">{s.seriesTitle}</span>}
+            <strong>{s.title}</strong>
+            <span class="small muted">
+              {[s.speakers.join(', '), longDate(s.preachedOn), minutes(s.audioDurationSeconds)].filter(Boolean).join(' · ')}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  const input = document.getElementById('filter') as HTMLInputElement | null;
+  input?.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    document.querySelectorAll<HTMLElement>('#sermons [data-search]').forEach((card) => {
+      card.hidden = q.length > 0 && !(card.dataset.search ?? '').includes(q);
+    });
+  });
+</script>

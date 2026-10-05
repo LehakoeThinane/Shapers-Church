@@ -9,6 +9,7 @@ import { AppText, Icon } from '@/components/text';
 import { EventRow } from '@/components/event-bits';
 import { SermonRow } from '@/components/sermon-bits';
 import { api, unwrap, useSession } from '@/lib/api';
+import { useNews } from '@/lib/content';
 import { eventWhen, useMyRegistrations, useUpcomingEvents } from '@/lib/events';
 import { enablePush, pushSupported, useInbox, usePushPermission, usePushStore } from '@/lib/notifications';
 import { startsIn, useLiveNow } from '@/lib/live';
@@ -43,6 +44,7 @@ export default function HomeScreen() {
   const isLive = live?.state === 'Live';
   const stream = live?.stream;
   const events = useUpcomingEvents().data ?? [];
+  const news = useNews(3).data ?? [];
   const myNext = useMyRegistrations().upcoming[0];
   const unread = useInbox().data?.unread ?? 0;
   const permission = usePushPermission();
@@ -181,6 +183,25 @@ export default function HomeScreen() {
             </Glass>
           </Pressable>
         </Link>
+      )}
+
+      {news.length > 0 && (
+        <Section title="News">
+          {news.map((n) => (
+            <Link key={n.id} href={{ pathname: '/post/[slug]', params: { slug: n.slug } }} asChild>
+              <Pressable accessibilityRole="button" accessibilityLabel={n.title}>
+                <Glass style={styles.card}>
+                  <AppText style={text.headline}>{n.title}</AppText>
+                  {n.summary && (
+                    <AppText tone="secondary" numberOfLines={2}>
+                      {n.summary}
+                    </AppText>
+                  )}
+                </Glass>
+              </Pressable>
+            </Link>
+          ))}
+        </Section>
       )}
 
       <Section title="Upcoming">

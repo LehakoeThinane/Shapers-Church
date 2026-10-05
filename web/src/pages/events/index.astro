@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { get, type Schemas } from '../../lib/api';
+import { dayAndTime } from '../../lib/format';
+
+const events = await get<Schemas['EventDto'][]>('/api/events', []);
+---
+
+<Base title="Events" description="What's coming up at Shapers Church, and how to book.">
+  <PageHeader eyebrow="Events" title="What's" accent="coming up." intro="Conferences, gatherings and special services at Shapers Church. Book your seat online." />
+
+  <section class="section">
+    {
+      events.length === 0 && (
+        <div class="glass">
+          <h2 style="font-size: 1.4rem">Nothing booked just yet</h2>
+          <p class="muted" style="margin: 0">
+            New events are announced on Sundays and in the Shapers Church app. In the meantime, <a href="/sermons">catch up on recent messages</a>.
+          </p>
+        </div>
+      )
+    }
+    <div class="grid">
+      {
+        events.map((e) => (
+          <a class="card" href={`/events/${e.slug}`}>
+            <Cover src={e.imageUrl} title={e.title} kicker="Event" />
+            <span class="label">{dayAndTime(e.startsAt)}</span>
+            <strong>{e.title}</strong>
+            {e.summary && <span class="muted">{e.summary}</span>}
+            {e.location && <span class="small muted">{e.location.name}</span>}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>

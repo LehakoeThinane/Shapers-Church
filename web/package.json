@@ -1,0 +1,26 @@
+{
+  "name": "@shapers/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/swa-config.mjs",
+    "preview": "astro preview",
+    "typecheck": "tsc --noEmit -p tsconfig.check.json",
+    "lint": "echo \"(website: checked by the TypeScript check and the build)\"",
+    "test": "echo \"(no website unit tests yet)\""
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^10.0.11",
+    "@shapers/tokens": "workspace:*",
+    "astro": "^7.3.5",
+    "marked": "^18.0.14",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@shapers/api-client": "workspace:*",
+    "@types/qrcode": "^1.5.5",
+    "typescript": "~6.0.2"
+  }
+}

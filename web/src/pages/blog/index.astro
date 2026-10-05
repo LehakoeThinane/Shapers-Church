@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getAll, type Schemas } from '../../lib/api';
+import { longDate } from '../../lib/format';
+
+const posts = await getAll<Schemas['PostSummaryDto']>('/api/content/posts');
+---
+
+<Base title="Blog" description="Teaching, stories and news from Shapers Church.">
+  <PageHeader eyebrow="Shapers blog" title="Let's grow." accent="Let's share. Let's uplift." intro="Teaching, stories and news from Shapers Church." />
+
+  <section class="section">
+    {posts.length === 0 && <p class="muted">Nothing here yet.</p>}
+    <div class="grid">
+      {
+        posts.map((p) => (
+          <a class="card" href={`/blog/${p.slug}`}>
+            <Cover src={p.coverImageUrl} title={p.title} kicker={p.kind === 'News' ? 'News' : 'Blog'} />
+            <span class="label">{p.kind === 'News' ? 'News' : longDate(p.publishedAt)}</span>
+            <strong>{p.title}</strong>
+            {p.summary && <span class="muted">{p.summary}</span>}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>

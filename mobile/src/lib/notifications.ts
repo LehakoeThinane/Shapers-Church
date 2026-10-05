@@ -10,11 +10,10 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { api, deviceName, unwrap, useSession, type Schemas } from './api';
+import { currentNoticeVersion } from './privacy';
 
 export type InboxItem = Schemas['NotificationDto'];
 export type Topic = Schemas['Topic'];
-
-const PRIVACY_NOTICE_VERSION = '2026-09';
 
 const projectId = (Constants.expoConfig?.extra?.eas as { projectId?: string } | undefined)?.projectId;
 
@@ -88,7 +87,7 @@ export async function enablePush(): Promise<boolean> {
   if (status !== 'granted') return false;
   unwrap(
     await api.POST('/api/me/consents', {
-      body: { decisions: [{ purpose: 'communications.push', granted: true }], policyVersion: PRIVACY_NOTICE_VERSION, source: 'MobileApp', lawfulBasis: 'Consent' },
+      body: { decisions: [{ purpose: 'communications.push', granted: true }], policyVersion: await currentNoticeVersion(), source: 'MobileApp', lawfulBasis: 'Consent' },
     }),
   );
   return registerThisPhone();

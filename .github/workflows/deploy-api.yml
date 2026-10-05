@@ -1,0 +1,62 @@
+name: Deploy API
+
+# After CI passes on main: build the API image inside Azure and roll the container app onto it.
+# Signs in to Azure with GitHub's short-lived OpenID Connect token (no stored Azure password); see
+# docs/deployment.md, "Automatic deployments". Until the variables exist, it does nothing.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build and deploy
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CONFIGURED: ${{ vars.AZURE_CLIENT_ID != '' }}
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - name: Not configured yet
+        if: env.CONFIGURED != 'true'
+        run: echo "Set the production environment variables in GitHub to deploy. See docs/deployment.md."
+
+      - uses: actions/checkout@v4
+        if: env.CONFIGURED == 'true'
+        with:
+          ref: ${{ env.SHA }}
+
+      - uses: azure/login@v2
+        if: env.CONFIGURED == 'true'
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build the image in Azure
+        if: env.CONFIGURED == 'true'
+        run: az acr build --registry "${{ vars.AZURE_REGISTRY }}" --image "shapers-api:${SHA}" backend
+
+      - name: Roll the API onto the new image
+        if: env.CONFIGURED == 'true'
+        run: |
+          az containerapp update \
+            --name "${{ vars.AZURE_API_APP }}" \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --image "${{ vars.AZURE_REGISTRY }}.azurecr.io/shapers-api:${SHA}"
+
+      - name: Check it is healthy
+        if: env.CONFIGURED == 'true'
+        run: curl --fail --silent --show-error --retry 20 --retry-delay 15 --retry-all-errors "${{ vars.API_URL }}/health/ready"
