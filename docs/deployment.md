@@ -89,7 +89,7 @@ Leave the existing **MX** and email records alone.
   ```powershell
   az containerapp logs show -g rg-shapers-prod -n ca-shapers-prod-api --follow
   ```
-- **Background jobs:** `https://api.shaperschurch.com/jobs` (staff with the jobs permission only).
+- **Background jobs:** `https://api.shaperschurch.com/jobs` (staff with the jobs permission only). What is stuck or failed is summarised at `/api/admin/background-health`, and on the admin portal's **Background work** page.
 - **Change a setting:** non-secret settings go in `backend/src/Host/Shapers.Api/appsettings.Production.json`; secrets go in Key Vault (`kv-shapers-prod`), then run the deploy script again.
 - **Change who gets alerts or the budget:** run the deploy script again with a different `-AlertEmail` or `-MonthlyBudget`.
 - **Choose an SMS provider:** add a sender for it in the Identity module, put its key in Key Vault, and set `Sms:Provider`. Until then members see "Signing in with a code by SMS isn't available yet"; staff are unaffected.
@@ -105,6 +105,7 @@ The deploy script sets these up and emails them to `-AlertEmail`. Each alert als
 | **API restarts** | The API container restarted | Check the logs just before the restart (out of memory, a crash at start-up, a failing migration). One restart after a deploy can be normal; repeated restarts are not. |
 | **Database CPU** | Average above 80% for 30 minutes | The B1ms server is small and runs on CPU credits. Look for a slow query or a stuck job (`/jobs`). If it's normal load, move up a size. |
 | **Database storage** | Above 80% full | Storage grows by itself, which raises the cost. Check what grew (sermon files are in Blob Storage, not here). |
+| **Background work needs attention** | Messages between modules have waited more than 10 minutes or were given up on after 10 attempts, a background job failed after all its retries, or the job server stopped. The API checks every 5 minutes; the alert checks every 15 (`-BackgroundAlertMinutes`) | Open **Background work** in the admin portal to see what and where. Retry or remove failed jobs from the jobs dashboard. Messages that were given up on need a developer: the cause is usually in the API logs at the time shown. |
 | **Cost budget** | 80% of the monthly budget spent, or 100% forecast | Azure portal, then *Cost Management*, then *Cost analysis* for this resource group. |
 
 To check the email arrives: Azure portal, then *Monitor*, then *Alerts*, then *Action groups*, then `ag-shapers-prod`, then *Test*.
@@ -135,9 +136,9 @@ To check the email arrives: Azure portal, then *Monitor*, then *Alerts*, then *A
 | Container Registry (Basic) | ~R90 |
 | Log Analytics / Application Insights | R50–R150 |
 | Storage, Key Vault, email | under R100 |
-| Alerts (2 log alerts every 5 minutes, 3 metric alerts; email and the budget are free) | about R60 |
+| Alerts (2 log alerts every 5 minutes, 1 every 15 minutes, 3 metric alerts; email and the budget are free) | about R70 |
 | Static Web Apps (Free) ×2, private network | R0 |
-| **Total** | **about R850–R1,450** |
+| **Total** | **about R860–R1,460** |
 
 Check the Azure pricing calculator before committing; a nonprofit grant may cover most of this.
 

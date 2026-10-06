@@ -65,6 +65,7 @@ public static class PlatformServiceCollectionExtensions
         services.AddSingleton(new IntegrationEventAssembly(contractsAssembly));
         services.AddScoped<OutboxCleanupJob<TContext>>();
         services.AddSingleton<OutboxProcessor<TContext>>();
+        services.AddScoped<IOutboxMonitor>(sp => new OutboxMonitor<TContext>(sp.GetRequiredService<TContext>(), schema, sp.GetRequiredService<TimeProvider>()));
         services.AddSingleton(new RecurringJobDefinition($"{schema}-outbox-cleanup", "0 3 * * *", (sp, ct) =>
             sp.GetRequiredService<OutboxCleanupJob<TContext>>().RunAsync(ct)));
         if (configuration.GetValue("Outbox:Enabled", true))
