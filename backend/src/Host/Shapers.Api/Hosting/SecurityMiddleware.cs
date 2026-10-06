@@ -19,7 +19,10 @@ internal static class SecurityMiddleware
             var cookieSession = context.User.Identity is { IsAuthenticated: true, AuthenticationType: var type }
                 && type == IdentityConstants.ApplicationScheme;
 
-            if (unsafeMethod && cookieSession && !context.Request.Headers.ContainsKey(IdentityInfrastructure.CsrfHeader))
+            // Answering a serving request from an email is authorised by the signed link in the form, never by the cookie.
+            var linkAuthorised = context.Request.Path.Equals(Shapers.Services.Api.ServicesModule.AnswerPath, StringComparison.OrdinalIgnoreCase);
+
+            if (unsafeMethod && cookieSession && !linkAuthorised && !context.Request.Headers.ContainsKey(IdentityInfrastructure.CsrfHeader))
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsJsonAsync(new { title = "Missing CSRF header.", code = "csrf_header_missing" });
@@ -34,7 +37,12 @@ internal static class SecurityMiddleware
         {
             var headers = context.Response.Headers;
             headers.XContentTypeOptions = "nosniff";
-            headers.XFrameOptions = "DENY";
+
+            // Public media files (chord charts) may be shown inside the admin portal's music stand; nothing else may be framed.
+            if (!context.Request.Path.StartsWithSegments("/media-files"))
+            {
+                headers.XFrameOptions = "DENY";
+            }
             headers["Referrer-Policy"] = "no-referrer";
             headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
             await next();

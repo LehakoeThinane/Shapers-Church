@@ -7732,6 +7732,1410 @@
           }
         }
       }
+    },
+    "/api/admin/services/teams": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ListTeams",
+        "parameters": [
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TeamDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "CreateTeam",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveTeamRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/teams/{id}": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "GetTeam",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "UpdateTeam",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveTeamRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/teams/{id}/archive": {
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ArchiveTeam",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/teams/{id}/restore": {
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "RestoreTeam",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/teams/{id}/positions": {
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "AddPosition",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePositionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/teams/{id}/positions/{positionId}": {
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "UpdatePosition",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "positionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePositionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ArchivePosition",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "positionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/teams/{id}/members": {
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "SaveTeamMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/teams/{id}/members/{personId}": {
+      "delete": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "RemoveTeamMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/types": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ListServiceTypes",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServiceTypeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "CreateServiceType",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveServiceTypeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceTypeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/types/{id}": {
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "UpdateServiceType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveServiceTypeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceTypeDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ArchiveServiceType",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/services/plans": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ListPlans",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlanSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "CreatePlan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/plans/{id}": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "GetPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "UpdatePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePlanDetailsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "DeletePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/services/plans/{id}/items": {
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "SetPlanItems",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePlanItemsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/plans/{id}/needs": {
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "SetPlanNeeds",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePlanNeedsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/plans/{id}/candidates": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "PlanCandidates",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "positionId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CandidateDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/plans/{id}/assignments": {
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "Schedule",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/plans/{id}/live/{action}": {
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ControlLive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoLiveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/assignments/{id}": {
+      "delete": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "Unschedule",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/matrix": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ServingMatrix",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "weeks",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatrixDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/songs": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ListSongs",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SongSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "CreateSong",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSongRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/songs/report": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "SongUsageReport",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SongUsageDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/songs/{id}": {
+      "get": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "GetSong",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "UpdateSong",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSongRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/songs/{id}/archive": {
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "ArchiveSong",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/songs/{id}/restore": {
+      "post": {
+        "tags": [
+          "Services admin"
+        ],
+        "operationId": "RestoreSong",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/services/plans/{id}/live": {
+      "get": {
+        "tags": [
+          "Serving"
+        ],
+        "operationId": "FollowLive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/services/plans/{id}/rehearse": {
+      "get": {
+        "tags": [
+          "Serving"
+        ],
+        "operationId": "Rehearse",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RehearsePlanDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/serving": {
+      "get": {
+        "tags": [
+          "Serving"
+        ],
+        "operationId": "MySchedule",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyAssignmentDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/serving/{id}/answer": {
+      "post": {
+        "tags": [
+          "Serving"
+        ],
+        "operationId": "AnswerServing",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServingAnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAssignmentDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/serving/blockouts": {
+      "get": {
+        "tags": [
+          "Serving"
+        ],
+        "operationId": "MyBlockouts",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlockoutDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Serving"
+        ],
+        "operationId": "AddBlockout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveBlockoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlockoutDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/serving/blockouts/{id}": {
+      "delete": {
+        "tags": [
+          "Serving"
+        ],
+        "operationId": "DeleteBlockout",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8037,6 +9441,65 @@
           }
         }
       },
+      "Arrangement": {
+        "required": [
+          "id",
+          "name",
+          "key",
+          "bpm",
+          "chartUrl",
+          "chartFileName",
+          "audioUrl",
+          "notes"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bpm": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "chartUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "chartFileName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "audioUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "AssetDto": {
         "required": [
           "id",
@@ -8075,6 +9538,98 @@
           },
           "status": {
             "$ref": "#/components/schemas/MediaAssetStatus"
+          }
+        }
+      },
+      "AssignmentDto": {
+        "required": [
+          "id",
+          "planId",
+          "teamId",
+          "team",
+          "positionId",
+          "position",
+          "personId",
+          "name",
+          "status",
+          "declineReason",
+          "requestedAt",
+          "respondedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "planId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "teamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "team": {
+            "type": "string"
+          },
+          "positionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "type": "string"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AssignmentStatus"
+          },
+          "declineReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "respondedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "AssignmentStatus": {
+        "enum": [
+          "Pending",
+          "Accepted",
+          "Declined"
+        ]
+      },
+      "AssignRequest": {
+        "required": [
+          "positionId",
+          "personId"
+        ],
+        "type": "object",
+        "properties": {
+          "positionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
@@ -8318,6 +9873,35 @@
           }
         }
       },
+      "BlockoutDto": {
+        "required": [
+          "id",
+          "from",
+          "to",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "BreachDto": {
         "required": [
           "id",
@@ -8474,6 +10058,41 @@
           "Active",
           "Closed"
         ]
+      },
+      "CandidateDto": {
+        "required": [
+          "personId",
+          "name",
+          "available",
+          "reason",
+          "lastServed"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lastServed": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          }
+        }
       },
       "CellDetailDto": {
         "required": [
@@ -9504,6 +11123,48 @@
           }
         }
       },
+      "CreatePlanRequest": {
+        "required": [
+          "serviceTypeId",
+          "date",
+          "title",
+          "startTime",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "serviceTypeId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "CreateTranslationRequest": {
         "required": [
           "language",
@@ -10103,6 +11764,21 @@
           null
         ]
       },
+      "GoLiveRequest": {
+        "required": [
+          "itemId"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
       "GrantDto": {
         "required": [
           "id",
@@ -10557,6 +12233,59 @@
           }
         }
       },
+      "LiveDto": {
+        "required": [
+          "planId",
+          "title",
+          "date",
+          "isLive",
+          "currentItemId",
+          "currentStartedAt",
+          "serverTime",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "isLive": {
+            "type": "boolean"
+          },
+          "currentItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "currentStartedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanItemDto"
+            }
+          }
+        }
+      },
       "LiveNowDto": {
         "required": [
           "state",
@@ -10785,6 +12514,108 @@
               "string"
             ],
             "format": "uuid"
+          }
+        }
+      },
+      "MatrixCellDto": {
+        "required": [
+          "planId",
+          "positionId",
+          "people",
+          "needed"
+        ],
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "positionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "people": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatrixPersonDto"
+            }
+          },
+          "needed": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "MatrixDto": {
+        "required": [
+          "plans",
+          "rows",
+          "cells"
+        ],
+        "type": "object",
+        "properties": {
+          "plans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanSummaryDto"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatrixRowDto"
+            }
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatrixCellDto"
+            }
+          }
+        }
+      },
+      "MatrixPersonDto": {
+        "required": [
+          "assignmentId",
+          "name",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "assignmentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AssignmentStatus"
+          }
+        }
+      },
+      "MatrixRowDto": {
+        "required": [
+          "teamId",
+          "team",
+          "positionId",
+          "position"
+        ],
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "team": {
+            "type": "string"
+          },
+          "positionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "type": "string"
           }
         }
       },
@@ -11119,6 +12950,49 @@
           }
         }
       },
+      "MyAssignmentDto": {
+        "required": [
+          "id",
+          "planId",
+          "planTitle",
+          "date",
+          "startTime",
+          "team",
+          "position",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "planId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "planTitle": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "team": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AssignmentStatus"
+          }
+        }
+      },
       "MyCellDto": {
         "required": [
           "id",
@@ -11305,6 +13179,46 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "NeedDto": {
+        "required": [
+          "teamId",
+          "team",
+          "positionId",
+          "position",
+          "needed",
+          "filled",
+          "pending"
+        ],
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "team": {
+            "type": "string"
+          },
+          "positionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "type": "string"
+          },
+          "needed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "filled": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pending": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -12008,6 +13922,261 @@
           "Erased"
         ]
       },
+      "PlanDto": {
+        "required": [
+          "id",
+          "serviceTypeId",
+          "title",
+          "date",
+          "startTime",
+          "endTime",
+          "scope",
+          "seriesTitle",
+          "notes",
+          "livestreamId",
+          "items",
+          "needs",
+          "assignments",
+          "liveItemId",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "serviceTypeId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "seriesTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "livestreamId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanItemDto"
+            }
+          },
+          "needs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NeedDto"
+            }
+          },
+          "assignments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssignmentDto"
+            }
+          },
+          "liveItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PlanItem": {
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "lengthSeconds",
+          "description",
+          "songId",
+          "arrangementId",
+          "key",
+          "leader"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/PlanItemKind"
+          },
+          "title": {
+            "type": "string"
+          },
+          "lengthSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "songId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "arrangementId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "leader": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "PlanItemDto": {
+        "required": [
+          "item",
+          "startsAt",
+          "songTitle",
+          "arrangementName"
+        ],
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/PlanItem"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "time"
+          },
+          "songTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arrangementName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "PlanItemKind": {
+        "enum": [
+          "Header",
+          "Item",
+          "Song"
+        ]
+      },
+      "PlanSummaryDto": {
+        "required": [
+          "id",
+          "title",
+          "date",
+          "startTime",
+          "seriesTitle",
+          "needed",
+          "accepted",
+          "pending",
+          "declined",
+          "isLive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "seriesTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "needed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "accepted": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pending": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "declined": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isLive": {
+            "type": "boolean"
+          }
+        }
+      },
       "PlaybackUpdateRequest": {
         "required": [
           "positionSeconds"
@@ -12015,6 +14184,44 @@
         "type": "object",
         "properties": {
           "positionSeconds": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PositionDto": {
+        "required": [
+          "id",
+          "name",
+          "order"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PositionNeed": {
+        "required": [
+          "positionId",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "positionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "count": {
             "type": "integer",
             "format": "int32"
           }
@@ -12824,6 +15031,138 @@
           "Cancelled"
         ]
       },
+      "RehearsePlanDto": {
+        "required": [
+          "id",
+          "title",
+          "date",
+          "startTime",
+          "notes",
+          "items",
+          "songs",
+          "team"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanItemDto"
+            }
+          },
+          "songs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RehearseSongDto"
+            }
+          },
+          "team": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssignmentDto"
+            }
+          }
+        }
+      },
+      "RehearseSongDto": {
+        "required": [
+          "itemId",
+          "songId",
+          "title",
+          "author",
+          "key",
+          "bpm",
+          "chartUrl",
+          "audioUrl",
+          "referenceUrl",
+          "lyrics",
+          "notes"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "songId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "key": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bpm": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "chartUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "audioUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "referenceUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lyrics": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "ReportDto": {
         "required": [
           "id",
@@ -13331,6 +15670,30 @@
           }
         }
       },
+      "SaveBlockoutRequest": {
+        "required": [
+          "from",
+          "to",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "SaveBreachRequest": {
         "required": [
           "title",
@@ -13685,6 +16048,30 @@
           }
         }
       },
+      "SaveMemberRequest": {
+        "required": [
+          "personId",
+          "positionIds",
+          "isLeader"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "positionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "isLeader": {
+            "type": "boolean"
+          }
+        }
+      },
       "SavePageRequest": {
         "required": [
           "title",
@@ -13718,6 +16105,93 @@
               "null",
               "integer"
             ],
+            "format": "int32"
+          }
+        }
+      },
+      "SavePlanDetailsRequest": {
+        "required": [
+          "title",
+          "date",
+          "startTime",
+          "seriesTitle",
+          "notes",
+          "livestreamId"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "seriesTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "livestreamId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "SavePlanItemsRequest": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanItem"
+            }
+          }
+        }
+      },
+      "SavePlanNeedsRequest": {
+        "required": [
+          "needs"
+        ],
+        "type": "object",
+        "properties": {
+          "needs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PositionNeed"
+            }
+          }
+        }
+      },
+      "SavePositionRequest": {
+        "required": [
+          "name",
+          "order"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
             "format": "int32"
           }
         }
@@ -14003,6 +16477,96 @@
           }
         }
       },
+      "SaveServiceTypeRequest": {
+        "required": [
+          "name",
+          "startTime",
+          "items",
+          "needs",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanItem"
+            }
+          },
+          "needs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PositionNeed"
+            }
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SaveSongRequest": {
+        "required": [
+          "title",
+          "author",
+          "ccliNumber",
+          "themes",
+          "lyrics",
+          "referenceUrl",
+          "arrangements"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ccliNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "themes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lyrics": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "referenceUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arrangements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Arrangement"
+            }
+          }
+        }
+      },
       "SaveSpeakerRequest": {
         "required": [
           "name",
@@ -14041,6 +16605,35 @@
               "string"
             ],
             "format": "uuid"
+          }
+        }
+      },
+      "SaveTeamRequest": {
+        "required": [
+          "name",
+          "description",
+          "openToMinors",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "openToMinors": {
+            "type": "boolean"
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -14518,6 +17111,63 @@
           }
         }
       },
+      "ServiceTypeDto": {
+        "required": [
+          "id",
+          "name",
+          "startTime",
+          "scope",
+          "items",
+          "needs"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanItem"
+            }
+          },
+          "needs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PositionNeed"
+            }
+          }
+        }
+      },
+      "ServingAnswerRequest": {
+        "required": [
+          "accept",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "accept": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "SetPasswordRequest": {
         "required": [
           "userId",
@@ -14639,6 +17289,185 @@
           "SignedIn",
           "RegistrationRequired"
         ]
+      },
+      "SongDto": {
+        "required": [
+          "id",
+          "title",
+          "author",
+          "ccliNumber",
+          "themes",
+          "lyrics",
+          "referenceUrl",
+          "arrangements",
+          "lastUsed",
+          "timesUsed",
+          "isArchived"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ccliNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "themes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lyrics": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "referenceUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "arrangements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Arrangement"
+            }
+          },
+          "lastUsed": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "timesUsed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isArchived": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SongSummaryDto": {
+        "required": [
+          "id",
+          "title",
+          "author",
+          "ccliNumber",
+          "themes",
+          "keys",
+          "lastUsed",
+          "timesUsed",
+          "isArchived"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ccliNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "themes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lastUsed": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "timesUsed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isArchived": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SongUsageDto": {
+        "required": [
+          "songId",
+          "title",
+          "author",
+          "ccliNumber",
+          "times",
+          "dates"
+        ],
+        "type": "object",
+        "properties": {
+          "songId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ccliNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "times": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        }
       },
       "SpeakerDto": {
         "required": [
@@ -14875,6 +17704,83 @@
           }
         }
       },
+      "TeamDto": {
+        "required": [
+          "id",
+          "name",
+          "description",
+          "openToMinors",
+          "scope",
+          "isArchived",
+          "positions",
+          "members"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "openToMinors": {
+            "type": "boolean"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "positions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PositionDto"
+            }
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamMemberDto"
+            }
+          }
+        }
+      },
+      "TeamMemberDto": {
+        "required": [
+          "personId",
+          "name",
+          "positionIds",
+          "isLeader"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "positionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "isLeader": {
+            "type": "boolean"
+          }
+        }
+      },
       "TicketDto": {
         "required": [
           "attendeeId",
@@ -14934,7 +17840,8 @@
           "Sermons",
           "Events",
           "Prayer",
-          "Announcements"
+          "Announcements",
+          "Serving"
         ]
       },
       "TranscriptDto": {
@@ -15650,6 +18557,12 @@
     },
     {
       "name": "AI help"
+    },
+    {
+      "name": "Services admin"
+    },
+    {
+      "name": "Serving"
     }
   ]
 }
