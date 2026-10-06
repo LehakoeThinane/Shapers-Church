@@ -19,3 +19,5 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0013](0013-public-website.md) | A static public website built from the API | Accepted |
 | [0014](0014-live-chat.md) | Moderated live chat during services | Accepted |
 | [0015](0015-production-deployment.md) | Production on Azure: Container Apps, private Postgres, Key Vault, Static Web Apps | Accepted |
+| [0016](0016-home-cells.md) | Home cells: leaders by membership, pastors by scoped permissions | Accepted |
+| [0017](0017-ai-drafting.md) | AI drafts for staff only, from public church content, within a monthly budget | Accepted |

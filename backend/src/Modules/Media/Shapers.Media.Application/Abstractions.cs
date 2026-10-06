@@ -44,6 +44,9 @@ public interface IFileStorage
 
     string PublicUrl(string key);
 
+    /// <summary>Reads a stored file, e.g. sermon audio for transcription.</summary>
+    Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken);
+
     Task DeleteAsync(string key, CancellationToken cancellationToken);
 }
 

@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -11,6 +12,8 @@ using Shapers.Identity.Api;
 using Shapers.Events.Api;
 using Shapers.Media.Api;
 using Shapers.Prayer.Api;
+using Shapers.Groups.Api;
+using Shapers.Assist.Api;
 using Shapers.Communications.Api;
 using Shapers.Privacy.Api;
 using Shapers.Content.Api;
@@ -38,7 +41,7 @@ if (generatingOpenApi)
 }
 
 // Initialisation order matters (see DatabaseInitialiser).
-IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule(), new MediaModule(), new EventsModule(), new PrayerModule(), new CommunicationsModule(), new PrivacyModule(), new ContentModule()];
+IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule(), new MediaModule(), new EventsModule(), new PrayerModule(), new GroupsModule(), new CommunicationsModule(), new PrivacyModule(), new ContentModule(), new AssistModule()];
 
 builder.Services.AddPlatform(builder.Configuration);
 foreach (var module in modules)
@@ -87,6 +90,15 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
         o.ForwardLimit = 1;
     }
 });
+
+// The keys that protect staff sign-in cookies and set-password links. Without a folder they live in memory, so
+// every restart would sign staff out; servers set DataProtection:KeysPath to a persistent folder.
+var dataProtection = builder.Services.AddDataProtection().SetApplicationName("shapers");
+var keysPath = builder.Configuration["DataProtection:KeysPath"];
+if (!string.IsNullOrWhiteSpace(keysPath))
+{
+    dataProtection.PersistKeysToFileSystem(new DirectoryInfo(keysPath));
+}
 
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(r => r.AddService("shapers-api"))

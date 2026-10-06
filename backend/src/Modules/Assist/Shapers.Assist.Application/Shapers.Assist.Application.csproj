@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Shapers.Assist.Domain/Shapers.Assist.Domain.csproj" />
+    <ProjectReference Include="../Shapers.Assist.Contracts/Shapers.Assist.Contracts.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/Shapers.Platform/Shapers.Platform.csproj" />
+    <ProjectReference Include="../../Media/Shapers.Media.Contracts/Shapers.Media.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Prompts/*.md" LogicalName="Prompts.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Shapers.Assist.Tests" />
+  </ItemGroup>
+</Project>

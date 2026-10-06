@@ -2,10 +2,12 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shapers.Assist.Contracts;
 using Shapers.Church.Contracts;
 using Shapers.Identity.Contracts;
 using Shapers.Identity.Domain;
 using Shapers.Events.Contracts;
+using Shapers.Groups.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Communications.Contracts;
 using Shapers.Content.Contracts;
@@ -43,11 +45,13 @@ public static class SystemRoles
                 PrayerPermissions.RequestsView, PrayerPermissions.RequestsModerate,
                 CommunicationsPermissions.AnnouncementsSend, CommunicationsPermissions.AnnouncementsApprove,
                 MediaPermissions.ChatModerate,
+                GroupsPermissions.CellsManage, GroupsPermissions.ReportsView,
+                AssistPermissions.DraftsCreate,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [
                 PeoplePermissions.ProfilesView, PeoplePermissions.ProfilesEdit, ChurchPermissions.MinistriesManage,
-                CommunicationsPermissions.AnnouncementsSend,
+                CommunicationsPermissions.AnnouncementsSend, AssistPermissions.DraftsCreate,
             ]),
             [MinistryLeader] = ("Leads a ministry; can see the people in it and send it announcements.",
             [
@@ -58,7 +62,7 @@ public static class SystemRoles
                 EventsPermissions.Edit, EventsPermissions.Publish, EventsPermissions.RegistrationsView, EventsPermissions.RegistrationsManage, EventsPermissions.CheckIn,
             ]),
             [DoorVolunteer] = ("Checks people in at events. Sees names only.", [EventsPermissions.CheckIn]),
-            [ContentTeam] = ("Writes and publishes the website pages, news and blog.", [ContentPermissions.Edit, ContentPermissions.Publish]),
+            [ContentTeam] = ("Writes and publishes the website pages, news and blog.", [ContentPermissions.Edit, ContentPermissions.Publish, AssistPermissions.DraftsCreate]),
             [InformationOfficer] = ("POPIA: handles correction and deletion requests and checks who read sensitive records.",
             [
                 PrivacyPermissions.RequestsManage, PrivacyPermissions.BreachesManage, PlatformPermissions.AuditView,
@@ -68,6 +72,7 @@ public static class SystemRoles
             [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",
             [
                 MediaPermissions.SermonsEdit, MediaPermissions.SermonsPublish, MediaPermissions.SpeakersManage, MediaPermissions.LivestreamManage, MediaPermissions.ChatModerate,
+                AssistPermissions.DraftsCreate,
             ]),
         };
 }

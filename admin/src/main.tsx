@@ -22,6 +22,9 @@ import { ContentPage, PageEditorPage, PostEditorPage } from './pages/ContentPage
 import { AnnouncementEditorPage, AnnouncementsPage } from './pages/AnnouncementPages';
 import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
 import { ChatConsolePage, ChatStreamsPage } from './pages/ChatModerationPage';
+import { HomePage } from './pages/HomePage';
+import { CellMaterialsPage, CellPage, CellReportPage, CellReportsPage, CellsPage, ChurchLessonsPage, MyCellPage, ReportEditorPage } from './pages/CellPages';
+import { AssistUsagePage } from './pages/AssistPage';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -45,7 +48,7 @@ const router = createBrowserRouter([
       </ScopeProvider>
     ),
     children: [
-      { index: true, element: <Navigate to="/people" replace /> },
+      { index: true, element: <HomePage /> },
       { path: 'people', element: <PeoplePage /> },
       { path: 'people/new', element: <NewPersonPage /> },
       { path: 'people/:id', element: <PersonPage /> },
@@ -71,6 +74,16 @@ const router = createBrowserRouter([
       { path: 'announcements', element: <AnnouncementsPage /> },
       { path: 'announcements/new', element: <AnnouncementEditorPage /> },
       { path: 'announcements/:id', element: <AnnouncementEditorPage /> },
+      { path: 'cells', element: <CellsPage /> },
+      { path: 'cells/reports', element: <CellReportsPage /> },
+      { path: 'cells/reports/:reportId', element: <CellReportPage /> },
+      { path: 'cells/materials', element: <CellMaterialsPage /> },
+      { path: 'cells/lessons', element: <ChurchLessonsPage /> },
+      { path: 'assist', element: <AssistUsagePage /> },
+      { path: 'cells/:id', element: <CellPage /> },
+      { path: 'my-cells/:cellId', element: <MyCellPage /> },
+      { path: 'my-cells/:cellId/reports/new', element: <ReportEditorPage /> },
+      { path: 'my-cells/:cellId/reports/:reportId', element: <ReportEditorPage /> },
       { path: 'prayer', element: <PrayerPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'breaches', element: <BreachesPage /> },
@@ -79,7 +92,7 @@ const router = createBrowserRouter([
       { path: 'access', element: <RolesPage /> },
       { path: 'audit', element: <AuditPage /> },
       { path: 'security', element: <SecurityPage /> },
-      { path: '*', element: <Navigate to="/people" replace /> },
+      { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
 ]);

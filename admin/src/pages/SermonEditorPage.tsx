@@ -5,6 +5,8 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
+import { AiBadge } from '../components/Assist';
+import { useAssistStatus, useCanDraft, useReviewDraft, type Draft } from '../lib/assist';
 import { formatBytes, formatDuration, uploadFile, type MediaKind } from '../lib/upload';
 
 type Admin = Schemas['SermonAdminDto'];
@@ -216,11 +218,191 @@ function Editor({ existing }: { existing: Admin | null }) {
           <div className="stack">
             <PublishCard sermon={existing} canPublish={can(access, Permissions.mediaPublish)} onChange={saved} />
             <MediaCard sermon={existing} kind="Audio" onChange={saved} />
+            <TranscriptCard sermon={existing} onChange={saved} />
+            <SermonAssistCard
+              sermon={existing}
+              onUseNotes={(n) => set({ summary: n.summary, notes: n.notes, topics: n.topics.join(', ') })}
+            />
             <MediaCard sermon={existing} kind="NotesPdf" onChange={saved} />
           </div>
         )}
       </div>
     </>
+  );
+}
+
+const transcriptLabel: Record<Schemas['TranscriptStatus'], string> = {
+  None: 'No transcript yet',
+  Queued: 'Waiting to be transcribed',
+  Working: 'Transcribing…',
+  Ready: 'Ready',
+  Failed: 'Transcription failed',
+};
+
+/** The sermon's words as text: transcribed from the audio, or pasted. Staff-only; AI drafting works from it. */
+function TranscriptCard({ sermon, onChange }: { sermon: Admin; onChange: (a: Admin) => void }) {
+  const id = sermon.sermon.id;
+  const info = sermon.transcript;
+  const { data: status } = useAssistStatus();
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState('');
+  const queryClient = useQueryClient();
+  const busy = info.status === 'Queued' || info.status === 'Working';
+
+  // While the job runs (every few minutes), check back so the card updates by itself.
+  useQuery({
+    queryKey: ['admin-sermon', id, 'transcript-poll'],
+    queryFn: async () => {
+      const latest = unwrap(await api.GET('/api/admin/media/sermons/{id}', { params: { path: { id } } }));
+      if (latest.transcript.status !== info.status) onChange(latest);
+      return latest.transcript.status;
+    },
+    enabled: busy,
+    refetchInterval: 30_000,
+  });
+
+  const open = useMutation({
+    mutationFn: async () => unwrap(await api.GET('/api/admin/media/sermons/{id}/transcript', { params: { path: { id } } })),
+    onSuccess: (t) => {
+      setText(t.text ?? '');
+      setEditing(true);
+    },
+  });
+  const save = useMutation({
+    mutationFn: async () => unwrap(await api.PUT('/api/admin/media/sermons/{id}/transcript', { params: { path: { id } }, body: { text: text || null } })),
+    onSuccess: (a) => {
+      setEditing(false);
+      void queryClient.invalidateQueries({ queryKey: ['assist'] });
+      onChange(a);
+    },
+  });
+  const transcribe = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/media/sermons/{id}/transcript/transcribe', { params: { path: { id } } })),
+    onSuccess: onChange,
+  });
+
+  return (
+    <Card
+      title="Transcript"
+      actions={
+        <Badge tone={info.status === 'Ready' ? 'success' : info.status === 'Failed' ? 'danger' : 'neutral'}>{transcriptLabel[info.status]}</Badge>
+      }
+    >
+      {info.status === 'Ready' && (
+        <p className="small muted">
+          {info.length.toLocaleString('en-ZA')} characters, {info.source === 'Audio' ? 'transcribed from the audio' : info.source === 'Captions' ? 'from YouTube captions' : 'pasted'}
+          {info.updatedAt && `, ${formatDateTime(info.updatedAt)}`}. Only staff see it.
+        </p>
+      )}
+      {info.status === 'Failed' && info.error && <p className="note note-danger small">{info.error}</p>}
+      {busy && <p className="small muted">This takes a few minutes after the upload. You can leave this page.</p>}
+      {info.status === 'None' && <p className="small muted">A transcript lets AI help draft show notes and a cell lesson from this sermon.</p>}
+
+      {editing ? (
+        <div className="stack">
+          <textarea className="input" rows={12} value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste the sermon's words here." />
+          <div className="row">
+            <Button variant="primary" busy={save.isPending} onClick={() => save.mutate()}>
+              Save transcript
+            </Button>
+            <Button variant="ghost" onClick={() => setEditing(false)}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="row">
+          <Button busy={open.isPending} disabled={busy} onClick={() => open.mutate()}>
+            {info.status === 'Ready' ? 'View or edit' : 'Paste transcript'}
+          </Button>
+          {status?.enabled && sermon.sermon.audio && !busy && (
+            <Button busy={transcribe.isPending} onClick={() => transcribe.mutate()}>
+              {info.status === 'Ready' ? 'Transcribe audio again' : 'Transcribe audio'}
+            </Button>
+          )}
+        </div>
+      )}
+      <ErrorNote error={open.error ?? save.error ?? transcribe.error} />
+    </Card>
+  );
+}
+
+/** AI drafts from the transcript: show notes for this page, or a lesson for every cell. */
+function SermonAssistCard({ sermon, onUseNotes }: { sermon: Admin; onUseNotes: (notes: Schemas['NotesDraft']) => void }) {
+  const navigate = useNavigate();
+  const canDraft = useCanDraft();
+  const review = useReviewDraft();
+  const [notes, setNotes] = useState<Draft | null>(null);
+  const body = { sermonId: sermon.sermon.id };
+  const draftNotes = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/assist/drafts/sermon-notes', { body })),
+    onSuccess: setNotes,
+  });
+  const draftLesson = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/assist/drafts/sermon-lesson', { body })),
+    onSuccess: (d) => navigate(`/cells/lessons?draft=${d.id}`),
+  });
+
+  if (!canDraft) return null;
+  const ready = sermon.transcript.status === 'Ready';
+  return (
+    <Card title="AI help">
+      {!ready ? (
+        <p className="small muted">Add a transcript first. AI works only from what was preached.</p>
+      ) : (
+        <div className="stack">
+          <p className="small muted">AI writes a first draft from the transcript. Check it against the sermon and change anything that isn't right.</p>
+          <div className="row">
+            <Button busy={draftNotes.isPending} disabled={draftLesson.isPending} onClick={() => draftNotes.mutate()}>
+              Draft summary and notes
+            </Button>
+            <Button busy={draftLesson.isPending} disabled={draftNotes.isPending} onClick={() => draftLesson.mutate()}>
+              Draft a cell lesson
+            </Button>
+          </div>
+          {(draftNotes.isPending || draftLesson.isPending) && <p className="small muted">Writing… this can take up to a minute.</p>}
+        </div>
+      )}
+      <ErrorNote error={draftNotes.error ?? draftLesson.error} />
+      {notes?.notes && (
+        <div className="ai-suggestion stack">
+          <span>
+            <AiBadge />
+          </span>
+          <p>
+            <strong>Summary:</strong> {notes.notes.summary}
+          </p>
+          <p className="small">
+            <strong>Topics:</strong> {notes.notes.topics.join(', ')}
+          </p>
+          <div className="markdown">
+            <Markdown>{notes.notes.notes}</Markdown>
+          </div>
+          <div className="row">
+            <Button
+              variant="primary"
+              onClick={() => {
+                onUseNotes(notes.notes!);
+                review.mutate({ id: notes.id, action: 'accept' });
+                setNotes(null);
+              }}
+            >
+              Put in the form
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                review.mutate({ id: notes.id, action: 'discard' });
+                setNotes(null);
+              }}
+            >
+              Discard
+            </Button>
+          </div>
+          <p className="small muted">Nothing is saved until you press Save changes.</p>
+        </div>
+      )}
+    </Card>
   );
 }
 

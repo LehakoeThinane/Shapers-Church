@@ -108,6 +108,29 @@
         }
       }
     },
+    "/api/me/cells": {
+      "get": {
+        "tags": [
+          "Cells"
+        ],
+        "operationId": "MyCells",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyCellDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/communications/deliveries": {
       "get": {
         "tags": [
@@ -2258,6 +2281,107 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/transcript": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "GetSermonTranscript",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "SetSermonTranscript",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTranscriptRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/transcript/transcribe": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "TranscribeSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -4580,6 +4704,967 @@
         }
       }
     },
+    "/api/cells/{cellId}": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderCell",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/members": {
+      "post": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderAddMember",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/members/{personId}": {
+      "delete": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderRemoveMember",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/reports": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderReports",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderCreateReport",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/reports/{reportId}": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderReport",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderUpdateReport",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/materials": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderMaterials",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderCreateMaterial",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveMaterialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/lessons": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderChurchLessons",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/materials/{materialId}": {
+      "put": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderUpdateMaterial",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "materialId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveMaterialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderDeleteMaterial",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "materialId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/cells": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListCells",
+        "parameters": [
+          {
+            "name": "includeClosed",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CellSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "CreateCell",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCellRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/reports": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListCellReports",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "urgentOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/reports/{id}": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "GetCellReport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/reports/{id}/follow-ups/{followUpId}/resolve": {
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ResolveCellFollowUp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "followUpId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/materials": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListCellMaterials",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/lessons": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListChurchLessons",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "CreateChurchLesson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLessonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/lessons/{lessonId}": {
+      "put": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "UpdateChurchLesson",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLessonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "DeleteChurchLesson",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "GetCell",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "UpdateCell",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCellRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}/close": {
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "CloseCell",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}/members": {
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "AddCellMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}/members/{personId}": {
+      "delete": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "RemoveCellMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me/devices": {
       "post": {
         "tags": [
@@ -6089,6 +7174,271 @@
           }
         }
       }
+    },
+    "/api/admin/assist/status": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "AssistStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistStatusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/usage": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "AssistUsage",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/sermon-lesson": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftSermonLesson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SermonDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/sermon-notes": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftSermonNotes",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SermonDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/rewrite": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftRewrite",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RewriteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftsForSource",
+        "parameters": [
+          {
+            "name": "sourceType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DraftDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/{id}": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "GetDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/{id}/accept": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "AcceptDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/{id}/discard": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DiscardDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -6127,6 +7477,22 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "AddMemberRequest": {
+        "required": [
+          "personId",
+          "role"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "$ref": "#/components/schemas/CellRole"
           }
         }
       },
@@ -6237,6 +7603,13 @@
             }
           }
         }
+      },
+      "AiOperation": {
+        "enum": [
+          "Chat",
+          "Transcription",
+          "Embedding"
+        ]
       },
       "AnnouncementDto": {
         "required": [
@@ -6409,6 +7782,35 @@
           },
           "status": {
             "$ref": "#/components/schemas/MediaAssetStatus"
+          }
+        }
+      },
+      "AssistStatusDto": {
+        "required": [
+          "enabled",
+          "canDraft",
+          "budgetZar",
+          "spentThisMonthZar",
+          "budgetReached"
+        ],
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "canDraft": {
+            "type": "boolean"
+          },
+          "budgetZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "spentThisMonthZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "budgetReached": {
+            "type": "boolean"
           }
         }
       },
@@ -6772,6 +8174,197 @@
           "Active",
           "Closed"
         ]
+      },
+      "CellDetailDto": {
+        "required": [
+          "id",
+          "name",
+          "campusId",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "address",
+          "status",
+          "members"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/CellStatus"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CellMemberDto"
+            }
+          }
+        }
+      },
+      "CellMemberDto": {
+        "required": [
+          "personId",
+          "name",
+          "role",
+          "joinedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/CellRole"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CellRole": {
+        "enum": [
+          "Leader",
+          "CoLeader",
+          "Member"
+        ]
+      },
+      "CellStatus": {
+        "enum": [
+          "Active",
+          "Closed"
+        ]
+      },
+      "CellSummaryDto": {
+        "required": [
+          "id",
+          "name",
+          "campusId",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "status",
+          "leaders",
+          "memberCount",
+          "lastReportDate",
+          "lastAttendance",
+          "reportedThisWeek",
+          "openUrgentFollowUps"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/CellStatus"
+          },
+          "leaders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "memberCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastReportDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "lastAttendance": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "reportedThisWeek": {
+            "type": "boolean"
+          },
+          "openUrgentFollowUps": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       },
       "ChangeStatusRequest": {
         "required": [
@@ -7719,6 +9312,18 @@
           "Deletion"
         ]
       },
+      "DayOfWeek": {
+        "enum": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          null
+        ]
+      },
       "DecideDataRequest": {
         "required": [
           "response"
@@ -7824,6 +9429,102 @@
           "Sent",
           "Failed",
           "Skipped"
+        ]
+      },
+      "DraftDto": {
+        "required": [
+          "id",
+          "kind",
+          "sourceType",
+          "sourceId",
+          "status",
+          "model",
+          "promptVersion",
+          "requestedAt",
+          "requestedByMe",
+          "lesson",
+          "notes",
+          "rewrite"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DraftKind"
+          },
+          "sourceType": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DraftStatus"
+          },
+          "model": {
+            "type": "string"
+          },
+          "promptVersion": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestedByMe": {
+            "type": "boolean"
+          },
+          "lesson": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LessonDraft"
+              }
+            ]
+          },
+          "notes": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/NotesDraft"
+              }
+            ]
+          },
+          "rewrite": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RewriteDraft"
+              }
+            ]
+          }
+        }
+      },
+      "DraftKind": {
+        "enum": [
+          "SermonLesson",
+          "SermonNotes",
+          "Rewrite"
+        ]
+      },
+      "DraftStatus": {
+        "enum": [
+          "Pending",
+          "Accepted",
+          "Discarded"
         ]
       },
       "DuplicateCandidateDto": {
@@ -8104,6 +9805,26 @@
           },
           "isActive": {
             "type": "boolean"
+          }
+        }
+      },
+      "GrowthDto": {
+        "required": [
+          "personId",
+          "name",
+          "step"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "step": {
+            "$ref": "#/components/schemas/NextStep"
           }
         }
       },
@@ -8417,6 +10138,51 @@
           "Contract"
         ]
       },
+      "LessonDraft": {
+        "required": [
+          "title",
+          "summary",
+          "keyVerses",
+          "icebreaker",
+          "questions",
+          "application",
+          "prayerFocus",
+          "body"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "keyVerses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "icebreaker": {
+            "type": "string"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "application": {
+            "type": "string"
+          },
+          "prayerFocus": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      },
       "LiveNowDto": {
         "required": [
           "state",
@@ -8573,6 +10339,78 @@
         "properties": {
           "refreshToken": {
             "type": "string"
+          }
+        }
+      },
+      "MaterialDto": {
+        "required": [
+          "id",
+          "cellId",
+          "cellName",
+          "title",
+          "body",
+          "link",
+          "forDate",
+          "sharedWithMembers",
+          "writtenBy",
+          "updatedAt",
+          "isChurchLesson",
+          "sermonId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "cellName": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "forDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "sharedWithMembers": {
+            "type": "boolean"
+          },
+          "writtenBy": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isChurchLesson": {
+            "type": "boolean"
+          },
+          "sermonId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           }
         }
       },
@@ -8856,6 +10694,13 @@
           }
         }
       },
+      "MultiplicationReadiness": {
+        "enum": [
+          "NotYet",
+          "Growing",
+          "Ready"
+        ]
+      },
       "MyAccessDto": {
         "required": [
           "userId",
@@ -8896,6 +10741,73 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PermissionScopesDto"
+            }
+          }
+        }
+      },
+      "MyCellDto": {
+        "required": [
+          "id",
+          "name",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "address",
+          "myRole",
+          "leaders",
+          "sharedMaterials"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "myRole": {
+            "$ref": "#/components/schemas/CellRole"
+          },
+          "leaders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sharedMaterials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaterialDto"
             }
           }
         }
@@ -9019,6 +10931,69 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "NewMemberRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "mobile",
+          "email",
+          "agreedToBeOnRecord"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "agreedToBeOnRecord": {
+            "type": "boolean"
+          }
+        }
+      },
+      "NextStep": {
+        "enum": [
+          "Baptism",
+          "GrowthTrack",
+          "Serving",
+          "Leadership"
+        ]
+      },
+      "NotesDraft": {
+        "required": [
+          "summary",
+          "notes",
+          "topics"
+        ],
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -9592,6 +11567,22 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "PersonRefDto": {
+        "required": [
+          "personId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
           }
         }
       },
@@ -10401,6 +12392,314 @@
           "Cancelled"
         ]
       },
+      "ReportDto": {
+        "required": [
+          "id",
+          "cellId",
+          "cellName",
+          "meetingDate",
+          "status",
+          "topic",
+          "materialId",
+          "materialTitle",
+          "notes",
+          "highlights",
+          "prayerNeeds",
+          "multiplication",
+          "attendees",
+          "visitors",
+          "followUps",
+          "growth",
+          "membersPresent",
+          "visitorCount",
+          "writtenBy",
+          "updatedAt",
+          "submittedAt",
+          "redacted"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellName": {
+            "type": "string"
+          },
+          "meetingDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReportStatus"
+          },
+          "topic": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "materialId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "materialTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "highlights": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "prayerNeeds": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "multiplication": {
+            "$ref": "#/components/schemas/MultiplicationReadiness"
+          },
+          "attendees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonRefDto"
+            }
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportVisitor"
+            }
+          },
+          "followUps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportFollowUp"
+            }
+          },
+          "growth": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrowthDto"
+            }
+          },
+          "membersPresent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "visitorCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "writtenBy": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submittedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportFollowUp": {
+        "required": [
+          "id",
+          "personId",
+          "name",
+          "note",
+          "urgent"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "urgent": {
+            "type": "boolean"
+          },
+          "resolvedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "resolvedByUserId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "ReportGrowth": {
+        "required": [
+          "personId",
+          "step"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "step": {
+            "$ref": "#/components/schemas/NextStep"
+          }
+        }
+      },
+      "ReportStatus": {
+        "enum": [
+          "Draft",
+          "Submitted"
+        ]
+      },
+      "ReportSummaryDto": {
+        "required": [
+          "id",
+          "cellId",
+          "cellName",
+          "meetingDate",
+          "status",
+          "topic",
+          "membersPresent",
+          "visitorCount",
+          "openUrgentFollowUps",
+          "writtenBy",
+          "submittedAt",
+          "redacted"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellName": {
+            "type": "string"
+          },
+          "meetingDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReportStatus"
+          },
+          "topic": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "membersPresent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "visitorCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "openUrgentFollowUps": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "writtenBy": {
+            "type": "string"
+          },
+          "submittedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportVisitor": {
+        "required": [
+          "firstName",
+          "lastName",
+          "mobile",
+          "email",
+          "agreedToBeContacted"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "agreedToBeContacted": {
+            "type": "boolean"
+          }
+        }
+      },
       "RequestCodeRequest": {
         "required": [
           "phone"
@@ -10465,6 +12764,39 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "RewriteDraft": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "RewriteMode": {
+        "enum": [
+          "Tidy",
+          "Shorter",
+          "Longer"
+        ]
+      },
+      "RewriteRequest": {
+        "required": [
+          "text",
+          "mode"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/RewriteMode"
           }
         }
       },
@@ -10637,6 +12969,55 @@
           }
         }
       },
+      "SaveCellRequest": {
+        "required": [
+          "name",
+          "campusId",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "address"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "SaveEventRequest": {
         "required": [
           "title",
@@ -10745,6 +13126,55 @@
           }
         }
       },
+      "SaveLessonRequest": {
+        "required": [
+          "title",
+          "body",
+          "link",
+          "forDate",
+          "sharedWithMembers",
+          "sermonId",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "forDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "sharedWithMembers": {
+            "type": "boolean"
+          },
+          "sermonId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "SaveLivestreamRequest": {
         "required": [
           "title",
@@ -10786,6 +13216,40 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "SaveMaterialRequest": {
+        "required": [
+          "title",
+          "body",
+          "link",
+          "forDate",
+          "sharedWithMembers"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "forDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "sharedWithMembers": {
+            "type": "boolean"
           }
         }
       },
@@ -10878,6 +13342,91 @@
               "string"
             ],
             "format": "date"
+          }
+        }
+      },
+      "SaveReportRequest": {
+        "required": [
+          "meetingDate",
+          "topic",
+          "materialId",
+          "notes",
+          "highlights",
+          "prayerNeeds",
+          "multiplication",
+          "attendeeIds",
+          "visitors",
+          "followUps",
+          "growth",
+          "submit"
+        ],
+        "type": "object",
+        "properties": {
+          "meetingDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "topic": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "materialId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "highlights": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "prayerNeeds": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "multiplication": {
+            "$ref": "#/components/schemas/MultiplicationReadiness"
+          },
+          "attendeeIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportVisitor"
+            }
+          },
+          "followUps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportFollowUp"
+            }
+          },
+          "growth": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportGrowth"
+            }
+          },
+          "submit": {
+            "type": "boolean"
           }
         }
       },
@@ -11236,7 +13785,8 @@
           "scope",
           "importSource",
           "publishProblems",
-          "updatedAt"
+          "updatedAt",
+          "transcript"
         ],
         "type": "object",
         "properties": {
@@ -11271,6 +13821,9 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "transcript": {
+            "$ref": "#/components/schemas/TranscriptInfoDto"
           }
         }
       },
@@ -11437,6 +13990,18 @@
           }
         }
       },
+      "SermonDraftRequest": {
+        "required": [
+          "sermonId"
+        ],
+        "type": "object",
+        "properties": {
+          "sermonId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
       "SermonStatus": {
         "enum": [
           "Draft",
@@ -11572,6 +14137,20 @@
               "string"
             ],
             "format": "uuid"
+          }
+        }
+      },
+      "SetTranscriptRequest": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -11926,6 +14505,83 @@
           "Announcements"
         ]
       },
+      "TranscriptDto": {
+        "required": [
+          "text",
+          "info"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "info": {
+            "$ref": "#/components/schemas/TranscriptInfoDto"
+          }
+        }
+      },
+      "TranscriptInfoDto": {
+        "required": [
+          "status",
+          "source",
+          "length",
+          "error",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/TranscriptStatus"
+          },
+          "source": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TranscriptSource"
+              }
+            ]
+          },
+          "length": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "updatedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "TranscriptSource": {
+        "enum": [
+          "Pasted",
+          "Audio",
+          "Captions",
+          null
+        ]
+      },
+      "TranscriptStatus": {
+        "enum": [
+          "None",
+          "Queued",
+          "Working",
+          "Ready",
+          "Failed"
+        ]
+      },
       "TwoFactorStatus": {
         "required": [
           "enabled",
@@ -12077,6 +14733,118 @@
           }
         }
       },
+      "UsageCallDto": {
+        "required": [
+          "occurredAt",
+          "operation",
+          "purpose",
+          "model",
+          "inputTokens",
+          "outputTokens",
+          "audioSeconds",
+          "costZar",
+          "succeeded"
+        ],
+        "type": "object",
+        "properties": {
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/AiOperation"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "inputTokens": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "audioSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "costZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "succeeded": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UsageDto": {
+        "required": [
+          "enabled",
+          "provider",
+          "chatModel",
+          "budgetZar",
+          "spentThisMonthZar",
+          "months",
+          "recent"
+        ],
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "chatModel": {
+            "type": "string"
+          },
+          "budgetZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "spentThisMonthZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "months": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageMonthDto"
+            }
+          },
+          "recent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageCallDto"
+            }
+          }
+        }
+      },
+      "UsageMonthDto": {
+        "required": [
+          "month",
+          "calls",
+          "costZar"
+        ],
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "calls": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "costZar": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "VerifyCodeRequest": {
         "required": [
           "challengeId",
@@ -12158,6 +14926,9 @@
       "name": "Events"
     },
     {
+      "name": "Cells"
+    },
+    {
       "name": "Notifications admin"
     },
     {
@@ -12200,6 +14971,12 @@
       "name": "Prayer admin"
     },
     {
+      "name": "Cells (leaders)"
+    },
+    {
+      "name": "Cells admin"
+    },
+    {
       "name": "Notifications"
     },
     {
@@ -12213,6 +14990,9 @@
     },
     {
       "name": "Content admin"
+    },
+    {
+      "name": "AI help"
     }
   ]
 }

@@ -25,6 +25,7 @@ public static class PeopleInfrastructure
         services.AddScoped<MergeService>();
         services.AddScoped<MyProfileService>();
         services.AddScoped<ConnectCardService>();
+        services.AddScoped<Shapers.Platform.Messaging.IIntegrationEventHandler<Shapers.Groups.Contracts.CellVisitorsRecordedIntegrationEvent>, FileCellVisitors>();
         services.AddScoped<IGuestRecords, GuestRecords>();
         services.AddScoped<IPeopleDirectory, PeopleDirectory>();
         services.AddScoped<IPeopleRegistration, PeopleRegistration>();

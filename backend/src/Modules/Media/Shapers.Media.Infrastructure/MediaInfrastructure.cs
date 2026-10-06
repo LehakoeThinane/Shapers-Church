@@ -30,14 +30,15 @@ public static class MediaInfrastructure
         {
             services.AddSingleton<IFileStorage, AzureBlobFileStorage>();
         }
-        else if (environment.IsDevelopment() || environment.IsEnvironment("Testing"))
+        // Local disk: development, tests, and the temporary demo server (a single machine with a persistent disk).
+        else if (environment.IsDevelopment() || environment.IsEnvironment("Testing") || environment.IsEnvironment("Demo"))
         {
             services.AddSingleton<LocalFileStorage>();
             services.AddSingleton<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
         }
         else
         {
-            throw new InvalidOperationException("Local media storage is for development only. Set Media:Storage:Provider to Azure.");
+            throw new InvalidOperationException("Local media storage is for development and demos only. Set Media:Storage:Provider to Azure.");
         }
 
         services.AddHttpClient<IYouTubeClient, YouTubeClient>(c =>
@@ -63,6 +64,10 @@ public static class MediaInfrastructure
         services.AddScoped<ChatModerationService>();
         services.AddScoped<ChatRetention>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, ChatPersonalData>();
+        services.AddScoped<TranscriptionJob>();
+        services.AddScoped<ISermonSource, SermonSource>();
+        services.AddSingleton(new RecurringJobDefinition("media-transcription", "*/5 * * * *", (sp, ct) =>
+            sp.GetRequiredService<TranscriptionJob>().RunAsync(ct)));
 
         services.AddSingleton(new RecurringJobDefinition("media-publish-scheduled", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<ScheduledPublisher>().PublishDueAsync(ct)));
@@ -77,14 +82,16 @@ public static class MediaInfrastructure
     {
         await using var scope = services.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<MediaDbContext>().Database.MigrateAsync(cancellationToken);
-        if (scope.ServiceProvider.GetRequiredService<IHostEnvironment>().IsDevelopment())
+        // Sample sermons and a Sunday livestream, so a new development or demo database isn't empty.
+        var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
+        if (environment.IsDevelopment() || environment.IsEnvironment("Demo"))
         {
             await scope.ServiceProvider.GetRequiredService<MediaDemoSeeder>().SeedAsync(cancellationToken);
         }
     }
 }
 
-/// <summary>Development only: receives signed uploads and serves files from the local disk, with range requests for audio seeking.</summary>
+/// <summary>Development and demo: receives signed uploads and serves files from the local disk, with range requests for audio seeking.</summary>
 public static class LocalStorageEndpoints
 {
     private static readonly FileExtensionContentTypeProvider ContentTypes = new();
@@ -106,6 +113,14 @@ public static class LocalStorageEndpoints
                 var path = storage.PathFor(key);
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                 var limit = long.Parse(size, System.Globalization.CultureInfo.InvariantCulture);
+
+                // The signed size was checked when the upload was created; allow exactly that much (sermon audio is
+                // larger than the server's 30 MB default) and no more.
+                var bodyLimit = request.HttpContext.Features.Get<Microsoft.AspNetCore.Http.Features.IHttpMaxRequestBodySizeFeature>();
+                if (bodyLimit is { IsReadOnly: false })
+                {
+                    bodyLimit.MaxRequestBodySize = limit + 1;
+                }
                 await using (var file = File.Create(path))
                 {
                     await request.Body.CopyToAsync(file, ct);

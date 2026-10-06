@@ -17,11 +17,14 @@ RUN dotnet restore src/Host/Shapers.Api/Shapers.Api.csproj
 RUN dotnet publish src/Host/Shapers.Api/Shapers.Api.csproj \
       --no-restore -c Release -o /app \
       -p:OpenApiGenerateDocuments=false \
-      -p:UseAppHost=false
+      -p:UseAppHost=false \
+ && mkdir -p /app/App_Data/media /app/App_Data/keys
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra AS runtime
 WORKDIR /app
-COPY --from=build /app ./
+# App_Data (uploaded files on a single-server setup, and the cookie protection keys) belongs to the non-root
+# app user, so a volume mounted there is writable.
+COPY --from=build --chown=$APP_UID:$APP_UID /app ./
 
 ENV ASPNETCORE_ENVIRONMENT=Production \
     ASPNETCORE_HTTP_PORTS=8080 \

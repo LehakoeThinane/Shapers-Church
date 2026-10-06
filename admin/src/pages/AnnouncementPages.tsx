@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, covers, Permissions, scopesFor, useAccess } from '../lib/access';
+import { RewriteHelp } from '../components/Assist';
 import { useScopes } from '../lib/queries';
 import { scopeLabel, useScope } from '../lib/scope-context';
 
@@ -188,6 +189,7 @@ function Editor({ existing }: { existing?: Announcement }) {
               <Field label="Message" hint="Phones show the first two lines; the inbox and email show it all.">
                 <textarea className="input" rows={7} required maxLength={2000} value={form.body} onChange={(e) => set({ body: e.target.value })} />
               </Field>
+              <RewriteHelp text={form.body} onApply={(body) => set({ body })} />
               <Field label="Open in the app (optional)" hint="A place in the app, e.g. /events or /prayer.">
                 <TextInput maxLength={300} value={form.link} placeholder="/events" onChange={(e) => set({ link: e.target.value })} />
               </Field>

@@ -137,6 +137,61 @@ nav {
   box-shadow: inset 0 1px 0 var(--color-glass-highlight);
 }
 
+/* Products grouped like Planning Center; the current product's own menu opens beneath it. */
+.sidebar nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  gap: var(--space-xs);
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-sm);
+}
+
+.nav-group-title {
+  padding: 0 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.nav-product {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-icon {
+  display: inline-grid;
+  place-items: center;
+  color: var(--color-interactive);
+}
+
+.nav-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nav-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 4px 22px;
+  padding-left: 10px;
+  border-left: 1px solid var(--color-glass-edge);
+}
+
+.nav-sub-link {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
 .sidebar-footer {
   margin-top: auto;
   display: flex;
@@ -577,8 +632,171 @@ fieldset {
   border-bottom: 0;
 }
 
+/* ---------- Home ---------- */
+
+.home-hero h1 {
+  font-size: 30px;
+  margin-top: 2px;
+}
+
+.serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+.stack-tight {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-md);
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+.task-count {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+}
+
+.task-done .task-count {
+  color: var(--color-success);
+  background: var(--color-glass-fill-active);
+  border: 1px solid var(--color-success);
+}
+
+.danger-text {
+  color: var(--color-danger);
+}
+
+.product-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-lg) var(--space-xl);
+}
+
+.product-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.product-group-title {
+  margin: 0 0 var(--space-xs);
+  padding-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  border-bottom: 1px solid var(--color-track);
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  transition: background 0.2s ease;
+}
+
+.product:hover {
+  text-decoration: none;
+  background: var(--color-glass-fill);
+}
+
+.product-disabled {
+  opacity: 0.55;
+}
+
+.product-disabled:hover {
+  background: none;
+}
+
+.product-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--color-text-on-button);
+  background: linear-gradient(180deg, var(--color-button-primary-top), var(--color-button-primary-bottom));
+  box-shadow: inset 0 1px 0 var(--color-glass-highlight);
+}
+
+.product-disabled .product-icon {
+  color: var(--color-interactive);
+  background: var(--color-glass-fill-active);
+}
+
+.product-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task,
+  .product {
+    transition: none;
+  }
+}
+
 /* Live chat console: the full log scrolls on its own so the queue stays in view. */
 .chat-log {
   max-height: 60vh;
   overflow-y: auto;
+}
+
+dd {
+  margin: 0;
+}
+
+/* ---------- AI help ---------- */
+
+.ai-help {
+  margin-top: var(--space-xs);
+}
+
+.ai-suggestion {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-tile-edge);
+  background: var(--color-tile);
+}
+
+.pre-wrap {
+  margin: 0;
+  white-space: pre-wrap;
 }

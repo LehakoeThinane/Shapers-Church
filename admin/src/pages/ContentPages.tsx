@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
+import { RewriteHelp } from '../components/Assist';
 
 type Status = Schemas['ContentStatus'];
 type Kind = Schemas['PostKind'];
@@ -242,6 +243,7 @@ function PageEditor({ existing }: { existing?: PageAdmin }) {
               <Field label="Content" hint="Markdown: ## for headings, - for lists, **bold**, [link](https://…).">
                 <textarea className="input" rows={14} required maxLength={50000} value={form.body} onChange={(e) => set({ body: e.target.value })} />
               </Field>
+              <RewriteHelp text={form.body} onApply={(body) => set({ body })} />
               <Field label="Position in the website menu" hint="Empty keeps it out of the menu.">
                 <TextInput type="number" min={1} max={20} value={form.menuOrder} onChange={(e) => set({ menuOrder: e.target.value })} />
               </Field>
@@ -349,6 +351,7 @@ function PostEditor({ existing }: { existing?: PostAdmin }) {
               <Field label="Content" hint="Markdown.">
                 <textarea className="input" rows={14} required maxLength={50000} value={form.body} onChange={(e) => set({ body: e.target.value })} />
               </Field>
+              <RewriteHelp text={form.body} onApply={(body) => set({ body })} />
               <div className="row">
                 <Field label="Author (optional)">
                   <TextInput maxLength={100} value={form.author} onChange={(e) => set({ author: e.target.value })} />

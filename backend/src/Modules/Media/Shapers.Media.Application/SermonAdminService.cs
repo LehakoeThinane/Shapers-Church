@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Shapers.Assist.Contracts;
 using Shapers.Church.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Media.Domain;
@@ -16,6 +17,7 @@ public sealed class SermonAdminService(
     IAuthorizer authorizer,
     IChurchDirectory church,
     IAuditLog audit,
+    IAssistTranscriber transcriber,
     TimeProvider clock)
 {
     private static readonly Error NotFound = Error.NotFound("media.sermon_not_found", "Sermon not found.");
@@ -121,6 +123,13 @@ public sealed class SermonAdminService(
             }
 
             sermon.AttachAudio(asset, now);
+
+            // New audio: transcribe it automatically when AI help is on, unless someone already provided the text.
+            if (transcriber.IsEnabled && sermon.TranscriptStatus is TranscriptStatus.None or TranscriptStatus.Failed)
+            {
+                sermon.QueueTranscription(now);
+            }
+
             return Result.Success();
         }, cancellationToken);
 
@@ -284,7 +293,37 @@ public sealed class SermonAdminService(
     }
 
     private async Task<SermonAdminDto> ToAdminDtoAsync(Sermon sermon, CancellationToken cancellationToken) =>
-        new(await reader.DetailAsync(sermon, cancellationToken), sermon.Status, sermon.PublishAt, sermon.Scope, sermon.ImportSource, sermon.PublishProblems(), sermon.UpdatedAt);
+        new(await reader.DetailAsync(sermon, cancellationToken), sermon.Status, sermon.PublishAt, sermon.Scope, sermon.ImportSource, sermon.PublishProblems(), sermon.UpdatedAt, TranscriptInfo(sermon));
+
+    public static TranscriptInfoDto TranscriptInfo(Sermon sermon) =>
+        new(sermon.TranscriptStatus, sermon.TranscriptSource, sermon.Transcript?.Length ?? 0, sermon.TranscriptError, sermon.TranscriptUpdatedAt);
+
+    public async Task<Result<TranscriptDto>> GetTranscriptAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var sermon = await db.Sermons.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id, cancellationToken);
+        return sermon is null || !await CanAsync(MediaPermissions.SermonsEdit, sermon, cancellationToken)
+            ? NotFound
+            : new TranscriptDto(sermon.Transcript, TranscriptInfo(sermon));
+    }
+
+    public Task<Result<SermonAdminDto>> SetTranscriptAsync(Guid id, SetTranscriptRequest request, CancellationToken cancellationToken) =>
+        ChangeAsync(id, MediaPermissions.SermonsEdit, "media.sermon.transcript_changed", (sermon, now) =>
+        {
+            sermon.SetTranscript(request.Text, TranscriptSource.Pasted, now);
+            return Task.FromResult(Result.Success());
+        }, cancellationToken);
+
+    public Task<Result<SermonAdminDto>> TranscribeAsync(Guid id, CancellationToken cancellationToken) =>
+        ChangeAsync(id, MediaPermissions.SermonsEdit, "media.sermon.transcription_queued", (sermon, now) =>
+        {
+            if (!transcriber.IsEnabled)
+            {
+                return Task.FromResult<Result>(new Error("media.transcription_off", "Automatic transcription is switched off. Paste the transcript instead."));
+            }
+
+            sermon.QueueTranscription(now);
+            return Task.FromResult(Result.Success());
+        }, cancellationToken);
 
     private Task<bool> CanAsync(string permission, Sermon sermon, CancellationToken cancellationToken) =>
         authorizer.CanAsync(permission, ScopePath.Parse(sermon.Scope), cancellationToken);

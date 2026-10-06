@@ -48,12 +48,13 @@ Principles:
 | Giving | Once-off and recurring giving, funds, ledger, reconciliation, Section 18A certificates | V1 |
 | Prayer | Requests visible publicly, to a group, to pastors only, or anonymously | V1 |
 | Communications | Push, email, SMS and WhatsApp with audience targeting | V1 |
-| Groups | Small groups, leaders, attendance, safeguarded group chat | V2 |
+| Groups | Home cells: leaders, meeting reports, teaching and church lessons (built); other groups and safeguarded group chat later | V2 |
 | Services and Volunteers | Service planning, rosters, availability | V2 |
 | Kids Check-In | Pre-check-in, security codes, labels, authorised pickup, offline mode | V2 |
 | Calendar and Resources | Room and resource booking | V2 |
 | Ticketing, Forms, Bible and Discipleship | Tickets, custom forms, reading plans, courses, Growth Track | V2 |
-| Search, Analytics, Automation | Semantic search, aggregate engagement metrics, sermon processing with human approval | V3 |
+| Assist (AI help) | Sermon transcripts, AI drafts of show notes, cell lessons and rewrites for staff to review; monthly budget (built) | V3 |
+| Search, Analytics, Automation | Semantic search, aggregate engagement metrics | V3 |
 
 ## South African requirements
 

@@ -5,6 +5,7 @@
     <ProjectReference Include="../../../BuildingBlocks/Shapers.Platform/Shapers.Platform.csproj" />
     <ProjectReference Include="../../Church/Shapers.Church.Contracts/Shapers.Church.Contracts.csproj" />
     <ProjectReference Include="../../People/Shapers.People.Contracts/Shapers.People.Contracts.csproj" />
+    <ProjectReference Include="../../Assist/Shapers.Assist.Contracts/Shapers.Assist.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Shapers.Media.Tests" />

@@ -1,0 +1,29 @@
+# One address for the API and the admin portal, so the staff sign-in cookie is same-origin.
+# Caddy gets and renews the HTTPS certificate for SITE_HOST automatically.
+{$SITE_HOST} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+		-Server
+	}
+
+	@api path /api/* /hubs/* /jobs /jobs/* /health/* /podcast.xml /media-files/*
+	handle @api {
+		reverse_proxy api:8080
+	}
+
+	# Admin portal (a single-page app): unknown paths load index.html.
+	handle {
+		header {
+			Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self'; connect-src 'self' wss://{$SITE_HOST}; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+			Permissions-Policy "camera=(self), microphone=(), geolocation=()"
+			X-Robots-Tag "noindex, nofollow"
+		}
+		root * /srv/admin
+		try_files {path} /index.html
+		file_server
+	}
+}

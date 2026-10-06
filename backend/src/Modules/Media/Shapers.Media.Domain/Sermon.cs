@@ -50,6 +50,22 @@ public sealed partial record VideoLink(VideoProvider Provider, string ExternalId
     private static partial Regex YouTubeId();
 }
 
+public enum TranscriptStatus
+{
+    None,
+    Queued,
+    Working,
+    Ready,
+    Failed,
+}
+
+public enum TranscriptSource
+{
+    Pasted,
+    Audio,
+    Captions,
+}
+
 public sealed record SermonPublished(Guid SermonId, string Title, string Slug, string Scope) : IDomainEvent;
 
 /// <summary>
@@ -109,6 +125,19 @@ public sealed partial class Sermon : AggregateRoot<Guid>
     public DateTimeOffset CreatedAt { get; private set; }
 
     public DateTimeOffset UpdatedAt { get; private set; }
+
+    /// <summary>What was said, as text. Staff-only by default; AI drafting works from it.</summary>
+    public string? Transcript { get; private set; }
+
+    public TranscriptSource? TranscriptSource { get; private set; }
+
+    public TranscriptStatus TranscriptStatus { get; private set; }
+
+    public string? TranscriptError { get; private set; }
+
+    public DateTimeOffset? TranscriptUpdatedAt { get; private set; }
+
+    public const int MaxTranscriptLength = 300_000;
 
     public IReadOnlyList<SermonSpeaker> Speakers => _speakers;
 
@@ -215,6 +244,69 @@ public sealed partial class Sermon : AggregateRoot<Guid>
 
         NotesPdfAssetId = asset?.Id;
         UpdatedAt = now;
+    }
+
+    /// <summary>Sets the transcript by hand (or from captions), or clears it when <paramref name="text"/> is empty.</summary>
+    public void SetTranscript(string? text, TranscriptSource source, DateTimeOffset now)
+    {
+        if (TranscriptStatus == TranscriptStatus.Working)
+        {
+            throw new DomainRuleException("media.transcribing", "The audio is being transcribed right now. Wait for it to finish.");
+        }
+
+        var trimmed = string.IsNullOrWhiteSpace(text) ? null : text.Trim();
+        if (trimmed is { Length: > MaxTranscriptLength })
+        {
+            throw new DomainRuleException("media.too_long", $"The transcript is too long ({MaxTranscriptLength:N0} characters at most).");
+        }
+
+        Transcript = trimmed;
+        TranscriptSource = trimmed is null ? null : source;
+        TranscriptStatus = trimmed is null ? TranscriptStatus.None : TranscriptStatus.Ready;
+        TranscriptError = null;
+        TranscriptUpdatedAt = now;
+    }
+
+    /// <summary>Asks for the audio to be transcribed by the background job.</summary>
+    public void QueueTranscription(DateTimeOffset now)
+    {
+        if (AudioAssetId is null)
+        {
+            throw new DomainRuleException("media.no_audio", "Upload the sermon's audio first.");
+        }
+
+        if (TranscriptStatus is TranscriptStatus.Queued or TranscriptStatus.Working)
+        {
+            return;
+        }
+
+        TranscriptStatus = TranscriptStatus.Queued;
+        TranscriptError = null;
+        TranscriptUpdatedAt = now;
+    }
+
+    public void StartTranscription(DateTimeOffset now)
+    {
+        if (TranscriptStatus != TranscriptStatus.Queued)
+        {
+            throw new DomainRuleException("media.not_queued", "This sermon isn't waiting to be transcribed.");
+        }
+
+        TranscriptStatus = TranscriptStatus.Working;
+        TranscriptUpdatedAt = now;
+    }
+
+    public void CompleteTranscription(string text, DateTimeOffset now)
+    {
+        TranscriptStatus = TranscriptStatus.None;
+        SetTranscript(text.Length > MaxTranscriptLength ? text[..MaxTranscriptLength] : text, Domain.TranscriptSource.Audio, now);
+    }
+
+    public void FailTranscription(string reason, DateTimeOffset now)
+    {
+        TranscriptStatus = TranscriptStatus.Failed;
+        TranscriptError = reason.Length > 300 ? reason[..300] : reason;
+        TranscriptUpdatedAt = now;
     }
 
     public void RefreshSearchText(IEnumerable<string> speakerNames, string? seriesTitle)

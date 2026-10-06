@@ -71,6 +71,18 @@ internal sealed class AzureBlobFileStorage : IFileStorage
     public string PublicUrl(string key) =>
         _publicBaseUrl is null ? _container.GetBlobClient(key).Uri.ToString() : $"{_publicBaseUrl}/{key}";
 
+    public async Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _container.GetBlobClient(key).OpenReadAsync(cancellationToken: cancellationToken);
+        }
+        catch (RequestFailedException ex)
+        {
+            throw new IOException($"Couldn't read '{key}' from storage.", ex);
+        }
+    }
+
     public Task DeleteAsync(string key, CancellationToken cancellationToken) =>
         _container.GetBlobClient(key).DeleteIfExistsAsync(cancellationToken: cancellationToken);
 }
@@ -107,6 +119,9 @@ public sealed class LocalFileStorage(IOptions<StorageOptions> options, IHostEnvi
     }
 
     public string PublicUrl(string key) => $"{BaseUrl()}/media-files/{key}";
+
+    public Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken) =>
+        Task.FromResult<Stream>(File.OpenRead(PathFor(key)));
 
     public Task DeleteAsync(string key, CancellationToken cancellationToken)
     {

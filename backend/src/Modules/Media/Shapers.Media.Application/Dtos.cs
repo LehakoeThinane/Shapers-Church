@@ -51,7 +51,15 @@ public sealed record SermonAdminDto(
     string Scope,
     string? ImportSource,
     IReadOnlyList<string> PublishProblems,
-    DateTimeOffset UpdatedAt);
+    DateTimeOffset UpdatedAt,
+    TranscriptInfoDto Transcript);
+
+/// <summary>Where the sermon's transcript stands, without the text itself.</summary>
+public sealed record TranscriptInfoDto(TranscriptStatus Status, TranscriptSource? Source, int Length, string? Error, DateTimeOffset? UpdatedAt);
+
+public sealed record TranscriptDto(string? Text, TranscriptInfoDto Info);
+
+public sealed record SetTranscriptRequest(string? Text);
 
 public sealed record SermonAdminListItemDto(
     Guid Id,

@@ -49,6 +49,7 @@ public static class CommunicationsInfrastructure
         services.AddScoped<IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>, NotifyWaitlistPromoted>();
         services.AddScoped<IIntegrationEventHandler<PrayerRequestApprovedIntegrationEvent>, NotifyPrayerApproved>();
         services.AddScoped<IIntegrationEventHandler<ChatMessageReportedIntegrationEvent>, NotifyChatReported>();
+        services.AddScoped<IIntegrationEventHandler<Shapers.Groups.Contracts.CellFollowUpFlaggedIntegrationEvent>, NotifyCellFollowUpFlagged>();
 
         services.AddSingleton(new RecurringJobDefinition("communications-announcements", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<AnnouncementDispatchJob>().RunAsync(ct)));
