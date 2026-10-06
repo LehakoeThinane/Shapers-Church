@@ -1,28 +1,51 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
-import type { PalettePreference } from '@shapers/tokens';
 import { api } from '../lib/api';
-import { useAccess } from '../lib/access';
+import { useAccess, type Access } from '../lib/access';
 import { isLeader, useMyCells } from '../lib/cells';
-import { usePalette } from '../lib/palette-context';
-import { allowed, cellsIcon, productFor, productGroups } from '../lib/products';
+import { currentTab, navIcons, navItemFor, navSections, settingsItems, visibleTabs, type NavItem } from '../lib/navigation';
+import { allowed, cellsIcon } from '../lib/products';
 import { scopeLabel, useScope } from '../lib/scope-context';
+import { AccountMenu, NotificationsBell } from './TopBar';
 import { Loading, Select } from './ui';
+
+const COLLAPSED_KEY = 'shapers.menu.collapsed';
+
+function readCollapsed() {
+  try {
+    return localStorage.getItem(COLLAPSED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 export function Layout() {
   const { data: access, isPending, isError } = useAccess();
-  const { preference, setPreference } = usePalette();
   const scope = useScope();
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const myCells = useMyCells();
   const led = myCells.data?.filter((c) => isLeader(c.myRole)) ?? [];
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+  // The phone drawer is open on the page it was opened on; choosing a page closes it.
+  const [drawerOn, setDrawerOn] = useState<string | null>(null);
+  const drawerOpen = drawerOn === location.pathname;
+  const setDrawerOpen = (open: boolean) => setDrawerOn(open ? location.pathname : null);
 
   if (isPending) return <Loading />;
   if (isError || !access) return <Navigate to={`/login?next=${encodeURIComponent(location.pathname)}`} replace />;
 
-  const current = productFor(location.pathname);
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    try {
+      localStorage.setItem(COLLAPSED_KEY, next ? '1' : '0');
+    } catch {
+      // Private windows may refuse storage; the menu just won't remember.
+    }
+  };
 
   const signOut = async () => {
     await api.POST('/api/auth/staff/logout');
@@ -30,101 +53,95 @@ export function Layout() {
     navigate('/login');
   };
 
+  const current = navItemFor(location.pathname);
+  const tabs = visibleTabs(current, access);
+  const activeTab = currentTab(location.pathname, tabs);
+  const settings = settingsItems.filter((i) => allowed(access, i.permission));
+
   return (
-    <div className="app">
-      <aside className="sidebar glass">
-        <div className="brand">
-          <span className="brand-mark">Shapers</span>
-          <span className="muted small">Church admin</span>
+    <div className={`shell${collapsed ? ' shell-collapsed' : ''}${drawerOpen ? ' shell-drawer-open' : ''}`}>
+      <aside className="rail glass" aria-label="Main menu">
+        <div className="rail-brand">
+          <span className="rail-logo" aria-hidden="true">
+            S
+          </span>
+          <span className="rail-name">
+            <span className="brand-mark">Shapers</span>
+            <span className="small muted">Church admin</span>
+          </span>
         </div>
-        <nav aria-label="Products">
-          <NavLink to="/" end className={({ isActive }) => `nav-link nav-home${isActive ? ' active' : ''}`}>
-            Home
-          </NavLink>
+
+        <nav className="rail-nav">
+          <RailLink to="/" end icon={navIcons.home} label="Home" />
           {led.length > 0 && (
-            <div className="nav-group">
-              <span className="nav-group-title">My cell</span>
+            <RailSection title="My cell">
               {led.map((c) => (
-                <NavLink key={c.id} to={`/my-cells/${c.id}`} className={({ isActive }) => `nav-link nav-product${isActive ? ' active' : ''}`}>
-                  <span className="nav-icon">{cellsIcon}</span>
-                  {c.name}
-                </NavLink>
+                <RailLink key={c.id} to={`/my-cells/${c.id}`} icon={cellsIcon} label={c.name} />
               ))}
-            </div>
+            </RailSection>
           )}
-          {productGroups.map((group) => {
-            const products = group.products.filter((p) => p.status === 'live' && allowed(access, p.permission));
-            if (products.length === 0) return null;
+          {navSections.map((section) => {
+            const items = section.items.filter((i) => allowed(access, i.permission));
+            if (items.length === 0) return null;
             return (
-              <div key={group.title} className="nav-group">
-                <span className="nav-group-title">{group.title}</span>
-                {products.map((p) => {
-                  const isCurrent = current?.key === p.key;
-                  const links = (p.links ?? []).filter((l) => allowed(access, l.permission === undefined ? p.permission : l.permission));
-                  return (
-                    <div key={p.key}>
-                      <NavLink to={p.to!} className={`nav-link nav-product${isCurrent ? ' active' : ''}`}>
-                        <span className="nav-icon">{p.icon}</span>
-                        {p.name}
-                      </NavLink>
-                      {isCurrent && links.length > 1 && (
-                        <div className="nav-sub">
-                          {links.map((l) => (
-                            <NavLink key={l.to} to={l.to} end={l.to === p.to} className={({ isActive }) => `nav-link nav-sub-link${isActive ? ' active' : ''}`}>
-                              {l.label}
-                            </NavLink>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              <RailSection key={section.title} title={section.title}>
+                {items.map((i) => (
+                  <RailItem key={i.key} item={i} active={current?.key === i.key} access={access} />
+                ))}
+              </RailSection>
             );
           })}
         </nav>
-        <div className="sidebar-footer">
-          <NavLink to="/security" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-            My security
-          </NavLink>
-          <Select className="input palette-select" aria-label="Palette" value={preference} onChange={(e) => setPreference(e.target.value as PalettePreference)}>
-            <option value="auto">Palette: automatic</option>
-            <option value="midnight">Palette: Midnight</option>
-            <option value="rose">Palette: Rose</option>
-          </Select>
-          <div className="sidebar-user">
-            <span className="small muted" title={access.displayName}>
-              {access.displayName}
-            </span>
-            <button type="button" className="link-button small" onClick={signOut}>
-              Sign out
-            </button>
-          </div>
+
+        <div className="rail-foot">
+          {settings.length > 0 && (
+            <details className="rail-settings" open={settings.some((i) => i.key === current?.key) || undefined}>
+              <summary className="rail-link" title="Settings">
+                <span className="rail-icon">{navIcons.settings}</span>
+                <span className="rail-label">Settings</span>
+              </summary>
+              {settings.map((i) => (
+                <RailItem key={i.key} item={i} active={current?.key === i.key} access={access} />
+              ))}
+            </details>
+          )}
+          <button type="button" className="rail-link rail-collapse" onClick={toggleCollapsed} aria-label={collapsed ? 'Expand the menu' : 'Collapse the menu'} title={collapsed ? 'Expand' : 'Collapse'}>
+            <span className="rail-icon">{collapsed ? navIcons.expand : navIcons.collapse}</span>
+            <span className="rail-label">Collapse</span>
+          </button>
         </div>
       </aside>
+      <button type="button" className="drawer-scrim" aria-label="Close the menu" onClick={() => setDrawerOpen(false)} />
 
       <div className="main">
         <header className="topbar">
-          <label className="row">
-            <span className="small muted">Working in</span>
-            <Select value={scope.current ?? ''} onChange={(e) => scope.setCurrent(e.target.value || null)}>
-              <option value="">Everything I can see</option>
+          <button type="button" className="icon-button menu-button" aria-label="Open the menu" onClick={() => setDrawerOpen(true)}>
+            {navIcons.menu}
+          </button>
+          <span className="topbar-title">{current?.label ?? (location.pathname === '/' ? 'Home' : '')}</span>
+          <span className="topbar-spacer" />
+          {scope.options.length > 1 && (
+            <Select className="input scope-select" aria-label="Working in" value={scope.current ?? ''} onChange={(e) => scope.setCurrent(e.target.value || null)}>
+              <option value="">All campuses and ministries</option>
               {scope.options.map((o) => (
                 <option key={o.path} value={o.path}>
                   {scopeLabel(o)}
                 </option>
               ))}
             </Select>
-          </label>
+          )}
+          <NotificationsBell access={access} />
+          <AccountMenu access={access} onSignOut={signOut} />
         </header>
 
-        {access.mfaRequiredForSensitive && !access.hasMfa && (
-          <p className="note note-accent">
-            {access.twoFactorEnabled
-              ? 'Sign in again with your authenticator code to open screens with personal information.'
-              : 'Set up two-step verification to open screens with personal information. '}
-            {!access.twoFactorEnabled && <NavLink to="/security">Set it up</NavLink>}
-          </p>
+        {tabs.length > 1 && (
+          <nav className="page-tabs" aria-label={`${current!.label} pages`}>
+            {tabs.map((t) => (
+              <NavLink key={t.to} to={t.to} className={() => `page-tab${activeTab === t.to ? ' active' : ''}`} aria-current={activeTab === t.to ? 'page' : undefined}>
+                {t.label}
+              </NavLink>
+            ))}
+          </nav>
         )}
 
         <main className="content">
@@ -133,4 +150,28 @@ export function Layout() {
       </div>
     </div>
   );
+}
+
+function RailSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rail-section">
+      <span className="rail-section-title">{title}</span>
+      {children}
+    </div>
+  );
+}
+
+function RailLink({ to, icon, label, end, active }: { to: string; icon: React.ReactNode; label: string; end?: boolean; active?: boolean }) {
+  return (
+    <NavLink to={to} end={end} title={label} className={({ isActive }) => `rail-link${(active ?? isActive) ? ' active' : ''}`}>
+      <span className="rail-icon">{icon}</span>
+      <span className="rail-label">{label}</span>
+    </NavLink>
+  );
+}
+
+/** A menu item goes to its first page the person can open. */
+function RailItem({ item, active, access }: { item: NavItem; active: boolean; access: Access }) {
+  const first = visibleTabs(item, access)[0]?.to ?? item.to;
+  return <RailLink to={first} icon={item.icon} label={item.label} active={active} />;
 }

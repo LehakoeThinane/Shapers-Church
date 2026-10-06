@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
-import { Badge, Card } from '../components/ui';
+import { Card } from '../components/ui';
 import { api, formatDateTime, unwrap } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { isLeader, useMyCells } from '../lib/cells';
+import { navSections } from '../lib/navigation';
 import { allowed, productGroups } from '../lib/products';
 
 /** The first page after sign-in: what's waiting for you, what's coming up, and every product. */
@@ -47,39 +48,29 @@ export function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="products-heading" className="stack">
-        <h2 id="products-heading">Products</h2>
+      <section aria-labelledby="go-heading" className="stack">
+        <h2 id="go-heading">Jump to</h2>
         <div className="product-groups">
-          {productGroups.map((group) => (
-            <div key={group.title} className="product-group">
-              <h3 className="product-group-title">{group.title}</h3>
-              {group.products.map((p) => {
-                const open = p.status === 'live' && allowed(access, p.permission);
-                const body = (
-                  <>
-                    <span className="product-icon">{p.icon}</span>
+          {navSections.map((section) => {
+            const items = section.items.filter((i) => allowed(access, i.permission));
+            if (items.length === 0) return null;
+            return (
+              <div key={section.title} className="product-group">
+                <h3 className="product-group-title">{section.title}</h3>
+                {items.map((i) => (
+                  <Link key={i.key} to={i.to} className="product">
+                    <span className="product-icon">{i.icon}</span>
                     <span className="stack-tight">
-                      <span className="product-name">
-                        {p.name}
-                        {p.status === 'soon' && <Badge>Coming soon</Badge>}
-                      </span>
-                      <span className="small muted">{p.description}</span>
+                      <span className="product-name">{i.label}</span>
+                      <span className="small muted">{describe(i.key)}</span>
                     </span>
-                  </>
-                );
-                return open ? (
-                  <Link key={p.key} to={p.to!} className="product">
-                    {body}
                   </Link>
-                ) : (
-                  <div key={p.key} className="product product-disabled" aria-disabled="true">
-                    {body}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                ))}
+              </div>
+            );
+          })}
         </div>
+        <p className="small muted">Coming next: giving, kids check-in, the church calendar and a staff app.</p>
       </section>
     </>
   );
@@ -217,4 +208,15 @@ function NothingWaiting() {
       <p className="muted">Nothing needs you right now. Choose a product below to get started.</p>
     </Card>
   );
+}
+
+/** The one-line description from the product catalogue, matched by key. */
+function describe(key: string) {
+  const own: Record<string, string> = {
+    sermons: 'Sermons, series, speakers and the Sunday livestream',
+    website: 'Website pages, news, blog and translations',
+  };
+  if (own[key]) return own[key];
+  const aliases: Record<string, string> = { events: 'registrations' };
+  return productGroups.flatMap((g) => g.products).find((p) => p.key === (aliases[key] ?? key))?.description ?? '';
 }
