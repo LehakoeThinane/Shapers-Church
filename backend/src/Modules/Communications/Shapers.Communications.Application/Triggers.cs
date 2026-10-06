@@ -1,5 +1,6 @@
 using Shapers.Communications.Domain;
 using Shapers.Events.Contracts;
+using Shapers.Groups.Contracts;
 using Shapers.Identity.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Platform.Messaging;
@@ -23,6 +24,16 @@ public sealed class NotifyChatReported(Notifier notifier, IUserDirectory users) 
     {
         var moderators = await users.PeopleWithPermissionAsync(MediaPermissions.ChatModerate, e.Scope, cancellationToken);
         await notifier.ToPeopleAsync(moderators, new Notifier.Message(Topic.Live, "Chat message reported", "Someone reported a message in the live chat. Please check the moderator console.", null, $"chat-report:{e.MessageId}", Urgent: true), cancellationToken);
+    }
+}
+
+/// <summary>A cell leader flagged an urgent follow-up: the pastors are told straight away, without any names or details.</summary>
+public sealed class NotifyCellFollowUpFlagged(Notifier notifier, IUserDirectory users) : IIntegrationEventHandler<CellFollowUpFlaggedIntegrationEvent>
+{
+    public async Task HandleAsync(CellFollowUpFlaggedIntegrationEvent e, CancellationToken cancellationToken)
+    {
+        var pastors = await users.PeopleWithPermissionAsync(GroupsPermissions.ReportsView, e.Scope, cancellationToken);
+        await notifier.ToPeopleAsync(pastors, new Notifier.Message(Topic.Prayer, "Urgent follow-up from a cell", $"The {e.CellName} cell leader asked for urgent pastoral follow-up. Open the cell report in the admin portal.", null, $"cell-urgent:{e.ReportId}", Urgent: true), cancellationToken);
     }
 }
 

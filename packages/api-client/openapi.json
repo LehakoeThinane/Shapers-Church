@@ -108,6 +108,29 @@
         }
       }
     },
+    "/api/me/cells": {
+      "get": {
+        "tags": [
+          "Cells"
+        ],
+        "operationId": "MyCells",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyCellDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/communications/deliveries": {
       "get": {
         "tags": [
@@ -4580,6 +4603,819 @@
         }
       }
     },
+    "/api/cells/{cellId}": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderCell",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/members": {
+      "post": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderAddMember",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/members/{personId}": {
+      "delete": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderRemoveMember",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/reports": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderReports",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderCreateReport",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/reports/{reportId}": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderReport",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderUpdateReport",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/materials": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderMaterials",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderCreateMaterial",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveMaterialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cells/{cellId}/materials/{materialId}": {
+      "put": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderUpdateMaterial",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "materialId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveMaterialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderDeleteMaterial",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "materialId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/cells": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListCells",
+        "parameters": [
+          {
+            "name": "includeClosed",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CellSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "CreateCell",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCellRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/reports": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListCellReports",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "urgentOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/reports/{id}": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "GetCellReport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/reports/{id}/follow-ups/{followUpId}/resolve": {
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ResolveCellFollowUp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "followUpId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/materials": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListCellMaterials",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "GetCell",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "UpdateCell",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCellRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}/close": {
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "CloseCell",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}/members": {
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "AddCellMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/{id}/members/{personId}": {
+      "delete": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "RemoveCellMember",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CellDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me/devices": {
       "post": {
         "tags": [
@@ -6130,6 +6966,22 @@
           }
         }
       },
+      "AddMemberRequest": {
+        "required": [
+          "personId",
+          "role"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "$ref": "#/components/schemas/CellRole"
+          }
+        }
+      },
       "AddressDto": {
         "required": [
           "line1",
@@ -6772,6 +7624,197 @@
           "Active",
           "Closed"
         ]
+      },
+      "CellDetailDto": {
+        "required": [
+          "id",
+          "name",
+          "campusId",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "address",
+          "status",
+          "members"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/CellStatus"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CellMemberDto"
+            }
+          }
+        }
+      },
+      "CellMemberDto": {
+        "required": [
+          "personId",
+          "name",
+          "role",
+          "joinedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/CellRole"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CellRole": {
+        "enum": [
+          "Leader",
+          "CoLeader",
+          "Member"
+        ]
+      },
+      "CellStatus": {
+        "enum": [
+          "Active",
+          "Closed"
+        ]
+      },
+      "CellSummaryDto": {
+        "required": [
+          "id",
+          "name",
+          "campusId",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "status",
+          "leaders",
+          "memberCount",
+          "lastReportDate",
+          "lastAttendance",
+          "reportedThisWeek",
+          "openUrgentFollowUps"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/CellStatus"
+          },
+          "leaders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "memberCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastReportDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "lastAttendance": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "reportedThisWeek": {
+            "type": "boolean"
+          },
+          "openUrgentFollowUps": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       },
       "ChangeStatusRequest": {
         "required": [
@@ -7719,6 +8762,18 @@
           "Deletion"
         ]
       },
+      "DayOfWeek": {
+        "enum": [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          null
+        ]
+      },
       "DecideDataRequest": {
         "required": [
           "response"
@@ -8104,6 +9159,26 @@
           },
           "isActive": {
             "type": "boolean"
+          }
+        }
+      },
+      "GrowthDto": {
+        "required": [
+          "personId",
+          "name",
+          "step"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "step": {
+            "$ref": "#/components/schemas/NextStep"
           }
         }
       },
@@ -8576,6 +9651,63 @@
           }
         }
       },
+      "MaterialDto": {
+        "required": [
+          "id",
+          "cellId",
+          "cellName",
+          "title",
+          "body",
+          "link",
+          "forDate",
+          "sharedWithMembers",
+          "writtenBy",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellName": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "forDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "sharedWithMembers": {
+            "type": "boolean"
+          },
+          "writtenBy": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "MediaAssetStatus": {
         "enum": [
           "Pending",
@@ -8856,6 +9988,13 @@
           }
         }
       },
+      "MultiplicationReadiness": {
+        "enum": [
+          "NotYet",
+          "Growing",
+          "Ready"
+        ]
+      },
       "MyAccessDto": {
         "required": [
           "userId",
@@ -8896,6 +10035,73 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PermissionScopesDto"
+            }
+          }
+        }
+      },
+      "MyCellDto": {
+        "required": [
+          "id",
+          "name",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "address",
+          "myRole",
+          "leaders",
+          "sharedMaterials"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "myRole": {
+            "$ref": "#/components/schemas/CellRole"
+          },
+          "leaders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sharedMaterials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaterialDto"
             }
           }
         }
@@ -9021,6 +10227,47 @@
             ]
           }
         }
+      },
+      "NewMemberRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "mobile",
+          "email",
+          "agreedToBeOnRecord"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "agreedToBeOnRecord": {
+            "type": "boolean"
+          }
+        }
+      },
+      "NextStep": {
+        "enum": [
+          "Baptism",
+          "GrowthTrack",
+          "Serving",
+          "Leadership"
+        ]
       },
       "NotificationDto": {
         "required": [
@@ -9592,6 +10839,22 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "PersonRefDto": {
+        "required": [
+          "personId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
           }
         }
       },
@@ -10401,6 +11664,314 @@
           "Cancelled"
         ]
       },
+      "ReportDto": {
+        "required": [
+          "id",
+          "cellId",
+          "cellName",
+          "meetingDate",
+          "status",
+          "topic",
+          "materialId",
+          "materialTitle",
+          "notes",
+          "highlights",
+          "prayerNeeds",
+          "multiplication",
+          "attendees",
+          "visitors",
+          "followUps",
+          "growth",
+          "membersPresent",
+          "visitorCount",
+          "writtenBy",
+          "updatedAt",
+          "submittedAt",
+          "redacted"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellName": {
+            "type": "string"
+          },
+          "meetingDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReportStatus"
+          },
+          "topic": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "materialId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "materialTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "highlights": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "prayerNeeds": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "multiplication": {
+            "$ref": "#/components/schemas/MultiplicationReadiness"
+          },
+          "attendees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonRefDto"
+            }
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportVisitor"
+            }
+          },
+          "followUps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportFollowUp"
+            }
+          },
+          "growth": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrowthDto"
+            }
+          },
+          "membersPresent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "visitorCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "writtenBy": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submittedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportFollowUp": {
+        "required": [
+          "id",
+          "personId",
+          "name",
+          "note",
+          "urgent"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "urgent": {
+            "type": "boolean"
+          },
+          "resolvedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "resolvedByUserId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "ReportGrowth": {
+        "required": [
+          "personId",
+          "step"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "step": {
+            "$ref": "#/components/schemas/NextStep"
+          }
+        }
+      },
+      "ReportStatus": {
+        "enum": [
+          "Draft",
+          "Submitted"
+        ]
+      },
+      "ReportSummaryDto": {
+        "required": [
+          "id",
+          "cellId",
+          "cellName",
+          "meetingDate",
+          "status",
+          "topic",
+          "membersPresent",
+          "visitorCount",
+          "openUrgentFollowUps",
+          "writtenBy",
+          "submittedAt",
+          "redacted"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cellName": {
+            "type": "string"
+          },
+          "meetingDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReportStatus"
+          },
+          "topic": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "membersPresent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "visitorCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "openUrgentFollowUps": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "writtenBy": {
+            "type": "string"
+          },
+          "submittedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportVisitor": {
+        "required": [
+          "firstName",
+          "lastName",
+          "mobile",
+          "email",
+          "agreedToBeContacted"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "mobile": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "agreedToBeContacted": {
+            "type": "boolean"
+          }
+        }
+      },
       "RequestCodeRequest": {
         "required": [
           "phone"
@@ -10637,6 +12208,55 @@
           }
         }
       },
+      "SaveCellRequest": {
+        "required": [
+          "name",
+          "campusId",
+          "meetingDay",
+          "meetingTime",
+          "area",
+          "address"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "campusId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "meetingDay": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DayOfWeek"
+              }
+            ]
+          },
+          "meetingTime": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "time"
+          },
+          "area": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "SaveEventRequest": {
         "required": [
           "title",
@@ -10789,6 +12409,40 @@
           }
         }
       },
+      "SaveMaterialRequest": {
+        "required": [
+          "title",
+          "body",
+          "link",
+          "forDate",
+          "sharedWithMembers"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "forDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "sharedWithMembers": {
+            "type": "boolean"
+          }
+        }
+      },
       "SavePageRequest": {
         "required": [
           "title",
@@ -10878,6 +12532,91 @@
               "string"
             ],
             "format": "date"
+          }
+        }
+      },
+      "SaveReportRequest": {
+        "required": [
+          "meetingDate",
+          "topic",
+          "materialId",
+          "notes",
+          "highlights",
+          "prayerNeeds",
+          "multiplication",
+          "attendeeIds",
+          "visitors",
+          "followUps",
+          "growth",
+          "submit"
+        ],
+        "type": "object",
+        "properties": {
+          "meetingDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "topic": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "materialId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "highlights": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "prayerNeeds": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "multiplication": {
+            "$ref": "#/components/schemas/MultiplicationReadiness"
+          },
+          "attendeeIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "visitors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportVisitor"
+            }
+          },
+          "followUps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportFollowUp"
+            }
+          },
+          "growth": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportGrowth"
+            }
+          },
+          "submit": {
+            "type": "boolean"
           }
         }
       },
@@ -12158,6 +13897,9 @@
       "name": "Events"
     },
     {
+      "name": "Cells"
+    },
+    {
       "name": "Notifications admin"
     },
     {
@@ -12198,6 +13940,12 @@
     },
     {
       "name": "Prayer admin"
+    },
+    {
+      "name": "Cells (leaders)"
+    },
+    {
+      "name": "Cells admin"
     },
     {
       "name": "Notifications"

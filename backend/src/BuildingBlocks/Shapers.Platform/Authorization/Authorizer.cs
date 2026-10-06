@@ -45,6 +45,31 @@ public static class AuthorizationEndpointExtensions
         });
         return builder;
     }
+
+    /// <summary>Like <see cref="RequirePermission{TBuilder}"/>, for endpoints open to holders of any one of several permissions.</summary>
+    public static TBuilder RequireAnyPermission<TBuilder>(this TBuilder builder, params string[] permissions)
+        where TBuilder : IEndpointConventionBuilder
+    {
+        builder.RequireAuthorization();
+        builder.AddEndpointFilter(async (context, next) =>
+        {
+            var authorizer = context.HttpContext.RequestServices.GetRequiredService<IAuthorizer>();
+            foreach (var permission in permissions)
+            {
+                if (await authorizer.HasAnywhereAsync(permission, context.HttpContext.RequestAborted))
+                {
+                    return await next(context);
+                }
+            }
+
+            return Results.Problem(
+                statusCode: StatusCodes.Status403Forbidden,
+                title: "Forbidden",
+                detail: $"This needs one of these permissions: {string.Join(", ", permissions)}.",
+                extensions: new Dictionary<string, object?> { ["code"] = "permission_required", ["permission"] = permissions[0] });
+        });
+        return builder;
+    }
 }
 
 public static class ScopeQueryExtensions

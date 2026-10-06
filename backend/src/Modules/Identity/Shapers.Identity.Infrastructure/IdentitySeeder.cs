@@ -6,6 +6,7 @@ using Shapers.Church.Contracts;
 using Shapers.Identity.Contracts;
 using Shapers.Identity.Domain;
 using Shapers.Events.Contracts;
+using Shapers.Groups.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Communications.Contracts;
 using Shapers.Content.Contracts;
@@ -43,6 +44,7 @@ public static class SystemRoles
                 PrayerPermissions.RequestsView, PrayerPermissions.RequestsModerate,
                 CommunicationsPermissions.AnnouncementsSend, CommunicationsPermissions.AnnouncementsApprove,
                 MediaPermissions.ChatModerate,
+                GroupsPermissions.CellsManage, GroupsPermissions.ReportsView,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [

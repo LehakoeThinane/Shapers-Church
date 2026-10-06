@@ -88,6 +88,9 @@ public enum GuestOrigin
 {
     ConnectCard,
     EventRegistration,
+
+    /// <summary>Added to a home cell by its leader, or a visitor at a cell meeting.</summary>
+    CellGroup,
 }
 
 /// <summary>Someone who isn't signed in, giving their details with consent (e.g. registering for an event).</summary>
