@@ -17,6 +17,9 @@
     "mobile:go": "pnpm --filter @shapers/mobile start:go"
   },
   "pnpm": {
+    "overrides": {
+      "source-map-js": "^1.2.2"
+    },
     "auditConfig": {
       "ignoreGhsas": [
         "GHSA-86w9-cpqp-85rv",
