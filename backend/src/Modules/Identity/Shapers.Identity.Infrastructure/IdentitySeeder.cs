@@ -32,6 +32,7 @@ public static class SystemRoles
     public const string InformationOfficer = "Information Officer";
     public const string ContentTeam = "Content team";
     public const string ChatModerator = "Chat moderator";
+    public const string Translator = "Translator";
 
     /// <summary>Built-in roles. The church administrator always holds every permission in the catalogue.</summary>
     public static IReadOnlyDictionary<string, (string Description, IReadOnlyList<string> Permissions)> Definitions(PermissionCatalog catalog) =>
@@ -67,6 +68,8 @@ public static class SystemRoles
             [
                 PrivacyPermissions.RequestsManage, PrivacyPermissions.BreachesManage, PlatformPermissions.AuditView,
             ]),
+            [Translator] = ("Speaks a language the church translates into: checks and corrects translations of pages and posts before they're published.",
+                [ContentPermissions.TranslationsReview]),
             [ChatModerator] = ("Looks after the live chat during services: hides messages, times people out, sets slow mode.", [MediaPermissions.ChatModerate]),
             [PrayerTeam] = ("Reviews requests for the prayer wall. Pastors-only requests stay with the pastors.", [PrayerPermissions.RequestsModerate]),
             [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",

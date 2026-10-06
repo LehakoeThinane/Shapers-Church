@@ -62,7 +62,12 @@ public sealed class ContentDbContext(DbContextOptions<ContentDbContext> options)
         b.Property(p => p.Scope).HasMaxLength(512);
         b.Property(p => p.LegacyPath).HasMaxLength(300);
         b.Property(p => p.Status).HasConversion<string>().HasMaxLength(20);
-        b.HasIndex(p => p.Slug).IsUnique();
+        b.Property(p => p.Language).HasMaxLength(5).HasDefaultValue(Languages.English);
+        b.Ignore(p => p.IsTranslation);
+        b.Ignore(p => p.TranslationChecked);
+        // A translation shares its original's address, so an address is unique per language.
+        b.HasIndex(p => new { p.Slug, p.Language }).IsUnique();
+        b.HasIndex(p => new { p.TranslationOfId, p.Language }).IsUnique().HasFilter("translation_of_id IS NOT NULL");
         b.HasIndex(p => new { p.Status, p.PublishAt });
         b.Property<uint>("xmin").IsRowVersion();
     }
@@ -88,6 +93,7 @@ public static class ContentInfrastructure
 
         services.AddScoped<ContentAdminService>();
         services.AddScoped<PublicContentService>();
+        services.AddScoped<IContentSource, ContentSource>();
         services.AddScoped<ContentPublisherJob>();
         services.AddScoped<IIntegrationEventHandler<ContentPublishedIntegrationEvent>, RebuildSiteOnPublish>();
         services.AddScoped<IIntegrationEventHandler<SermonPublishedIntegrationEvent>, RebuildSiteOnPublish>();

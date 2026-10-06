@@ -182,6 +182,7 @@ public sealed class FakeAiProvider : IAiProvider
                 {"summary":"Faith that only talks is not enough: this message calls us to live it out.","notes":"## Faith acts\n- James 2:14-17","topics":["Faith","Service"]}
                 """,
             "rewrite" => """{"text":"Join us on Sunday at 09:00."}""",
+            "translation" => FakeTranslation(request.User),
             _ => "{}",
         };
         return Task.FromResult(new ChatResponse(json, ChatModel, request.User.Length / 4, json.Length / 4));
@@ -189,6 +190,14 @@ public sealed class FakeAiProvider : IAiProvider
 
     public Task<TranscriptResponse> TranscribeAsync(Stream audio, string fileName, string contentType, string locale, CancellationToken cancellationToken) =>
         Task.FromResult(new TranscriptResponse($"Fake transcript of {fileName}. Faith without works is dead.", 60, "fake"));
+
+    /// <summary>"Translates" by marking the text, keeping its placeholders, so the flow can be tried without a real model.</summary>
+    private static string FakeTranslation(string user)
+    {
+        var parts = user.Split("\"\"\"");
+        string Part(int i) => parts.Length > i ? parts[i].Trim() : string.Empty;
+        return JsonSerializer.Serialize(new { title = $"(Translated) {Part(1)}", summary = Part(3), body = $"(Translated) {Part(5)}" });
+    }
 }
 
 /// <summary>Registered when AI is switched off. The gateway refuses before it gets here.</summary>

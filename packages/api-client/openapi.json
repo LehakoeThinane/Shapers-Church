@@ -6571,6 +6571,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -6643,6 +6650,13 @@
             "name": "slug",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
             "schema": {
               "type": "string"
             }
@@ -6731,6 +6745,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ImportResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/content/translations": {
+      "get": {
+        "tags": [
+          "Content admin"
+        ],
+        "operationId": "ListTranslations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TranslationQueueItemDto"
+                  }
                 }
               }
             }
@@ -6845,6 +6882,78 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/content/pages/{id}/translations": {
+      "post": {
+        "tags": [
+          "Content admin"
+        ],
+        "operationId": "TranslatePage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTranslationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/content/pages/{id}/check": {
+      "post": {
+        "tags": [
+          "Content admin"
+        ],
+        "operationId": "CheckPageTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -7123,6 +7232,78 @@
         }
       }
     },
+    "/api/admin/content/posts/{id}/translations": {
+      "post": {
+        "tags": [
+          "Content admin"
+        ],
+        "operationId": "TranslatePost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTranslationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/content/posts/{id}/check": {
+      "post": {
+        "tags": [
+          "Content admin"
+        ],
+        "operationId": "CheckPostTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/content/posts/{id}/publish": {
       "post": {
         "tags": [
@@ -7368,6 +7549,36 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RewriteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/translate": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftTranslation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslateRequest"
               }
             }
           },
@@ -7873,7 +8084,8 @@
           "canDraft",
           "budgetZar",
           "spentThisMonthZar",
-          "budgetReached"
+          "budgetReached",
+          "languages"
         ],
         "type": "object",
         "properties": {
@@ -7893,6 +8105,12 @@
           },
           "budgetReached": {
             "type": "boolean"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LanguageOptionDto"
+            }
           }
         }
       },
@@ -9057,6 +9275,12 @@
           "Archived"
         ]
       },
+      "ContentType": {
+        "enum": [
+          "Page",
+          "Post"
+        ]
+      },
       "ContinueListeningDto": {
         "required": [
           "sermon",
@@ -9277,6 +9501,32 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "CreateTranslationRequest": {
+        "required": [
+          "language",
+          "title",
+          "summary",
+          "body"
+        ],
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "body": {
+            "type": "string"
           }
         }
       },
@@ -9526,7 +9776,8 @@
           "requestedByMe",
           "lesson",
           "notes",
-          "rewrite"
+          "rewrite",
+          "translation"
         ],
         "type": "object",
         "properties": {
@@ -9592,6 +9843,16 @@
                 "$ref": "#/components/schemas/RewriteDraft"
               }
             ]
+          },
+          "translation": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TranslationDraft"
+              }
+            ]
           }
         }
       },
@@ -9599,7 +9860,8 @@
         "enum": [
           "SermonLesson",
           "SermonNotes",
-          "Rewrite"
+          "Rewrite",
+          "Translation"
         ]
       },
       "DraftStatus": {
@@ -10211,6 +10473,36 @@
           "Member",
           "Inactive"
         ]
+      },
+      "LanguageDto": {
+        "required": [
+          "code",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "LanguageOptionDto": {
+        "required": [
+          "code",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
       },
       "LawfulBasis": {
         "enum": [
@@ -11178,7 +11470,9 @@
           "status",
           "publishAt",
           "publishedAt",
-          "legacyPath"
+          "legacyPath",
+          "translation",
+          "translations"
         ],
         "type": "object",
         "properties": {
@@ -11207,6 +11501,22 @@
               "null",
               "string"
             ]
+          },
+          "translation": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TranslationInfoDto"
+              }
+            ]
+          },
+          "translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslationSummaryDto"
+            }
           }
         }
       },
@@ -11334,7 +11644,9 @@
           "summary",
           "body",
           "menuOrder",
-          "updatedAt"
+          "updatedAt",
+          "language",
+          "languages"
         ],
         "type": "object",
         "properties": {
@@ -11367,6 +11679,15 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "language": {
+            "type": "string"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LanguageDto"
+            }
           }
         }
       },
@@ -11714,7 +12035,9 @@
           "publishAt",
           "publishedAt",
           "updatedAt",
-          "legacyPath"
+          "legacyPath",
+          "translation",
+          "translations"
         ],
         "type": "object",
         "properties": {
@@ -11785,6 +12108,22 @@
               "null",
               "string"
             ]
+          },
+          "translation": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TranslationInfoDto"
+              }
+            ]
+          },
+          "translations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TranslationSummaryDto"
+            }
           }
         }
       },
@@ -11802,7 +12141,9 @@
       "PostDto": {
         "required": [
           "post",
-          "body"
+          "body",
+          "language",
+          "languages"
         ],
         "type": "object",
         "properties": {
@@ -11811,6 +12152,15 @@
           },
           "body": {
             "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LanguageDto"
+            }
           }
         }
       },
@@ -14663,6 +15013,174 @@
           "Ready",
           "Failed"
         ]
+      },
+      "TranslateRequest": {
+        "required": [
+          "sourceType",
+          "sourceId",
+          "language"
+        ],
+        "type": "object",
+        "properties": {
+          "sourceType": {
+            "$ref": "#/components/schemas/ContentType"
+          },
+          "sourceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "language": {
+            "type": "string"
+          }
+        }
+      },
+      "TranslationDraft": {
+        "required": [
+          "language",
+          "languageName",
+          "title",
+          "summary",
+          "body"
+        ],
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "languageName": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      },
+      "TranslationInfoDto": {
+        "required": [
+          "originalId",
+          "originalTitle",
+          "language",
+          "languageName",
+          "checked",
+          "checkedAt",
+          "originalChangedSince"
+        ],
+        "type": "object",
+        "properties": {
+          "originalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "originalTitle": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "languageName": {
+            "type": "string"
+          },
+          "checked": {
+            "type": "boolean"
+          },
+          "checkedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "originalChangedSince": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TranslationQueueItemDto": {
+        "required": [
+          "id",
+          "type",
+          "language",
+          "languageName",
+          "title",
+          "originalTitle",
+          "status",
+          "checked",
+          "originalChangedSince",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ContentType"
+          },
+          "language": {
+            "type": "string"
+          },
+          "languageName": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "originalTitle": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ContentStatus"
+          },
+          "checked": {
+            "type": "boolean"
+          },
+          "originalChangedSince": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TranslationSummaryDto": {
+        "required": [
+          "id",
+          "language",
+          "languageName",
+          "status",
+          "checked",
+          "originalChangedSince"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "language": {
+            "type": "string"
+          },
+          "languageName": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ContentStatus"
+          },
+          "checked": {
+            "type": "boolean"
+          },
+          "originalChangedSince": {
+            "type": "boolean"
+          }
+        }
       },
       "TwoFactorStatus": {
         "required": [

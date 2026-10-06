@@ -35,6 +35,26 @@ public sealed class AssistRulesTests
     }
 
     [Fact]
+    public void Masking_keeps_contact_details_out_and_puts_them_back()
+    {
+        var masked = new Dictionary<string, string>();
+        var text = PersonalDataGuard.Mask("Email info@shaperschurch.com or call 011 234 5678. Again: info@shaperschurch.com", masked);
+
+        Assert.Equal("Email [[C1]] or call [[C2]]. Again: [[C1]]", text);
+        Assert.Equal("Thumela i-imeyili ku-info@shaperschurch.com noma ushayele 011 234 5678.", PersonalDataGuard.Unmask("Thumela i-imeyili ku-[[C1]] noma ushayele [[C2]].", masked));
+    }
+
+    [Fact]
+    public void A_translation_answer_needs_a_title_and_text()
+    {
+        Assert.Throws<System.Text.Json.JsonException>(() => DraftReader.Translation("""{"title":"","summary":"","body":"x"}""", "zu"));
+
+        var draft = DraftReader.Translation("""{"title":" Ukholo ","summary":"","body":"Umbhalo"}""", "zu");
+        Assert.Equal("Ukholo", draft.Title);
+        Assert.Equal("isiZulu", draft.LanguageName);
+    }
+
+    [Fact]
     public void A_draft_is_reviewed_once()
     {
         var draft = AiDraft.Create(DraftKind.Rewrite, "text", null, ScopePath.Parse("org"), "fake", Prompts.Rewrite, """{"text":"Hi"}""", User, Now);
