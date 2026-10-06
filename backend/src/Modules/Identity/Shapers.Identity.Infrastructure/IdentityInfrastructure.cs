@@ -51,6 +51,7 @@ public static class IdentityInfrastructure
         services.AddScoped<OtpLoginService>();
         services.AddScoped<SessionService>();
         services.AddScoped<AccessService>();
+        services.AddSingleton<ISystemRoleDefaults, SystemRoleDefaults>();
         services.AddScoped<IdentitySeeder>();
         services.AddScoped<IIntegrationEventHandler<PeopleMergedIntegrationEvent>, RelinkUserOnPeopleMerged>();
 

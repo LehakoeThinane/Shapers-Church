@@ -6,7 +6,8 @@ import { Layout } from './components/Layout';
 import { ApiError } from './lib/api';
 import { PaletteProvider } from './lib/palette';
 import { ScopeProvider } from './lib/scope';
-import { AuditPage, ChurchPage, DuplicatesPage, RolesPage, SecurityPage } from './pages/AdminPages';
+import { AuditPage, ChurchPage, DuplicatesPage, SecurityPage } from './pages/AdminPages';
+import { RolePage, RolesPage } from './pages/RolesPages';
 import { LoginPage, SetPasswordPage } from './pages/LoginPage';
 import { NewPersonPage, PeoplePage } from './pages/PeoplePage';
 import { PersonPage } from './pages/PersonPage';
@@ -102,6 +103,8 @@ const router = createBrowserRouter([
       { path: 'connect', element: <ConnectCardsPage /> },
       { path: 'church', element: <ChurchPage /> },
       { path: 'access', element: <RolesPage /> },
+      { path: 'access/roles/new', element: <RolePage /> },
+      { path: 'access/roles/:id', element: <RolePage /> },
       { path: 'audit', element: <AuditPage /> },
       { path: 'security', element: <SecurityPage /> },
       { path: '*', element: <Navigate to="/" replace /> },

@@ -1723,6 +1723,100 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "GetRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/roles/{id}/people": {
+      "get": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "ListRoleHolders",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleHolderDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/roles/{id}/reset": {
+      "post": {
+        "tags": [
+          "Access"
+        ],
+        "operationId": "ResetRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleDto"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/admin/people/{personId}/access": {
@@ -15719,6 +15813,9 @@
           "name",
           "description",
           "isSystem",
+          "isCustomised",
+          "canEdit",
+          "people",
           "permissions"
         ],
         "type": "object",
@@ -15739,11 +15836,63 @@
           "isSystem": {
             "type": "boolean"
           },
+          "isCustomised": {
+            "type": "boolean"
+          },
+          "canEdit": {
+            "type": "boolean"
+          },
+          "people": {
+            "type": "integer",
+            "format": "int32"
+          },
           "permissions": {
             "type": "array",
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "RoleHolderDto": {
+        "required": [
+          "grantId",
+          "personId",
+          "displayName",
+          "scope",
+          "scopeName",
+          "grantedAt",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "grantId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "scopeName": {
+            "type": "string"
+          },
+          "grantedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },

@@ -23,7 +23,10 @@ public sealed record MyAccessDto(
 
 public sealed record PermissionDto(string Key, string Module, string Description, bool IsSensitive);
 
-public sealed record RoleDto(Guid Id, string Name, string? Description, bool IsSystem, IReadOnlyList<string> Permissions);
+public sealed record RoleDto(Guid Id, string Name, string? Description, bool IsSystem, bool IsCustomised, bool CanEdit, int People, IReadOnlyList<string> Permissions);
+
+/// <summary>Someone who holds a role, and where.</summary>
+public sealed record RoleHolderDto(Guid GrantId, Guid PersonId, string DisplayName, string Scope, string ScopeName, DateTimeOffset GrantedAt, DateTimeOffset? ExpiresAt);
 
 public sealed record SaveRoleRequest(string Name, string? Description, IReadOnlyList<string> Permissions);
 
@@ -49,6 +52,7 @@ public sealed class AccessService(
     IPeopleDirectory people,
     IChurchDirectory church,
     IAuditLog audit,
+    ISystemRoleDefaults defaults,
     Microsoft.Extensions.Options.IOptions<IdentitySecurityOptions> security,
     TimeProvider clock)
 {
@@ -95,10 +99,69 @@ public sealed class AccessService(
     public IReadOnlyList<PermissionDto> ListPermissions() =>
         catalog.All.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => new PermissionDto(p.Key, p.Module, p.Description, p.IsSensitive)).ToList();
 
-    public async Task<IReadOnlyList<RoleDto>> ListRolesAsync(CancellationToken cancellationToken) =>
-        (await db.Roles.AsNoTracking().OrderByDescending(r => r.IsSystem).ThenBy(r => r.Name).ToListAsync(cancellationToken))
-            .Select(ToDto)
+    public async Task<IReadOnlyList<RoleDto>> ListRolesAsync(CancellationToken cancellationToken)
+    {
+        var now = clock.GetUtcNow();
+        var counts = await db.Grants.AsNoTracking()
+            .Where(g => g.RevokedAt == null && (g.ExpiresAt == null || g.ExpiresAt > now))
+            .GroupBy(g => g.RoleId)
+            .Select(g => new { RoleId = g.Key, People = g.Select(x => x.UserId).Distinct().Count() })
+            .ToDictionaryAsync(x => x.RoleId, x => x.People, cancellationToken);
+        return (await db.Roles.AsNoTracking().OrderByDescending(r => r.IsSystem).ThenBy(r => r.Name).ToListAsync(cancellationToken))
+            .Select(r => ToDto(r, counts.GetValueOrDefault(r.Id)))
             .ToList();
+    }
+
+    public async Task<Result<RoleDto>> GetRoleAsync(Guid id, CancellationToken cancellationToken) =>
+        (await ListRolesAsync(cancellationToken)).FirstOrDefault(r => r.Id == id) is { } role
+            ? role
+            : Error.NotFound("identity.role_not_found", "Role not found.");
+
+    /// <summary>Everyone who holds a role now, with where they hold it.</summary>
+    public async Task<Result<IReadOnlyList<RoleHolderDto>>> ListRoleHoldersAsync(Guid id, CancellationToken cancellationToken)
+    {
+        if (!await db.Roles.AnyAsync(r => r.Id == id, cancellationToken))
+        {
+            return Error.NotFound("identity.role_not_found", "Role not found.");
+        }
+
+        var now = clock.GetUtcNow();
+        var grants = await db.Grants.AsNoTracking()
+            .Where(g => g.RoleId == id && g.RevokedAt == null && (g.ExpiresAt == null || g.ExpiresAt > now))
+            .OrderBy(g => g.GrantedAt)
+            .ToListAsync(cancellationToken);
+        var personOf = new Dictionary<Guid, Guid>();
+        foreach (var userId in grants.Select(g => g.UserId).Distinct())
+        {
+            if (await accounts.FindByIdAsync(userId, cancellationToken) is { } user)
+            {
+                personOf[userId] = user.PersonId;
+            }
+        }
+
+        var names = await people.GetManyAsync(personOf.Values.Distinct().ToList(), cancellationToken);
+        var scopes = (await church.GetScopesAsync(cancellationToken)).ToDictionary(s => s.Path, s => s.Name);
+        var holders = new List<RoleHolderDto>();
+        foreach (var grant in grants.Where(g => personOf.ContainsKey(g.UserId)))
+        {
+            if (!await authorizer.CanAsync(IdentityPermissions.UsersView, ScopePath.Parse(grant.Scope), cancellationToken))
+            {
+                continue;
+            }
+
+            var personId = personOf[grant.UserId];
+            holders.Add(new RoleHolderDto(
+                grant.Id,
+                personId,
+                names.GetValueOrDefault(personId)?.DisplayName ?? "Unknown person",
+                grant.Scope,
+                scopes.GetValueOrDefault(grant.Scope, grant.Scope),
+                grant.GrantedAt,
+                grant.ExpiresAt));
+        }
+
+        return holders.OrderBy(h => h.DisplayName, StringComparer.CurrentCultureIgnoreCase).ToList();
+    }
 
     public async Task<Result<RoleDto>> CreateRoleAsync(SaveRoleRequest request, CancellationToken cancellationToken)
     {
@@ -106,6 +169,12 @@ public sealed class AccessService(
         if (check.IsFailure)
         {
             return check.Error!;
+        }
+
+        var escalation = await CheckNoEscalationAsync(new HashSet<string>(), request.Permissions, cancellationToken);
+        if (escalation.IsFailure)
+        {
+            return escalation.Error!;
         }
 
         var role = Role.Create(request.Name, request.Description, request.Permissions);
@@ -129,10 +198,62 @@ public sealed class AccessService(
             return Error.NotFound("identity.role_not_found", "Role not found.");
         }
 
+        if (role.IsSystem && role.Name == Role.FullAccessName)
+        {
+            return new Error("identity.full_access_role", "The church administrator role always has full access, so it can't be changed.");
+        }
+
+        var escalation = await CheckNoEscalationAsync(role.PermissionKeys, request.Permissions, cancellationToken);
+        if (escalation.IsFailure)
+        {
+            return escalation.Error!;
+        }
+
+        var before = role.PermissionKeys;
         role.Update(request.Name, request.Description, request.Permissions);
         await db.SaveChangesAsync(cancellationToken);
-        await audit.RecordAsync(new AuditRecord("identity.role.updated", "role", role.Id.ToString(), Details: new { role.Name, request.Permissions }), cancellationToken);
-        return ToDto(role);
+        var after = role.PermissionKeys;
+        await audit.RecordAsync(
+            new AuditRecord("identity.role.updated", "role", role.Id.ToString(), Details: new
+            {
+                role.Name,
+                added = after.Except(before).Order(StringComparer.Ordinal).ToList(),
+                removed = before.Except(after).Order(StringComparer.Ordinal).ToList(),
+            }),
+            cancellationToken);
+        return await GetRoleAsync(role.Id, cancellationToken);
+    }
+
+    /// <summary>Puts a changed built-in role back the way it ships.</summary>
+    public async Task<Result<RoleDto>> ResetRoleAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var role = await db.Roles.SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+        if (role is null)
+        {
+            return Error.NotFound("identity.role_not_found", "Role not found.");
+        }
+
+        if (!role.IsSystem || defaults.For(role.Name) is not { } shipped)
+        {
+            return new Error("identity.custom_role", "Only built-in roles have defaults to go back to.");
+        }
+
+        var check = await CheckRoleRequestAsync(new SaveRoleRequest(role.Name, shipped.Description, shipped.Permissions), cancellationToken);
+        if (check.IsFailure)
+        {
+            return check.Error!;
+        }
+
+        var escalation = await CheckNoEscalationAsync(role.PermissionKeys, shipped.Permissions, cancellationToken);
+        if (escalation.IsFailure)
+        {
+            return escalation.Error!;
+        }
+
+        role.ResetToDefaults(shipped.Description, shipped.Permissions);
+        await db.SaveChangesAsync(cancellationToken);
+        await audit.RecordAsync(new AuditRecord("identity.role.reset", "role", role.Id.ToString(), Details: new { role.Name }), cancellationToken);
+        return await GetRoleAsync(role.Id, cancellationToken);
     }
 
     public async Task<Result<PersonAccessDto>> GetPersonAccessAsync(Guid personId, CancellationToken cancellationToken)
@@ -268,6 +389,26 @@ public sealed class AccessService(
             : new Error("identity.permission_unknown", $"Unknown permissions: {string.Join(", ", unknown)}.");
     }
 
-    private static RoleDto ToDto(Role r) =>
-        new(r.Id, r.Name, r.Description, r.IsSystem, r.PermissionKeys.Order(StringComparer.Ordinal).ToList());
+    /// <summary>Nobody can give a role more than they hold themselves, church-wide.</summary>
+    private async Task<Result> CheckNoEscalationAsync(IReadOnlySet<string> current, IEnumerable<string> wanted, CancellationToken cancellationToken)
+    {
+        var root = ScopePath.Parse((await church.GetRootScopeAsync(cancellationToken)).Path);
+        var missing = new List<string>();
+        foreach (var permission in wanted.Distinct(StringComparer.Ordinal).Where(p => !current.Contains(p)))
+        {
+            if (!await authorizer.CanAsync(permission, root, cancellationToken))
+            {
+                missing.Add(catalog.All.FirstOrDefault(p => p.Key == permission)?.Description ?? permission);
+            }
+        }
+
+        return missing.Count == 0
+            ? Result.Success()
+            : Error.Forbidden("identity.escalation", $"You can't add what you don't have yourself: {string.Join("; ", missing)}.");
+    }
+
+    private static RoleDto ToDto(Role r) => ToDto(r, 0);
+
+    private static RoleDto ToDto(Role r, int people) =>
+        new(r.Id, r.Name, r.Description, r.IsSystem, r.IsCustomised, !(r.IsSystem && r.Name == Role.FullAccessName), people, r.PermissionKeys.Order(StringComparer.Ordinal).ToList());
 }

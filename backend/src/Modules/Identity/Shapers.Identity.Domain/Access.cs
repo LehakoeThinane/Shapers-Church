@@ -13,8 +13,14 @@ public sealed class Role : AggregateRoot<Guid>
 
     public string? Description { get; private set; }
 
-    /// <summary>System roles are defined in code and kept in sync at startup; staff cannot edit them.</summary>
+    /// <summary>The built-in role that always holds every permission. It can't be edited, so the church can't lock itself out.</summary>
+    public const string FullAccessName = "Church administrator";
+
+    /// <summary>Built-in roles are defined in code and kept in sync at startup, until the church changes one.</summary>
     public bool IsSystem { get; private set; }
+
+    /// <summary>A built-in role the church has changed. Startup leaves it alone until it is reset to its defaults.</summary>
+    public bool IsCustomised { get; private set; }
 
     public IReadOnlyList<RolePermission> Permissions => _permissions;
 
@@ -34,20 +40,29 @@ public sealed class Role : AggregateRoot<Guid>
         return role;
     }
 
+    /// <summary>Changes a role. A built-in role keeps its name (the app refers to it) and is marked as customised.</summary>
     public void Update(string name, string? description, IEnumerable<string> permissions)
     {
-        if (IsSystem)
+        if (IsSystem && Name == FullAccessName)
         {
-            throw new DomainRuleException("identity.system_role", "Built-in roles can't be edited. Create a custom role instead.");
+            throw new DomainRuleException("identity.full_access_role", "The church administrator role always has full access, so it can't be changed.");
         }
 
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        Name = name.Trim();
+        if (IsSystem)
+        {
+            IsCustomised = true;
+        }
+        else
+        {
+            Name = name.Trim();
+        }
+
         Description = description?.Trim();
         ReplacePermissions(permissions);
     }
 
-    /// <summary>Startup sync for built-in roles.</summary>
+    /// <summary>Startup sync for built-in roles. A role the church has changed is left as they made it.</summary>
     public void SyncSystemPermissions(IEnumerable<string> permissions)
     {
         if (!IsSystem)
@@ -55,6 +70,22 @@ public sealed class Role : AggregateRoot<Guid>
             throw new InvalidOperationException("Only system roles are synced from code.");
         }
 
+        if (!IsCustomised)
+        {
+            ReplacePermissions(permissions);
+        }
+    }
+
+    /// <summary>Puts a changed built-in role back the way it ships.</summary>
+    public void ResetToDefaults(string description, IEnumerable<string> permissions)
+    {
+        if (!IsSystem)
+        {
+            throw new DomainRuleException("identity.custom_role", "Only built-in roles have defaults to go back to.");
+        }
+
+        IsCustomised = false;
+        Description = description;
         ReplacePermissions(permissions);
     }
 

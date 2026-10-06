@@ -246,6 +246,21 @@ public sealed class IdentityModule : IModule
             .WithName("UpdateRole")
             .RequirePermission(IdentityPermissions.RolesManage);
 
+        admin.MapGet("/roles/{id:guid}", async (Guid id, AccessService service, CancellationToken ct) =>
+                (await service.GetRoleAsync(id, ct)).ToHttp())
+            .WithName("GetRole")
+            .RequirePermission(IdentityPermissions.UsersView);
+
+        admin.MapGet("/roles/{id:guid}/people", async (Guid id, AccessService service, CancellationToken ct) =>
+                (await service.ListRoleHoldersAsync(id, ct)).ToHttp())
+            .WithName("ListRoleHolders")
+            .RequirePermission(IdentityPermissions.UsersView);
+
+        admin.MapPost("/roles/{id:guid}/reset", async (Guid id, AccessService service, CancellationToken ct) =>
+                (await service.ResetRoleAsync(id, ct)).ToHttp())
+            .WithName("ResetRole")
+            .RequirePermission(IdentityPermissions.RolesManage);
+
         admin.MapGet("/people/{personId:guid}/access", async (Guid personId, AccessService service, CancellationToken ct) =>
                 (await service.GetPersonAccessAsync(personId, ct)).ToHttp())
             .WithName("GetPersonAccess")

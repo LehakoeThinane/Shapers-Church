@@ -795,9 +795,41 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["GetRole"];
         put: operations["UpdateRole"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/roles/{id}/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListRoleHolders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/roles/{id}/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ResetRole"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5521,7 +5553,24 @@ export interface components {
             name: string;
             description: null | string;
             isSystem: boolean;
+            isCustomised: boolean;
+            canEdit: boolean;
+            /** Format: int32 */
+            people: number;
             permissions: string[];
+        };
+        RoleHolderDto: {
+            /** Format: uuid */
+            grantId: string;
+            /** Format: uuid */
+            personId: string;
+            displayName: string;
+            scope: string;
+            scopeName: string;
+            /** Format: date-time */
+            grantedAt: string;
+            /** Format: date-time */
+            expiresAt: null | string;
         };
         SanctionRequest: {
             /** Format: uuid */
@@ -7495,6 +7544,28 @@ export interface operations {
             };
         };
     };
+    GetRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleDto"];
+                };
+            };
+        };
+    };
     UpdateRole: {
         parameters: {
             query?: never;
@@ -7509,6 +7580,50 @@ export interface operations {
                 "application/json": components["schemas"]["SaveRoleRequest"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleDto"];
+                };
+            };
+        };
+    };
+    ListRoleHolders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleHolderDto"][];
+                };
+            };
+        };
+    };
+    ResetRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
