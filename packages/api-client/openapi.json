@@ -5,6 +5,26 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/admin/background-health": {
+      "get": {
+        "tags": [
+          "Background work"
+        ],
+        "operationId": "GetBackgroundHealth",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackgroundHealthDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/church": {
       "get": {
         "tags": [
@@ -10081,6 +10101,40 @@
           }
         }
       },
+      "BackgroundHealthDto": {
+        "required": [
+          "needsAttention",
+          "checkedAt",
+          "outbox",
+          "jobs"
+        ],
+        "type": "object",
+        "properties": {
+          "needsAttention": {
+            "type": "boolean"
+          },
+          "checkedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "outbox": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutboxHealth"
+            }
+          },
+          "jobs": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/JobsHealthDto"
+              }
+            ]
+          }
+        }
+      },
       "BlockoutDto": {
         "required": [
           "id",
@@ -12377,6 +12431,55 @@
           }
         }
       },
+      "JobFailureDto": {
+        "required": [
+          "job",
+          "failedAt",
+          "errorType"
+        ],
+        "type": "object",
+        "properties": {
+          "job": {
+            "type": "string"
+          },
+          "failedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "errorType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "JobsHealthDto": {
+        "required": [
+          "running",
+          "failed",
+          "recentFailures"
+        ],
+        "type": "object",
+        "properties": {
+          "running": {
+            "type": "boolean"
+          },
+          "failed": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "recentFailures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobFailureDto"
+            }
+          }
+        }
+      },
       "JourneyStage": {
         "enum": [
           "Visitor",
@@ -13611,6 +13714,74 @@
           },
           "isSection18AApproved": {
             "type": "boolean"
+          }
+        }
+      },
+      "OutboxHealth": {
+        "required": [
+          "module",
+          "waiting",
+          "gaveUp",
+          "oldest"
+        ],
+        "type": "object",
+        "properties": {
+          "module": {
+            "type": "string"
+          },
+          "waiting": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gaveUp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "oldest": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutboxProblem"
+            }
+          },
+          "needsAttention": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OutboxProblem": {
+        "required": [
+          "id",
+          "eventType",
+          "occurredAt",
+          "attempts",
+          "gaveUp",
+          "errorType"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventType": {
+            "type": "string"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gaveUp": {
+            "type": "boolean"
+          },
+          "errorType": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -18806,6 +18977,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Background work"
+    },
     {
       "name": "Church"
     },

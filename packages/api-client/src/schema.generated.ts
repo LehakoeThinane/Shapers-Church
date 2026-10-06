@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/admin/background-health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetBackgroundHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/church": {
         parameters: {
             query?: never;
@@ -4070,6 +4086,13 @@ export interface components {
             sharedKey: string;
             authenticatorUri: string;
         };
+        BackgroundHealthDto: {
+            needsAttention: boolean;
+            /** Format: date-time */
+            checkedAt: string;
+            outbox: components["schemas"]["OutboxHealth"][];
+            jobs: null | components["schemas"]["JobsHealthDto"];
+        };
         BlockoutDto: {
             /** Format: uuid */
             id: string;
@@ -4670,6 +4693,18 @@ export interface components {
             /** Format: int32 */
             unread: number;
         };
+        JobFailureDto: {
+            job: string;
+            /** Format: date-time */
+            failedAt: null | string;
+            errorType: null | string;
+        };
+        JobsHealthDto: {
+            running: boolean;
+            /** Format: int64 */
+            failed: number;
+            recentFailures: components["schemas"]["JobFailureDto"][];
+        };
         /** @enum {unknown} */
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
         LanguageDto: {
@@ -4991,6 +5026,26 @@ export interface components {
             contactEmail: null | string;
             website: null | string;
             isSection18AApproved: boolean;
+        };
+        OutboxHealth: {
+            module: string;
+            /** Format: int32 */
+            waiting: number;
+            /** Format: int32 */
+            gaveUp: number;
+            oldest: components["schemas"]["OutboxProblem"][];
+            needsAttention?: boolean;
+        };
+        OutboxProblem: {
+            /** Format: uuid */
+            id: string;
+            eventType: string;
+            /** Format: date-time */
+            occurredAt: string;
+            /** Format: int32 */
+            attempts: number;
+            gaveUp: boolean;
+            errorType: null | string;
         };
         PageAdminDto: {
             page: components["schemas"]["PageDto"];
@@ -6276,6 +6331,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    GetBackgroundHealth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackgroundHealthDto"];
+                };
+            };
+        };
+    };
     GetChurch: {
         parameters: {
             query?: never;

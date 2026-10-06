@@ -25,6 +25,8 @@ param(
     [Parameter(Mandatory)] [string] $AlertEmail,
     # Monthly cost budget in the subscription's billing currency; 0 leaves it out.
     [int] $MonthlyBudget = 2000,
+    # How often the "background work needs attention" alert checks, in minutes (5, 10, 15, 30 or 60).
+    [ValidateSet(5, 10, 15, 30, 60)] [int] $BackgroundAlertMinutes = 15,
     [string] $ResourceGroup = 'rg-shapers-prod',
     [string] $Location = 'southafricanorth',
     [string] $YouTubeApiKey = '',
@@ -141,6 +143,7 @@ function Deploy([bool] $withApi, [string] $image) {
             aiMonthlyBudgetZar     = @{ value = $AiMonthlyBudgetZar }
             alertEmail             = @{ value = $AlertEmail }
             monthlyBudget          = @{ value = $MonthlyBudget }
+            backgroundAlertMinutes = @{ value = $BackgroundAlertMinutes }
             budgetStartMonth       = @{ value = $budgetStartMonth }
         }
     }

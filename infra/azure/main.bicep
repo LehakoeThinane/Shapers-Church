@@ -87,6 +87,10 @@ param monthlyBudget int = 2000
 @description('Month the budget counts from (yyyy-MM). The deploy script passes the existing budget\'s month so it never moves.')
 param budgetStartMonth string = utcNow('yyyy-MM')
 
+@description('How often, in minutes, the "background work needs attention" alert checks the logs. Less often costs less.')
+@allowed([5, 10, 15, 30, 60])
+param backgroundAlertMinutes int = 15
+
 var suffix = '${name}-prod'
 var compact = '${name}prod'
 var tags = { app: 'shapers', environment: 'production' }
@@ -606,6 +610,7 @@ var logAlerts = [
     displayName: 'API: server errors'
     alertDescription: 'Five or more requests failed with a server error (5xx) in 15 minutes.'
     query: 'AppRequests | where toint(ResultCode) >= 500 and Url !has "/health/"'
+    evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
     threshold: 5
   }
@@ -614,8 +619,21 @@ var logAlerts = [
     displayName: 'API: readiness check failing'
     alertDescription: 'The readiness check (database reachable) failed three or more times in 10 minutes; the API takes no traffic while it fails.'
     query: 'AppRequests | where Url has "/health/ready" and Success == false'
+    evaluationFrequency: 'PT5M'
     windowSize: 'PT10M'
     threshold: 3
+  }
+  {
+    // The API checks itself every 5 minutes and logs this warning while something needs attention
+    // (backend/src/Host/Shapers.Api/Hosting/BackgroundHealth.cs). Logs reach Application Insights and the
+    // container's console log; whichever has it counts.
+    key: 'background-work'
+    displayName: 'Background work needs attention'
+    alertDescription: 'Messages between modules are stuck or were given up on, a background job failed after all its retries, or the job server stopped. Open Background work in the admin portal.'
+    query: 'union isfuzzy=true (AppTraces | where Message has "Background work needs attention"), (ContainerAppConsoleLogs_CL | where Log_s has "Background work needs attention")'
+    evaluationFrequency: 'PT${backgroundAlertMinutes}M'
+    windowSize: 'PT${backgroundAlertMinutes}M'
+    threshold: 1
   }
 ]
 
@@ -630,7 +648,7 @@ resource logAlertRules 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = [
       severity: 1
       enabled: true
       scopes: [logs.id]
-      evaluationFrequency: 'PT5M'
+      evaluationFrequency: alert.evaluationFrequency
       windowSize: alert.windowSize
       criteria: {
         allOf: [
