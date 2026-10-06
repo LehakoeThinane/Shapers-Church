@@ -26,6 +26,10 @@ param(
     [string] $YouTubeApiKey = '',
     [string] $SiteRebuildToken = '',
     [switch] $UseCustomEmailDomain,
+    # YouTube captions as sermon transcripts: the church's Google OAuth client (docs/deployment.md).
+    [string] $YouTubeOAuthClientId = '',
+    [string] $YouTubeOAuthClientSecret = '',
+    [string] $YouTubeOAuthRedirectUri = '',
     # AI help for staff: Azure OpenAI and Speech, paused once the month's estimated spend reaches the budget (ADR 0017).
     [switch] $EnableAi,
     [int] $AiMonthlyBudgetZar = 300
@@ -117,6 +121,9 @@ function Deploy([bool] $withApi, [string] $image) {
             bootstrapAdminPassword = @{ value = $secrets.bootstrapAdminPassword }
             youTubeApiKey          = @{ value = $YouTubeApiKey }
             siteRebuildToken       = @{ value = $SiteRebuildToken }
+            youTubeOAuthClientId     = @{ value = $YouTubeOAuthClientId }
+            youTubeOAuthClientSecret = @{ value = $YouTubeOAuthClientSecret }
+            youTubeOAuthRedirectUri  = @{ value = $YouTubeOAuthRedirectUri }
             enableAi               = @{ value = [bool] $EnableAi }
             aiMonthlyBudgetZar     = @{ value = $AiMonthlyBudgetZar }
         }

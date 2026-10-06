@@ -25,6 +25,8 @@ public interface IMediaDb
 
     DbSet<ChatBlockedTerm> ChatBlockedTerms { get; }
 
+    DbSet<YouTubeConnection> YouTubeConnections { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
@@ -60,6 +62,53 @@ public interface IYouTubeClient
     Task<IReadOnlyList<YouTubeVideo>> ListChannelVideosAsync(string channelId, CancellationToken cancellationToken);
 }
 
+public sealed record CaptionTrack(string Id, string Language, string TrackKind, bool IsDraft);
+
+public sealed record YouTubeChannel(string Id, string Title);
+
+/// <summary>
+/// YouTube with the channel owner's permission (OAuth): reads the channel's caption tracks. YouTube only lets a
+/// channel's owner download its captions, so the owner connects the channel once from the admin portal.
+/// </summary>
+public interface IYouTubeCaptions
+{
+    /// <summary>True when the church's Google OAuth client is set up (Media:YouTube:OAuthClientId and secret).</summary>
+    bool IsConfigured { get; }
+
+    string AuthorizeUrl(string state, string redirectUri);
+
+    /// <summary>Exchanges the code from Google's redirect for a refresh token.</summary>
+    Task<string> ExchangeCodeAsync(string code, string redirectUri, CancellationToken cancellationToken);
+
+    Task<string> AccessTokenAsync(string refreshToken, CancellationToken cancellationToken);
+
+    Task<YouTubeChannel> MyChannelAsync(string accessToken, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<CaptionTrack>> ListCaptionsAsync(string accessToken, string videoId, CancellationToken cancellationToken);
+
+    /// <summary>The track as SubRip (.srt) text.</summary>
+    Task<string> DownloadSrtAsync(string accessToken, string trackId, CancellationToken cancellationToken);
+
+    Task RevokeAsync(string refreshToken, CancellationToken cancellationToken);
+}
+
+/// <summary>A failure talking to YouTube, worded for staff.</summary>
+public sealed class YouTubeException(string message, Exception? inner = null) : Exception(message, inner);
+
+/// <summary>Encrypts credentials kept in the database and signs short-lived values such as OAuth state.</summary>
+public interface ITokenProtector
+{
+    string Protect(string value);
+
+    /// <summary>Null when the value can't be read, e.g. the keys changed.</summary>
+    string? Unprotect(string value);
+
+    string ProtectFor(string value, TimeSpan lifetime);
+
+    /// <summary>Null when it's been tampered with or has expired.</summary>
+    string? UnprotectTimed(string value);
+}
+
 public sealed class MediaOptions
 {
     public const string SectionName = "Media";
@@ -77,6 +126,17 @@ public sealed class MediaOptions
         public string? ApiKey { get; set; }
 
         public string ChannelId { get; set; } = "UCZf66xLSk4RyXbMzI_lVf-g";
+
+        /// <summary>The church's Google OAuth client (web application), for reading captions with the owner's permission.</summary>
+        public string? OAuthClientId { get; set; }
+
+        public string? OAuthClientSecret { get; set; }
+
+        /// <summary>
+        /// Where Google sends the owner back, registered in the Google Cloud console, e.g.
+        /// https://api.shaperschurch.com/api/media/youtube/callback. Defaults to this API's address.
+        /// </summary>
+        public string? OAuthRedirectUri { get; set; }
     }
 
     public sealed class PodcastOptions

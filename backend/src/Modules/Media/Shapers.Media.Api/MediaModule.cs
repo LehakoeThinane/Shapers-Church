@@ -1,9 +1,11 @@
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Shapers.Media.Application;
 using Shapers.Media.Contracts;
 using Shapers.Media.Infrastructure;
@@ -29,10 +31,62 @@ public sealed class MediaModule : IModule
     public Task InitialiseAsync(IServiceProvider services, CancellationToken cancellationToken) =>
         services.InitialiseMediaAsync(cancellationToken);
 
+    /// <summary>Connecting the church's YouTube channel (once, by its owner) so sermon captions become transcripts.</summary>
+    private static void MapYouTube(IEndpointRouteBuilder endpoints)
+    {
+        var youtube = endpoints.MapGroup("/api/admin/media/youtube").WithTags("Sermons admin").RequireAuthorization();
+        youtube.MapGet("/", (YouTubeCaptionService s, CancellationToken ct) => s.StatusAsync(ct))
+            .WithName("YouTubeConnection")
+            .RequirePermission(MediaPermissions.SermonsEdit);
+        youtube.MapPost("/connect", (HttpRequest request, YouTubeCaptionService s, IOptions<MediaOptions> options) =>
+                s.StartConnect(RedirectUri(request, options.Value)).ToHttp())
+            .WithName("ConnectYouTube")
+            .RequirePermission(MediaPermissions.SermonsPublish);
+        youtube.MapDelete("/", async (YouTubeCaptionService s, CancellationToken ct) => (await s.DisconnectAsync(ct)).ToHttp())
+            .WithName("DisconnectYouTube")
+            .RequirePermission(MediaPermissions.SermonsPublish);
+
+        endpoints.MapPost("/api/admin/media/sermons/{id:guid}/transcript/captions", async (Guid id, SermonAdminService sermons, YouTubeCaptionService captions, CancellationToken ct) =>
+            {
+                // Reading it first checks the person may edit this sermon.
+                var sermon = await sermons.GetAsync(id, ct);
+                if (sermon.IsSuccess)
+                {
+                    var imported = await captions.ImportForSermonAsync(id, ct);
+                    sermon = imported.IsFailure ? imported.Error! : await sermons.GetAsync(id, ct);
+                }
+
+                return sermon.ToHttp();
+            })
+            .WithTags("Sermons admin")
+            .WithName("TranscriptFromCaptions")
+            .RequirePermission(MediaPermissions.SermonsEdit);
+
+        // Google sends the owner back here. The staff cookie isn't sent on this cross-site visit; the signed state is
+        // what proves the request started in the admin portal.
+        endpoints.MapGet("/api/media/youtube/callback", async (string? code, string? state, string? error, HttpRequest request, YouTubeCaptionService s, IOptions<MediaOptions> options, CancellationToken ct) =>
+            {
+                var result = await s.CompleteAsync(code, state, error, RedirectUri(request, options.Value), ct);
+                var (heading, message) = result.IsSuccess
+                    ? ("YouTube connected", $"Captions from “{result.Value}” will become sermon transcripts over the next few hours. You can close this tab.")
+                    : ("YouTube wasn't connected", result.Error!.Message);
+                var html = $"<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>{WebUtility.HtmlEncode(heading)}</title></head>"
+                    + "<body style=\"font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;margin:15vh auto;padding:0 16px;line-height:1.5\">"
+                    + $"<h1 style=\"font-size:22px\">{WebUtility.HtmlEncode(heading)}</h1><p>{WebUtility.HtmlEncode(message)}</p></body></html>";
+                return Results.Content(html, "text/html; charset=utf-8", statusCode: result.IsSuccess ? 200 : 400);
+            })
+            .AllowAnonymous()
+            .ExcludeFromDescription();
+    }
+
+    private static string RedirectUri(HttpRequest request, MediaOptions options) =>
+        options.YouTube.OAuthRedirectUri ?? $"{request.Scheme}://{request.Host}{request.PathBase}/api/media/youtube/callback";
+
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         MapPublic(endpoints.MapGroup("/api/media").WithTags("Sermons").AllowAnonymous());
         MapAdmin(endpoints.MapGroup("/api/admin/media").WithTags("Sermons admin").RequireAuthorization());
+        MapYouTube(endpoints);
 
         var me = endpoints.MapGroup("/api/me/playback").WithTags("Sermons").RequireAuthorization();
         me.MapGet("/", (PlaybackService service, CancellationToken ct) => service.ContinueAsync(ct)).WithName("ContinueListening");

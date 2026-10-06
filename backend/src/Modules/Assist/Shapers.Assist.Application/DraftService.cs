@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shapers.Assist.Contracts;
 using Shapers.Assist.Domain;
+using Shapers.Content.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Platform.Auditing;
 using Shapers.Platform.Authorization;
@@ -19,6 +20,7 @@ public sealed class DraftService(
     AiGateway gateway,
     IAssistDb db,
     ISermonSource sermons,
+    IContentSource content,
     IAuthorizer authorizer,
     ICurrentUser currentUser,
     IAuditLog audit,
@@ -39,7 +41,83 @@ public sealed class DraftService(
         var spent = gateway.IsEnabled ? await gateway.SpentThisMonthAsync(cancellationToken) : 0;
         var budget = options.Value.MonthlyBudgetZar;
         var canDraft = gateway.IsEnabled && await authorizer.HasAnywhereAsync(AssistPermissions.DraftsCreate, cancellationToken);
-        return new AssistStatusDto(gateway.IsEnabled, canDraft, budget, Math.Round(spent, 2), spent >= budget);
+        return new AssistStatusDto(gateway.IsEnabled, canDraft, budget, Math.Round(spent, 2), spent >= budget, TranslationLanguages());
+    }
+
+    /// <summary>The languages offered for translation drafts, from settings.</summary>
+    public IReadOnlyList<LanguageOptionDto> TranslationLanguages() =>
+        options.Value.Languages.Where(c => c != Languages.English && Languages.IsKnown(c)).Distinct().Select(c => new LanguageOptionDto(c, Languages.NameOf(c))).ToList();
+
+    public const int MaxTranslationLength = 20_000;
+
+    /// <summary>
+    /// A page or post in another language. Contact details are swapped for placeholders before sending and put back after,
+    /// so they're kept without being sent. A fluent speaker checks the result before it's published (Content enforces that).
+    /// </summary>
+    public async Task<Result<DraftDto>> TranslateAsync(TranslateRequest request, CancellationToken cancellationToken)
+    {
+        if (!TranslationLanguages().Any(l => l.Code == request.Language))
+        {
+            return new Error("assist.language_not_offered", "That language isn't offered for translation yet.");
+        }
+
+        var source = await content.GetForTranslationAsync(request.SourceType, request.SourceId, cancellationToken);
+        if (source is null || !await CanAsync(source.Scope, cancellationToken))
+        {
+            return Error.NotFound("assist.source_not_found", "Page or post not found.");
+        }
+
+        if (source.Body.Length > MaxTranslationLength)
+        {
+            return new Error("assist.too_long", $"This is too long to translate in one go ({MaxTranslationLength:N0} characters at most). Split it into shorter pages.");
+        }
+
+        var masked = new Dictionary<string, string>();
+        var prompt = Prompts.Get(Prompts.Translate);
+        var user = prompt.User(new Dictionary<string, string>
+        {
+            ["language"] = Languages.NameOf(request.Language),
+            ["title"] = PersonalDataGuard.Mask(source.Title, masked),
+            ["summary"] = PersonalDataGuard.Mask(source.Summary ?? string.Empty, masked),
+            ["body"] = PersonalDataGuard.Mask(source.Body, masked),
+        });
+        var response = await gateway.ChatAsync("translate", new ChatRequest(prompt.System, user, "translation", DraftSchemas.Translation(), 12_000 + source.Body.Length), cancellationToken);
+        if (response.IsFailure)
+        {
+            return response.Error!;
+        }
+
+        TranslationDraft translated;
+        try
+        {
+            translated = DraftReader.Translation(response.Value.Json, request.Language);
+        }
+        catch (JsonException)
+        {
+            return new Error("assist.bad_output", "The AI service gave an answer we couldn't read. Try again.");
+        }
+
+        var all = string.Concat(translated.Title, translated.Summary, translated.Body);
+        if (masked.Keys.Any(token => !all.Contains(token, StringComparison.Ordinal)))
+        {
+            return new Error("assist.lost_details", "The translation dropped some contact details. Try again.");
+        }
+
+        // Stored with the contact details back in place, ready to become the translation.
+        var restored = translated with
+        {
+            Title = PersonalDataGuard.Unmask(translated.Title, masked),
+            Summary = PersonalDataGuard.Unmask(translated.Summary, masked),
+            Body = PersonalDataGuard.Unmask(translated.Body, masked),
+        };
+        return await SaveAsync(
+            DraftKind.Translation,
+            request.SourceType.ToString().ToLowerInvariant(),
+            source.Id,
+            ScopePath.Parse(source.Scope),
+            prompt.Version,
+            response.Value with { Json = JsonSerializer.Serialize(restored, DraftReader.JsonOptions) },
+            cancellationToken);
     }
 
     public Task<Result<DraftDto>> SermonLessonAsync(SermonDraftRequest request, CancellationToken cancellationToken) =>
@@ -194,13 +272,32 @@ public sealed class DraftService(
         d.RequestedByUserId == currentUser.UserId,
         d.Kind == DraftKind.SermonLesson ? DraftReader.Lesson(d.Output) : null,
         d.Kind == DraftKind.SermonNotes ? DraftReader.Notes(d.Output) : null,
-        d.Kind == DraftKind.Rewrite ? DraftReader.Rewrite(d.Output) : null);
+        d.Kind == DraftKind.Rewrite ? DraftReader.Rewrite(d.Output) : null,
+        d.Kind == DraftKind.Translation ? DraftReader.StoredTranslation(d.Output) : null);
 }
 
 /// <summary>Turns the model's JSON into typed drafts, tidying what it returned.</summary>
 public static class DraftReader
 {
-    private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
+    public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+
+    private static JsonSerializerOptions Json => JsonOptions;
+
+    /// <summary>The model's answer: title, summary and body in the target language.</summary>
+    public static TranslationDraft Translation(string json, string language)
+    {
+        var raw = JsonSerializer.Deserialize<TranslationJson>(json, Json) ?? throw new JsonException("Empty translation.");
+        if (string.IsNullOrWhiteSpace(raw.Title) || string.IsNullOrWhiteSpace(raw.Body))
+        {
+            throw new JsonException("The translation is missing its title or text.");
+        }
+
+        return new TranslationDraft(language, Languages.NameOf(language), Trim(raw.Title), Trim(raw.Summary), Trim(raw.Body));
+    }
+
+    /// <summary>A translation draft as saved (with its language).</summary>
+    public static TranslationDraft StoredTranslation(string json) =>
+        JsonSerializer.Deserialize<TranslationDraft>(json, Json) ?? throw new JsonException("Empty translation.");
 
     public static bool IsValid(DraftKind kind, string json)
     {
@@ -211,6 +308,7 @@ public static class DraftReader
                 DraftKind.SermonLesson => Lesson(json) is { Title.Length: > 0, Questions.Count: > 0 },
                 DraftKind.SermonNotes => Notes(json) is { Summary.Length: > 0 },
                 DraftKind.Rewrite => Rewrite(json) is { Text.Length: > 0 },
+                DraftKind.Translation => StoredTranslation(json) is { Title.Length: > 0, Body.Length: > 0 },
                 _ => false,
             };
         }
@@ -267,6 +365,8 @@ public static class DraftReader
     private sealed record NotesJson(string? Summary, string? Notes, List<string>? Topics);
 
     private sealed record RewriteJson(string? Text);
+
+    private sealed record TranslationJson(string? Title, string? Summary, string? Body);
 }
 
 /// <summary>Usage and cost for administrators.</summary>

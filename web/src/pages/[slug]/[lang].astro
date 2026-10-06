@@ -1,0 +1,22 @@
+---
+import CmsPage from '../../components/CmsPage.astro';
+import { get, type Schemas } from '../../lib/api';
+import { reservedSlugs } from '../../lib/church';
+
+// One page per checked, published translation: /{slug}/zu, /{slug}/st, ...
+export async function getStaticPaths() {
+  const pages = await get<Schemas['PageDto'][]>('/api/content/pages', []);
+  const paths = [];
+  for (const p of pages.filter((x) => !reservedSlugs.has(x.slug))) {
+    for (const l of p.languages.filter((x) => x.code !== 'en')) {
+      const page = await get<Schemas['PageDto'] | null>(`/api/content/pages/${p.slug}?lang=${l.code}`, null);
+      if (page) paths.push({ params: { slug: p.slug, lang: l.code }, props: { page } });
+    }
+  }
+  return paths;
+}
+
+const { page } = Astro.props as { page: Schemas['PageDto'] };
+---
+
+<CmsPage page={page} />

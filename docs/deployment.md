@@ -32,6 +32,7 @@ konsoleH (xneelo)        DNS and the church's email only
    ./infra/azure/deploy.ps1 -AdminEmail admin@shaperschurch.com
    ```
    Add `-YouTubeApiKey <key>` to enable the sermon import, and `-SiteRebuildToken <token>` (a GitHub fine-grained token with *Contents: read & write* on this repository) so the website rebuilds the moment something is published.
+   For **sermon transcripts from YouTube captions**, add `-YouTubeOAuthClientId`, `-YouTubeOAuthClientSecret` and `-YouTubeOAuthRedirectUri https://api.shaperschurch.com/api/media/youtube/callback` (see *YouTube captions* below).
    Add `-EnableAi` (optionally `-AiMonthlyBudgetZar 300`) for AI help: it creates Azure OpenAI and Speech in South Africa North and lets the API use them with its managed identity, so no keys are involved (ADR 0017). AI pauses for the rest of the month once the estimated spend reaches the budget.
    The script prints the first administrator's password **once**. Sign in, set up the authenticator app, then change the password.
 3. **Check it.** Open the API's temporary address the script printed, ending in `/health/ready`. It should answer `Healthy`.
@@ -138,3 +139,14 @@ Check the Azure pricing calculator before committing; a nonprofit grant may cove
 - **API won't start, database SSL error:** the connection string uses `SSL Mode=VerifyFull`. Check the image has CA certificates, or temporarily use `Require` (still encrypted).
 - **Admin portal shows "Something went wrong" on every call:** check `Cors:Origins` includes `https://admin.shaperschurch.com`, and that the admin build had `VITE_API_URL` set.
 - **Uploads fail from the admin portal:** the storage account's CORS rule must allow `https://admin.shaperschurch.com`.
+
+## YouTube captions
+
+YouTube only lets a channel's owner download captions, so the church creates its own Google sign-in for the platform once:
+
+1. In the [Google Cloud console](https://console.cloud.google.com/), signed in with the church's Google account, create a project (e.g. *Shapers Church platform*) and enable the **YouTube Data API v3**.
+2. **OAuth consent screen:** user type *External*, app name *Shapers Church*, support email info@shaperschurch.com. Add the scope `.../auth/youtube.force-ssl`. Then choose **Publish app** (*In production*). Left in *Testing*, Google ends the access after 7 days. Google may show an "unverified app" warning; only the channel owner sees it, and they can continue.
+3. **Credentials > Create OAuth client ID:** type *Web application*, authorised redirect URI `https://api.shaperschurch.com/api/media/youtube/callback`. Pass the client ID and secret to `deploy.ps1` (they go to Key Vault).
+4. In the admin portal, under **Publishing > Sermons**, the person who owns the church's YouTube channel clicks **Connect the church's channel** and signs in. From then on, sermons with a YouTube link get their captions as a transcript (a few every hour; YouTube's daily quota allows about 40).
+
+The refresh token is stored encrypted with the API's data protection keys. **Disconnect** on the same page removes it and revokes it at Google. If those keys are ever lost, the page asks for the channel to be connected again.

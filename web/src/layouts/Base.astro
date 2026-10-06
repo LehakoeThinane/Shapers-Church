@@ -11,9 +11,13 @@ interface Props {
   image?: string | null;
   /** Private pages (e.g. someone's tickets) stay out of search engines. */
   noindex?: boolean;
+  /** The page's language (ISO 639-1, e.g. "zu"); English by default. */
+  lang?: string;
+  /** The same page in other languages, for search engines. */
+  alternates?: { lang: string; href: string }[];
 }
 
-const { title, description, image, noindex } = Astro.props;
+const { title, description, image, noindex, lang = 'en', alternates = [] } = Astro.props;
 const menu = await get<Schemas['MenuItemDto'][]>('/api/content/menu', []);
 const fullTitle = title ? `${title} · Shapers Church` : 'Shapers Church · Rivonia, Johannesburg';
 const summary = description ?? 'Shapers Church in Rivonia, Johannesburg: building productive people for the kingdom of God.';
@@ -31,9 +35,10 @@ const shareImage = new URL(image ?? '/images/og-shapers.jpg', Astro.site);
 ---
 
 <!doctype html>
-<html lang="en-ZA" data-palette="midnight">
+<html lang={`${lang}-ZA`} data-palette="midnight">
   <head>
     <meta charset="utf-8" />
+    {alternates.map((a) => <link rel="alternate" hreflang={`${a.lang}-ZA`} href={new URL(a.href, Astro.site)} />)}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#050304" />
     <title>{fullTitle}</title>

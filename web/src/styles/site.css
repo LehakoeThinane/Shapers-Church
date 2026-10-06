@@ -2050,3 +2050,39 @@ fieldset legend {
   border-radius: var(--radius-pill);
   padding: 0 6px;
 }
+
+/* ---------- Language switch ---------- */
+
+.language-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 1.5rem;
+}
+
+.language-switch .label {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.language-switch .language {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-glass-edge);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+.language-switch a.language:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.language-switch .current {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-on-button);
+}

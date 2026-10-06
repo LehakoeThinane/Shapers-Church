@@ -64,6 +64,11 @@ public static class MediaInfrastructure
         services.AddScoped<ChatModerationService>();
         services.AddScoped<ChatRetention>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, ChatPersonalData>();
+        services.AddHttpClient<IYouTubeCaptions, YouTubeCaptionsClient>(c => c.Timeout = TimeSpan.FromSeconds(60));
+        services.AddSingleton<ITokenProtector, DataProtectionTokenProtector>();
+        services.AddScoped<YouTubeCaptionService>();
+        services.AddSingleton(new RecurringJobDefinition("media-youtube-captions", "25 * * * *", (sp, ct) =>
+            sp.GetRequiredService<YouTubeCaptionService>().RunAsync(ct)));
         services.AddScoped<TranscriptionJob>();
         services.AddScoped<ISermonSource, SermonSource>();
         services.AddSingleton(new RecurringJobDefinition("media-transcription", "*/5 * * * *", (sp, ct) =>

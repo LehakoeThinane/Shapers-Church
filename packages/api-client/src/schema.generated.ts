@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/media/sermons/{id}/transcript/captions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TranscriptFromCaptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/podcast.xml": {
         parameters: {
             query?: never;
@@ -1390,6 +1406,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["CompleteUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/youtube": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["YouTubeConnection"];
+        put?: never;
+        post?: never;
+        delete: operations["DisconnectYouTube"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/youtube/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectYouTube"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2852,6 +2900,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/content/translations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListTranslations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/content/pages": {
         parameters: {
             query?: never;
@@ -2878,6 +2942,38 @@ export interface paths {
         get: operations["AdminGetPage"];
         put: operations["UpdatePage"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages/{id}/translations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TranslatePage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/pages/{id}/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CheckPageTranslation"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2974,6 +3070,38 @@ export interface paths {
         get: operations["AdminGetPost"];
         put: operations["UpdatePost"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts/{id}/translations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TranslatePost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/content/posts/{id}/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CheckPostTranslation"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3118,6 +3246,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["DraftRewrite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts/translate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DraftTranslation"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3281,6 +3425,7 @@ export interface components {
             /** Format: double */
             spentThisMonthZar: number;
             budgetReached: boolean;
+            languages: components["schemas"]["LanguageOptionDto"][];
         };
         AttendeeRowDto: {
             /** Format: uuid */
@@ -3587,6 +3732,8 @@ export interface components {
         ContactType: "Email" | "Mobile" | "WhatsApp";
         /** @enum {unknown} */
         ContentStatus: "Draft" | "Scheduled" | "Published" | "Archived";
+        /** @enum {unknown} */
+        ContentType: "Page" | "Post";
         ContinueListeningDto: {
             sermon: components["schemas"]["SermonSummaryDto"];
             /** Format: int32 */
@@ -3640,6 +3787,12 @@ export interface components {
             membershipStatusId: null | string;
             email: null | string;
             mobile: null | string;
+        };
+        CreateTranslationRequest: {
+            language: string;
+            title: string;
+            summary: null | string;
+            body: string;
         };
         CueDto: {
             /** Format: uuid */
@@ -3723,9 +3876,10 @@ export interface components {
             lesson: null | components["schemas"]["LessonDraft"];
             notes: null | components["schemas"]["NotesDraft"];
             rewrite: null | components["schemas"]["RewriteDraft"];
+            translation: null | components["schemas"]["TranslationDraft"];
         };
         /** @enum {unknown} */
-        DraftKind: "SermonLesson" | "SermonNotes" | "Rewrite";
+        DraftKind: "SermonLesson" | "SermonNotes" | "Rewrite" | "Translation";
         /** @enum {unknown} */
         DraftStatus: "Pending" | "Accepted" | "Discarded";
         DuplicateCandidateDto: {
@@ -3893,6 +4047,14 @@ export interface components {
         };
         /** @enum {unknown} */
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
+        LanguageDto: {
+            code: string;
+            name: string;
+        };
+        LanguageOptionDto: {
+            code: string;
+            name: string;
+        };
         /** @enum {unknown} */
         LawfulBasis: "Consent" | "LegitimateInterest" | "LegalObligation" | "Contract";
         LessonDraft: {
@@ -4142,6 +4304,8 @@ export interface components {
             /** Format: date-time */
             publishedAt: null | string;
             legacyPath: null | string;
+            translation: null | components["schemas"]["TranslationInfoDto"];
+            translations: components["schemas"]["TranslationSummaryDto"][];
         };
         PagedResultOfAuditEntryDto: {
             items: components["schemas"]["AuditEntryDto"][];
@@ -4190,6 +4354,8 @@ export interface components {
             menuOrder: null | number;
             /** Format: date-time */
             updatedAt: string;
+            language: string;
+            languages: components["schemas"]["LanguageDto"][];
         };
         PermissionDto: {
             key: string;
@@ -4288,6 +4454,8 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             legacyPath: null | string;
+            translation: null | components["schemas"]["TranslationInfoDto"];
+            translations: components["schemas"]["TranslationSummaryDto"][];
         };
         PostChatRequest: {
             text: string;
@@ -4295,6 +4463,8 @@ export interface components {
         PostDto: {
             post: components["schemas"]["PostSummaryDto"];
             body: string;
+            language: string;
+            languages: components["schemas"]["LanguageDto"][];
         };
         /** @enum {unknown} */
         PostKind: "Blog" | "News";
@@ -4985,6 +5155,53 @@ export interface components {
         TranscriptSource: "Pasted" | "Audio" | "Captions" | null;
         /** @enum {unknown} */
         TranscriptStatus: "None" | "Queued" | "Working" | "Ready" | "Failed";
+        TranslateRequest: {
+            sourceType: components["schemas"]["ContentType"];
+            /** Format: uuid */
+            sourceId: string;
+            language: string;
+        };
+        TranslationDraft: {
+            language: string;
+            languageName: string;
+            title: string;
+            summary: string;
+            body: string;
+        };
+        TranslationInfoDto: {
+            /** Format: uuid */
+            originalId: string;
+            originalTitle: string;
+            language: string;
+            languageName: string;
+            checked: boolean;
+            /** Format: date-time */
+            checkedAt: null | string;
+            originalChangedSince: boolean;
+        };
+        TranslationQueueItemDto: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["ContentType"];
+            language: string;
+            languageName: string;
+            title: string;
+            originalTitle: string;
+            status: components["schemas"]["ContentStatus"];
+            checked: boolean;
+            originalChangedSince: boolean;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        TranslationSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            language: string;
+            languageName: string;
+            status: components["schemas"]["ContentStatus"];
+            checked: boolean;
+            originalChangedSince: boolean;
+        };
         TwoFactorStatus: {
             enabled: boolean;
             /** Format: int32 */
@@ -5073,6 +5290,20 @@ export interface components {
         WordListDto: {
             terms: string[];
         };
+        YouTubeConnectionDto: {
+            configured: boolean;
+            connected: boolean;
+            channelId: null | string;
+            channelTitle: null | string;
+            /** Format: date-time */
+            connectedAt: null | string;
+            isChurchChannel: boolean;
+            /** Format: int32 */
+            sermonsWaiting: number;
+        };
+        YouTubeConnectStartDto: {
+            authorizeUrl: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -5122,6 +5353,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConnectCardReceipt"];
+                };
+            };
+        };
+    };
+    TranscriptFromCaptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
                 };
             };
         };
@@ -7418,6 +7671,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetDto"];
+                };
+            };
+        };
+    };
+    YouTubeConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YouTubeConnectionDto"];
+                };
+            };
+        };
+    };
+    DisconnectYouTube: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ConnectYouTube: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YouTubeConnectStartDto"];
                 };
             };
         };
@@ -9737,7 +10048,9 @@ export interface operations {
     };
     GetPage: {
         parameters: {
-            query?: never;
+            query?: {
+                lang?: string;
+            };
             header?: never;
             path: {
                 slug: string;
@@ -9783,7 +10096,9 @@ export interface operations {
     };
     GetPost: {
         parameters: {
-            query?: never;
+            query?: {
+                lang?: string;
+            };
             header?: never;
             path: {
                 slug: string;
@@ -9861,6 +10176,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportResult"];
+                };
+            };
+        };
+    };
+    ListTranslations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranslationQueueItemDto"][];
                 };
             };
         };
@@ -9945,6 +10280,54 @@ export interface operations {
                 "application/json": components["schemas"]["SavePageRequest"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    TranslatePage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTranslationRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAdminDto"];
+                };
+            };
+        };
+    };
+    CheckPageTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -10131,6 +10514,54 @@ export interface operations {
                 "application/json": components["schemas"]["SavePostRequest"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    TranslatePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTranslationRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    CheckPostTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -10333,6 +10764,30 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["RewriteRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"];
+                };
+            };
+        };
+    };
+    DraftTranslation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TranslateRequest"];
             };
         };
         responses: {

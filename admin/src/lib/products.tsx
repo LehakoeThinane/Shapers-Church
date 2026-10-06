@@ -219,9 +219,10 @@ export const productGroups: ProductGroup[] = [
         icon: icons.publishing,
         status: 'live',
         to: '/content',
-        permission: [Permissions.contentEdit, Permissions.contentPublish, Permissions.mediaEdit, Permissions.livestreamManage],
+        permission: [Permissions.contentEdit, Permissions.contentPublish, Permissions.contentTranslationsReview, Permissions.mediaEdit, Permissions.livestreamManage],
         links: [
           { to: '/content', label: 'Pages & posts', permission: [Permissions.contentEdit, Permissions.contentPublish] },
+          { to: '/content/translations', label: 'Translations', permission: [Permissions.contentEdit, Permissions.contentTranslationsReview] },
           { to: '/sermons', label: 'Sermons', permission: Permissions.mediaEdit },
           { to: '/livestreams', label: 'Livestream', permission: Permissions.livestreamManage },
         ],

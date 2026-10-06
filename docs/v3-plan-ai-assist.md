@@ -1,6 +1,6 @@
 # Plan: AI help for staff (sermons, cell lessons, translation, search)
 
-Status: approved (2026-10-06). Built: steps 1–3 except YouTube captions, plus writing help from step 5 (ADR 0017). Next: YouTube captions, then translation.
+Status: approved (2026-10-06). Built: steps 1–3 (including YouTube captions), step 4 for pages and posts (ADR 0018), and the writing help from step 5 (ADR 0017). Next: search by meaning; translating church lessons and announcements later.
 
 ## Rules (from the project brief)
 - **AI only drafts.** Nothing it writes is published or sent until a named person reviews, edits and accepts it. Everything it produces is labelled *AI draft* until then.

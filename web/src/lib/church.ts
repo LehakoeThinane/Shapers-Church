@@ -43,3 +43,6 @@ export const growthTrack = [
   { step: 'Partner', text: 'Being anchored, serving and giving in church.' },
   { step: 'Produce', text: 'Activating your gifts and talents to be productive in the marketplace.' },
 ] as const;
+
+/** Addresses with their own page in this site; pages written in the admin portal can't take them. */
+export const reservedSlugs = new Set(['sermons', 'events', 'live', 'blog', 'connect', 'privacy', 'about', 'growth-track', 'give', 'contact']);

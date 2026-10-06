@@ -72,6 +72,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.AddSingleton<IPushSender>(Push);
             services.AddSingleton<IWordPressSource, FakeWordPress>();
             services.AddSingleton<IYouTubeClient, FakeYouTubeClient>();
+            services.AddSingleton<IYouTubeCaptions, FakeYouTubeCaptions>();
         });
     }
 
@@ -169,6 +170,32 @@ internal static class HttpExtensions
 
     public static Task<HttpResponseMessage> PostJsonAsync(this HttpClient client, string url, object body) =>
         client.PostAsJsonAsync(url, body, ApiFactory.Json);
+}
+
+/// <summary>Stands in for Google sign-in and YouTube captions. Video "noCaptions1" has no caption tracks.</summary>
+public sealed class FakeYouTubeCaptions : IYouTubeCaptions
+{
+    public const string NoCaptionsVideo = "noCaptions1";
+
+    public bool IsConfigured => true;
+
+    public string AuthorizeUrl(string state, string redirectUri) =>
+        $"https://accounts.example/auth?redirect_uri={Uri.EscapeDataString(redirectUri)}&state={Uri.EscapeDataString(state)}";
+
+    public Task<string> ExchangeCodeAsync(string code, string redirectUri, CancellationToken cancellationToken) => Task.FromResult($"refresh-{code}");
+
+    public Task<string> AccessTokenAsync(string refreshToken, CancellationToken cancellationToken) => Task.FromResult("access");
+
+    public Task<YouTubeChannel> MyChannelAsync(string accessToken, CancellationToken cancellationToken) =>
+        Task.FromResult(new YouTubeChannel("UCZf66xLSk4RyXbMzI_lVf-g", "Shapers Church"));
+
+    public Task<IReadOnlyList<CaptionTrack>> ListCaptionsAsync(string accessToken, string videoId, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<CaptionTrack>>(videoId == NoCaptionsVideo ? [] : [new("asr-1", "en", "asr", false)]);
+
+    public Task<string> DownloadSrtAsync(string accessToken, string trackId, CancellationToken cancellationToken) =>
+        Task.FromResult("1\n00:00:01,000 --> 00:00:03,000\nFaith without works is dead.\n");
+
+    public Task RevokeAsync(string refreshToken, CancellationToken cancellationToken) => Task.CompletedTask;
 }
 
 /// <summary>Stands in for the YouTube Data API: two videos in the shapes the church actually uses.</summary>

@@ -10,6 +10,9 @@ public enum DraftKind
 
     /// <summary>Someone's own text, tidied up, shortened or lengthened.</summary>
     Rewrite,
+
+    /// <summary>A page or post in another language, for a speaker of it to check.</summary>
+    Translation,
 }
 
 public enum DraftStatus

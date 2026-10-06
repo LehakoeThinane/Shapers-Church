@@ -1,0 +1,33 @@
+---
+import type { Schemas } from '../lib/api';
+
+interface Props {
+  /** Every language the page can be read in. */
+  languages: Schemas['LanguageDto'][];
+  current: string;
+  /** The English address, e.g. /blog/faith-that-works; translations add /zu, /st, ... */
+  basePath: string;
+}
+
+const { languages, current, basePath } = Astro.props;
+const hrefFor = (basePath: string, code: string) => (code === 'en' ? basePath : `${basePath}/${code}`);
+---
+
+{
+  languages.length > 1 && (
+    <nav class="language-switch" aria-label="Read in another language">
+      <span class="label">Read in</span>
+      {languages.map((l) =>
+        l.code === current ? (
+          <span class="language current" aria-current="page" lang={l.code}>
+            {l.name}
+          </span>
+        ) : (
+          <a class="language" href={hrefFor(basePath, l.code)} lang={l.code} hreflang={l.code}>
+            {l.name}
+          </a>
+        ),
+      )}
+    </nav>
+  )
+}

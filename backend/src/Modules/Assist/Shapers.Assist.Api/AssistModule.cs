@@ -40,6 +40,8 @@ public sealed class AssistModule : IModule
             .WithName("DraftSermonNotes");
         drafts.MapPost("/rewrite", async (RewriteRequest request, DraftService s, CancellationToken ct) => (await s.RewriteAsync(request, ct)).ToHttp())
             .WithName("DraftRewrite");
+        drafts.MapPost("/translate", async (TranslateRequest request, DraftService s, CancellationToken ct) => (await s.TranslateAsync(request, ct)).ToHttp())
+            .WithName("DraftTranslation");
         drafts.MapGet("/", (string sourceType, Guid sourceId, DraftService s, CancellationToken ct) => s.ForSourceAsync(sourceType, sourceId, ct))
             .WithName("DraftsForSource");
         drafts.MapGet("/{id:guid}", async (Guid id, DraftService s, CancellationToken ct) => (await s.GetAsync(id, ct)).ToHttp())

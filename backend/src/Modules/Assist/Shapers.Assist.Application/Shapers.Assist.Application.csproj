@@ -4,6 +4,7 @@
     <ProjectReference Include="../Shapers.Assist.Contracts/Shapers.Assist.Contracts.csproj" />
     <ProjectReference Include="../../../BuildingBlocks/Shapers.Platform/Shapers.Platform.csproj" />
     <ProjectReference Include="../../Media/Shapers.Media.Contracts/Shapers.Media.Contracts.csproj" />
+    <ProjectReference Include="../../Content/Shapers.Content.Contracts/Shapers.Content.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Prompts/*.md" LogicalName="Prompts.%(Filename)%(Extension)" />

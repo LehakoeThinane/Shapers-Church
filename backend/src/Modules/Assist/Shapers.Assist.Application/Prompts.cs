@@ -17,6 +17,7 @@ public static class Prompts
     public const string SermonLesson = "sermon-lesson.v1";
     public const string SermonNotes = "sermon-notes.v1";
     public const string Rewrite = "rewrite.v1";
+    public const string Translate = "translate.v1";
 
     private const string Separator = "=== user ===";
     private static readonly ConcurrentDictionary<string, Prompt> Cache = new();
@@ -57,6 +58,11 @@ public static class DraftSchemas
         ("topics", TextList()));
 
     public static JsonObject Rewrite() => Object(("text", Text()));
+
+    public static JsonObject Translation() => Object(
+        ("title", Text()),
+        ("summary", Text()),
+        ("body", Text()));
 
     private static JsonObject Text() => new() { ["type"] = "string" };
 

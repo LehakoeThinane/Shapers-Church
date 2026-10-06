@@ -36,6 +36,31 @@ public static partial class PersonalDataGuard
     public static string Redact(string text) =>
         IdNumber().Replace(Phone().Replace(Email().Replace(text, Removed), Removed), Removed);
 
+    /// <summary>
+    /// Swaps contact details for placeholders like [[C1]], so published text (e.g. the church office's number on a page)
+    /// can be translated without the details being sent. <see cref="Unmask"/> puts them back.
+    /// </summary>
+    public static string Mask(string text, Dictionary<string, string> masked)
+    {
+        string Swap(Match m)
+        {
+            var existing = masked.FirstOrDefault(p => p.Value == m.Value).Key;
+            if (existing is not null)
+            {
+                return existing;
+            }
+
+            var token = $"[[C{masked.Count + 1}]]";
+            masked[token] = m.Value;
+            return token;
+        }
+
+        return IdNumber().Replace(Phone().Replace(Email().Replace(text, Swap), Swap), Swap);
+    }
+
+    public static string Unmask(string text, IReadOnlyDictionary<string, string> masked) =>
+        masked.Aggregate(text, (current, pair) => current.Replace(pair.Key, pair.Value, StringComparison.Ordinal));
+
     [GeneratedRegex(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")]
     private static partial Regex Email();
 

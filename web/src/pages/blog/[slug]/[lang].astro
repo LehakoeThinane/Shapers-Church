@@ -1,0 +1,25 @@
+---
+import PostArticle from '../../../components/PostArticle.astro';
+import { get, getAll, type Schemas } from '../../../lib/api';
+
+// One page per checked, published translation: /blog/{slug}/zu, /blog/{slug}/st, ...
+export async function getStaticPaths() {
+  const posts = await getAll<Schemas['PostSummaryDto']>('/api/content/posts');
+  const paths = [];
+  for (const p of posts) {
+    const english = await get<Schemas['PostDto'] | null>(`/api/content/posts/${p.slug}`, null);
+    for (const l of english?.languages ?? []) {
+      if (l.code !== 'en') paths.push({ params: { slug: p.slug, lang: l.code }, props: { all: posts } });
+    }
+  }
+  return paths;
+}
+
+const { slug, lang } = Astro.params;
+const { all } = Astro.props as { all: Schemas['PostSummaryDto'][] };
+const post = await get<Schemas['PostDto'] | null>(`/api/content/posts/${slug}?lang=${lang}`, null);
+if (!post) return Astro.redirect(`/blog/${slug}`);
+const more = all.filter((x) => x.slug !== slug).slice(0, 3);
+---
+
+<PostArticle post={post} more={more} />

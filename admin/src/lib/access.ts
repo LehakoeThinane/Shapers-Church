@@ -55,6 +55,7 @@ export const Permissions = {
   privacyBreaches: 'privacy.breaches.manage',
   contentEdit: 'content.edit',
   contentPublish: 'content.publish',
+  contentTranslationsReview: 'content.translations.review',
   cellsManage: 'groups.cells.manage',
   cellReportsView: 'groups.reports.view',
   assistDrafts: 'assist.drafts.create',

@@ -56,6 +56,24 @@ public abstract class PublishableContent : AggregateRoot<Guid>
     /// <summary>The address on the old WordPress site, so it can redirect here.</summary>
     public string? LegacyPath { get; protected set; }
 
+    /// <summary>"en" for originals; a translation's language otherwise.</summary>
+    public string Language { get; protected set; } = Languages.English;
+
+    /// <summary>The English original this translates. A translation shares its address, in another language.</summary>
+    public Guid? TranslationOfId { get; protected set; }
+
+    /// <summary>When a speaker of the language last checked it. Editing the text clears it.</summary>
+    public DateTimeOffset? TranslationCheckedAt { get; protected set; }
+
+    public Guid? TranslationCheckedByUserId { get; protected set; }
+
+    /// <summary>The original's last change when this translation was made or checked, to spot an original that changed since.</summary>
+    public DateTimeOffset? TranslatedFromVersion { get; protected set; }
+
+    public bool IsTranslation => TranslationOfId is not null;
+
+    public bool TranslationChecked => TranslationCheckedAt is not null;
+
     public bool IsLive(DateTimeOffset now) => Status == ContentStatus.Published || (Status == ContentStatus.Scheduled && PublishAt <= now);
 
     protected void SetText(string title, string? summary, string body, DateTimeOffset now)
@@ -64,6 +82,59 @@ public abstract class PublishableContent : AggregateRoot<Guid>
         Summary = Optional(summary, MaxSummary);
         Body = Required(body, MaxBody, "Write something first.");
         UpdatedAt = now;
+        if (IsTranslation)
+        {
+            // Changed words need checking again, and unchecked words don't stay on the site.
+            TranslationCheckedAt = null;
+            TranslationCheckedByUserId = null;
+            if (Status is ContentStatus.Published or ContentStatus.Scheduled)
+            {
+                Status = ContentStatus.Draft;
+                PublishAt = null;
+            }
+        }
+    }
+
+    protected void StartTranslation(PublishableContent original, string language, DateTimeOffset now)
+    {
+        if (original.IsTranslation)
+        {
+            throw new DomainRuleException("content.translate_original", "Translate the English original, not another translation.");
+        }
+
+        if (language == Languages.English || !Languages.IsKnown(language))
+        {
+            throw new DomainRuleException("content.language_invalid", "Choose a language to translate into.");
+        }
+
+        Language = language;
+        TranslationOfId = original.Id;
+        Slug = original.Slug;
+        Scope = original.Scope;
+        Status = ContentStatus.Draft;
+        CreatedAt = now;
+        TranslatedFromVersion = original.UpdatedAt;
+    }
+
+    /// <summary>A speaker of the language has read it against the original and it says the same thing.</summary>
+    public void CheckTranslation(Guid userId, DateTimeOffset originalVersion, DateTimeOffset now)
+    {
+        if (!IsTranslation)
+        {
+            throw new DomainRuleException("content.not_translation", "Only translations are checked.");
+        }
+
+        TranslationCheckedAt = now;
+        TranslationCheckedByUserId = userId;
+        TranslatedFromVersion = originalVersion;
+    }
+
+    private void EnsureCheckedIfTranslation()
+    {
+        if (IsTranslation && !TranslationChecked)
+        {
+            throw new DomainRuleException("content.translation_unchecked", $"Someone who speaks {Languages.NameOf(Language)} must check this translation before it goes on the site.");
+        }
     }
 
     public void UseSlug(string slug)
@@ -85,6 +156,7 @@ public abstract class PublishableContent : AggregateRoot<Guid>
             return;
         }
 
+        EnsureCheckedIfTranslation();
         Status = ContentStatus.Published;
         PublishedAt ??= now;
         PublishAt = null;
@@ -99,6 +171,7 @@ public abstract class PublishableContent : AggregateRoot<Guid>
             throw new DomainRuleException("content.schedule_past", "Choose a time in the future, or publish now.");
         }
 
+        EnsureCheckedIfTranslation();
         Status = ContentStatus.Scheduled;
         PublishAt = at;
         UpdatedAt = now;
@@ -176,6 +249,15 @@ public sealed class Page : PublishableContent
         SetText(title, summary, body, now);
         MenuOrder = menuOrder;
     }
+
+    /// <summary>The page in another language, at the same address. Starts as a draft that needs checking.</summary>
+    public static Page TranslationOf(Page original, string language, string title, string? summary, string body, DateTimeOffset now)
+    {
+        var page = new Page { Id = Guid.CreateVersion7(), MenuOrder = original.MenuOrder };
+        page.StartTranslation(original, language, now);
+        page.SetText(title, summary, body, now);
+        return page;
+    }
 }
 
 /// <summary>A blog article or a news item.</summary>
@@ -215,6 +297,22 @@ public sealed class Post : PublishableContent
         Author = Optional(author, 100);
         CoverImageUrl = string.IsNullOrWhiteSpace(coverImageUrl) ? null : coverImageUrl.Trim();
         ShowUntil = kind == PostKind.News ? showUntil : null;
+    }
+
+    /// <summary>The post in another language, at the same address. Starts as a draft that needs checking.</summary>
+    public static Post TranslationOf(Post original, string language, string title, string? summary, string body, DateTimeOffset now)
+    {
+        var post = new Post
+        {
+            Id = Guid.CreateVersion7(),
+            Kind = original.Kind,
+            Author = original.Author,
+            CoverImageUrl = original.CoverImageUrl,
+            ShowUntil = original.ShowUntil,
+        };
+        post.StartTranslation(original, language, now);
+        post.SetText(title, summary, body, now);
+        return post;
     }
 
     /// <summary>Backdates an imported article to when it was first published on the old site.</summary>

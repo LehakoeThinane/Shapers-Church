@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.EntityFrameworkCore;
 using Shapers.Assist.Contracts;
 using Shapers.Assist.Domain;
+using Shapers.Content.Contracts;
 using Shapers.Platform.Authorization;
 
 namespace Shapers.Assist.Application;
@@ -33,6 +34,9 @@ public sealed class AssistOptions
 
     /// <summary>Calls stop for the rest of the month once the estimated spend reaches this.</summary>
     public decimal MonthlyBudgetZar { get; set; } = 300;
+
+    /// <summary>Languages offered for translation drafts (ISO 639-1 codes, e.g. zu, st). Add more as reviewers become available.</summary>
+    public List<string> Languages { get; set; } = ["zu", "st"];
 
     public AzureOptions Azure { get; set; } = new();
 
@@ -105,7 +109,11 @@ public sealed record SermonDraftRequest(Guid SermonId);
 
 public sealed record RewriteRequest(string Text, RewriteMode Mode);
 
-public sealed record AssistStatusDto(bool Enabled, bool CanDraft, decimal BudgetZar, decimal SpentThisMonthZar, bool BudgetReached);
+public sealed record TranslateRequest(ContentType SourceType, Guid SourceId, string Language);
+
+public sealed record LanguageOptionDto(string Code, string Name);
+
+public sealed record AssistStatusDto(bool Enabled, bool CanDraft, decimal BudgetZar, decimal SpentThisMonthZar, bool BudgetReached, IReadOnlyList<LanguageOptionDto> Languages);
 
 public sealed record LessonDraft(
     string Title,
@@ -121,7 +129,9 @@ public sealed record NotesDraft(string Summary, string Notes, IReadOnlyList<stri
 
 public sealed record RewriteDraft(string Text);
 
-/// <summary>A draft with its content in the shape of its kind. Exactly one of Lesson, Notes or Rewrite is set.</summary>
+public sealed record TranslationDraft(string Language, string LanguageName, string Title, string Summary, string Body);
+
+/// <summary>A draft with its content in the shape of its kind. Exactly one of Lesson, Notes, Rewrite or Translation is set.</summary>
 public sealed record DraftDto(
     Guid Id,
     DraftKind Kind,
@@ -134,7 +144,8 @@ public sealed record DraftDto(
     bool RequestedByMe,
     LessonDraft? Lesson,
     NotesDraft? Notes,
-    RewriteDraft? Rewrite);
+    RewriteDraft? Rewrite,
+    TranslationDraft? Translation);
 
 public sealed record UsageMonthDto(string Month, int Calls, decimal CostZar);
 

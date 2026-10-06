@@ -18,7 +18,7 @@ import { CheckInPage, EventAttendeesPage, EventEditorPage, EventsPage } from './
 import { PrayerPage } from './pages/PrayerPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { BreachesPage } from './pages/BreachesPage';
-import { ContentPage, PageEditorPage, PostEditorPage } from './pages/ContentPages';
+import { ContentPage, PageEditorPage, PostEditorPage, TranslationsPage } from './pages/ContentPages';
 import { AnnouncementEditorPage, AnnouncementsPage } from './pages/AnnouncementPages';
 import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
 import { ChatConsolePage, ChatStreamsPage } from './pages/ChatModerationPage';
@@ -67,6 +67,7 @@ const router = createBrowserRouter([
       { path: 'events/:id/attendees', element: <EventAttendeesPage /> },
       { path: 'events/:id/check-in', element: <CheckInPage /> },
       { path: 'content', element: <ContentPage /> },
+      { path: 'content/translations', element: <TranslationsPage /> },
       { path: 'content/pages/new', element: <PageEditorPage /> },
       { path: 'content/pages/:id', element: <PageEditorPage /> },
       { path: 'content/posts/new', element: <PostEditorPage /> },
