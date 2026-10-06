@@ -192,4 +192,5 @@ export const topicLabels: Record<Topic, { title: string; hint: string }> = {
   Events: { title: 'Events', hint: 'Your bookings, waiting lists and reminders' },
   Prayer: { title: 'Prayer', hint: 'Updates on your prayer requests' },
   Announcements: { title: 'Announcements', hint: 'News from the church' },
+  Serving: { title: 'Serving', hint: 'When you’re asked to serve, and reminders before you do' },
 };

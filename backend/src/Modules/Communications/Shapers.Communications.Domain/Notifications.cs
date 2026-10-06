@@ -8,6 +8,9 @@ public enum Topic
     Events,
     Prayer,
     Announcements,
+
+    /// <summary>Being asked to serve, reminders, and (for team leaders) when someone can't make it.</summary>
+    Serving,
 }
 
 public enum Channel

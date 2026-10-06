@@ -51,6 +51,14 @@
     <Project Path="src/Modules/Assist/Shapers.Assist.Infrastructure/Shapers.Assist.Infrastructure.csproj" />
     <Project Path="tests/Modules/Shapers.Assist.Tests/Shapers.Assist.Tests.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Services/">
+    <Project Path="src/Modules/Services/Shapers.Services.Api/Shapers.Services.Api.csproj" />
+    <Project Path="src/Modules/Services/Shapers.Services.Application/Shapers.Services.Application.csproj" />
+    <Project Path="src/Modules/Services/Shapers.Services.Contracts/Shapers.Services.Contracts.csproj" />
+    <Project Path="src/Modules/Services/Shapers.Services.Domain/Shapers.Services.Domain.csproj" />
+    <Project Path="src/Modules/Services/Shapers.Services.Infrastructure/Shapers.Services.Infrastructure.csproj" />
+    <Project Path="tests/Modules/Shapers.Services.Tests/Shapers.Services.Tests.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Groups/">
     <Project Path="src/Modules/Groups/Shapers.Groups.Api/Shapers.Groups.Api.csproj" />
     <Project Path="src/Modules/Groups/Shapers.Groups.Application/Shapers.Groups.Application.csproj" />

@@ -3332,6 +3332,486 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/services/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListTeams"];
+        put?: never;
+        post: operations["CreateTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/teams/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetTeam"];
+        put: operations["UpdateTeam"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/teams/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchiveTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/teams/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RestoreTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/teams/{id}/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AddPosition"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/teams/{id}/positions/{positionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdatePosition"];
+        post?: never;
+        delete: operations["ArchivePosition"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/teams/{id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SaveTeamMember"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/teams/{id}/members/{personId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["RemoveTeamMember"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListServiceTypes"];
+        put?: never;
+        post: operations["CreateServiceType"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/types/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateServiceType"];
+        post?: never;
+        delete: operations["ArchiveServiceType"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPlans"];
+        put?: never;
+        post: operations["CreatePlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/plans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetPlan"];
+        put: operations["UpdatePlan"];
+        post?: never;
+        delete: operations["DeletePlan"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/plans/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SetPlanItems"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/plans/{id}/needs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SetPlanNeeds"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/plans/{id}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlanCandidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/plans/{id}/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Schedule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/plans/{id}/live/{action}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ControlLive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/assignments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["Unschedule"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/matrix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ServingMatrix"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/songs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListSongs"];
+        put?: never;
+        post: operations["CreateSong"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/songs/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SongUsageReport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/songs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetSong"];
+        put: operations["UpdateSong"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/songs/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchiveSong"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/songs/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RestoreSong"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/services/plans/{id}/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FollowLive"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/services/plans/{id}/rehearse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Rehearse"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/serving": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MySchedule"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/serving/{id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AnswerServing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/serving/blockouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyBlockouts"];
+        put?: never;
+        post: operations["AddBlockout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/serving/blockouts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["DeleteBlockout"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3405,6 +3885,18 @@ export interface components {
         AnswerRequest: {
             note: null | string;
         };
+        Arrangement: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            key: null | string;
+            /** Format: int32 */
+            bpm: null | number;
+            chartUrl: null | string;
+            chartFileName: null | string;
+            audioUrl: null | string;
+            notes: null | string;
+        };
         AssetDto: {
             /** Format: uuid */
             id: string;
@@ -3416,6 +3908,35 @@ export interface components {
             /** Format: int32 */
             durationSeconds: null | number;
             status: components["schemas"]["MediaAssetStatus"];
+        };
+        AssignmentDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            planId: string;
+            /** Format: uuid */
+            teamId: string;
+            team: string;
+            /** Format: uuid */
+            positionId: string;
+            position: string;
+            /** Format: uuid */
+            personId: string;
+            name: string;
+            status: components["schemas"]["AssignmentStatus"];
+            declineReason: null | string;
+            /** Format: date-time */
+            requestedAt: string;
+            /** Format: date-time */
+            respondedAt: null | string;
+        };
+        /** @enum {unknown} */
+        AssignmentStatus: "Pending" | "Accepted" | "Declined";
+        AssignRequest: {
+            /** Format: uuid */
+            positionId: string;
+            /** Format: uuid */
+            personId: string;
         };
         AssistStatusDto: {
             enabled: boolean;
@@ -3485,6 +4006,15 @@ export interface components {
             sharedKey: string;
             authenticatorUri: string;
         };
+        BlockoutDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
+            reason: null | string;
+        };
         BreachDto: {
             /** Format: uuid */
             id: string;
@@ -3526,6 +4056,15 @@ export interface components {
         };
         /** @enum {unknown} */
         CampusStatus: "Planned" | "Active" | "Closed";
+        CandidateDto: {
+            /** Format: uuid */
+            personId: string;
+            name: string;
+            available: boolean;
+            reason: null | string;
+            /** Format: date */
+            lastServed: null | string;
+        };
         CellDetailDto: {
             /** Format: uuid */
             id: string;
@@ -3788,6 +4327,16 @@ export interface components {
             email: null | string;
             mobile: null | string;
         };
+        CreatePlanRequest: {
+            /** Format: uuid */
+            serviceTypeId: null | string;
+            /** Format: date */
+            date: string;
+            title: null | string;
+            /** Format: time */
+            startTime: null | string;
+            scope: null | string;
+        };
         CreateTranslationRequest: {
             language: string;
             title: string;
@@ -3944,6 +4493,10 @@ export interface components {
         EventVisibility: "Public" | "Members";
         /** @enum {unknown} */
         Gender: "Female" | "Male" | null;
+        GoLiveRequest: {
+            /** Format: uuid */
+            itemId: null | string;
+        };
         GrantDto: {
             /** Format: uuid */
             id: string;
@@ -4067,6 +4620,21 @@ export interface components {
             prayerFocus: string;
             body: string;
         };
+        LiveDto: {
+            /** Format: uuid */
+            planId: string;
+            title: string;
+            /** Format: date */
+            date: string;
+            isLive: boolean;
+            /** Format: uuid */
+            currentItemId: null | string;
+            /** Format: date-time */
+            currentStartedAt: null | string;
+            /** Format: date-time */
+            serverTime: string;
+            items: components["schemas"]["PlanItemDto"][];
+        };
         LiveNowDto: {
             state: components["schemas"]["LiveState"];
             stream: null | components["schemas"]["PublicLivestreamDto"];
@@ -4121,6 +4689,34 @@ export interface components {
             isChurchLesson: boolean;
             /** Format: uuid */
             sermonId: null | string;
+        };
+        MatrixCellDto: {
+            /** Format: uuid */
+            planId: string;
+            /** Format: uuid */
+            positionId: string;
+            people: components["schemas"]["MatrixPersonDto"][];
+            /** Format: int32 */
+            needed: number;
+        };
+        MatrixDto: {
+            plans: components["schemas"]["PlanSummaryDto"][];
+            rows: components["schemas"]["MatrixRowDto"][];
+            cells: components["schemas"]["MatrixCellDto"][];
+        };
+        MatrixPersonDto: {
+            /** Format: uuid */
+            assignmentId: string;
+            name: string;
+            status: components["schemas"]["AssignmentStatus"];
+        };
+        MatrixRowDto: {
+            /** Format: uuid */
+            teamId: string;
+            team: string;
+            /** Format: uuid */
+            positionId: string;
+            position: string;
         };
         /** @enum {unknown} */
         MediaAssetStatus: "Pending" | "Ready";
@@ -4215,6 +4811,20 @@ export interface components {
             palette: string;
             permissions: components["schemas"]["PermissionScopesDto"][];
         };
+        MyAssignmentDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            planId: string;
+            planTitle: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            startTime: string;
+            team: string;
+            position: string;
+            status: components["schemas"]["AssignmentStatus"];
+        };
         MyCellDto: {
             /** Format: uuid */
             id: string;
@@ -4258,6 +4868,20 @@ export interface components {
             /** Format: date-time */
             answeredAt: null | string;
             answerNote: null | string;
+        };
+        NeedDto: {
+            /** Format: uuid */
+            teamId: string;
+            team: string;
+            /** Format: uuid */
+            positionId: string;
+            position: string;
+            /** Format: int32 */
+            needed: number;
+            /** Format: int32 */
+            filled: number;
+            /** Format: int32 */
+            pending: number;
         };
         NewMemberRequest: {
             firstName: string;
@@ -4430,9 +5054,90 @@ export interface components {
         PersonSource: "Admin" | "SelfRegistration" | "VisitorCard" | "EventRegistration" | "Giving" | "Import";
         /** @enum {unknown} */
         PersonStatus: "Active" | "Inactive" | "Deceased" | "Merged" | "Erased";
+        PlanDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            serviceTypeId: null | string;
+            title: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            startTime: string;
+            /** Format: time */
+            endTime: string;
+            scope: string;
+            seriesTitle: null | string;
+            notes: null | string;
+            /** Format: uuid */
+            livestreamId: null | string;
+            items: components["schemas"]["PlanItemDto"][];
+            needs: components["schemas"]["NeedDto"][];
+            assignments: components["schemas"]["AssignmentDto"][];
+            /** Format: uuid */
+            liveItemId: null | string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        PlanItem: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["PlanItemKind"];
+            title: string;
+            /** Format: int32 */
+            lengthSeconds: number;
+            description: null | string;
+            /** Format: uuid */
+            songId: null | string;
+            /** Format: uuid */
+            arrangementId: null | string;
+            key: null | string;
+            leader: null | string;
+        };
+        PlanItemDto: {
+            item: components["schemas"]["PlanItem"];
+            /** Format: time */
+            startsAt: string;
+            songTitle: null | string;
+            arrangementName: null | string;
+        };
+        /** @enum {unknown} */
+        PlanItemKind: "Header" | "Item" | "Song";
+        PlanSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            startTime: string;
+            seriesTitle: null | string;
+            /** Format: int32 */
+            needed: number;
+            /** Format: int32 */
+            accepted: number;
+            /** Format: int32 */
+            pending: number;
+            /** Format: int32 */
+            declined: number;
+            isLive: boolean;
+        };
         PlaybackUpdateRequest: {
             /** Format: int32 */
             positionSeconds: number;
+        };
+        PositionDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: int32 */
+            order: number;
+        };
+        PositionNeed: {
+            /** Format: uuid */
+            positionId: string;
+            /** Format: int32 */
+            count: number;
         };
         PostAdminDto: {
             /** Format: uuid */
@@ -4635,6 +5340,35 @@ export interface components {
         RegistrationSource: "App" | "Web" | "Admin";
         /** @enum {unknown} */
         RegistrationStatus: "Confirmed" | "Waitlisted" | "Cancelled";
+        RehearsePlanDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            startTime: string;
+            notes: null | string;
+            items: components["schemas"]["PlanItemDto"][];
+            songs: components["schemas"]["RehearseSongDto"][];
+            team: components["schemas"]["AssignmentDto"][];
+        };
+        RehearseSongDto: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: uuid */
+            songId: string;
+            title: string;
+            author: null | string;
+            key: null | string;
+            /** Format: int32 */
+            bpm: null | number;
+            chartUrl: null | string;
+            audioUrl: null | string;
+            referenceUrl: null | string;
+            lyrics: null | string;
+            notes: null | string;
+        };
         ReportDto: {
             /** Format: uuid */
             id: string;
@@ -4765,6 +5499,13 @@ export interface components {
             /** Format: date-time */
             sendAt: null | string;
         };
+        SaveBlockoutRequest: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
+            reason: null | string;
+        };
         SaveBreachRequest: {
             title: string;
             description: string;
@@ -4844,6 +5585,12 @@ export interface components {
             forDate: null | string;
             sharedWithMembers: boolean;
         };
+        SaveMemberRequest: {
+            /** Format: uuid */
+            personId: string;
+            positionIds: string[];
+            isLeader: boolean;
+        };
         SavePageRequest: {
             title: string;
             slug: null | string;
@@ -4851,6 +5598,28 @@ export interface components {
             body: string;
             /** Format: int32 */
             menuOrder: null | number;
+        };
+        SavePlanDetailsRequest: {
+            title: string;
+            /** Format: date */
+            date: string;
+            /** Format: time */
+            startTime: string;
+            seriesTitle: null | string;
+            notes: null | string;
+            /** Format: uuid */
+            livestreamId: null | string;
+        };
+        SavePlanItemsRequest: {
+            items: components["schemas"]["PlanItem"][];
+        };
+        SavePlanNeedsRequest: {
+            needs: components["schemas"]["PositionNeed"][];
+        };
+        SavePositionRequest: {
+            name: string;
+            /** Format: int32 */
+            order: number;
         };
         SavePostRequest: {
             kind: components["schemas"]["PostKind"];
@@ -4908,6 +5677,23 @@ export interface components {
             videoUrl: null | string;
             scope: null | string;
         };
+        SaveServiceTypeRequest: {
+            name: string;
+            /** Format: time */
+            startTime: string;
+            items: components["schemas"]["PlanItem"][];
+            needs: components["schemas"]["PositionNeed"][];
+            scope: null | string;
+        };
+        SaveSongRequest: {
+            title: string;
+            author: null | string;
+            ccliNumber: null | string;
+            themes: string[];
+            lyrics: null | string;
+            referenceUrl: null | string;
+            arrangements: components["schemas"]["Arrangement"][];
+        };
         SaveSpeakerRequest: {
             name: string;
             title: null | string;
@@ -4916,6 +5702,12 @@ export interface components {
             personId: null | string;
             /** Format: uuid */
             photoAssetId: null | string;
+        };
+        SaveTeamRequest: {
+            name: string;
+            description: null | string;
+            openToMinors: boolean;
+            scope: null | string;
         };
         ScheduleRequest: {
             /** Format: date-time */
@@ -5029,6 +5821,20 @@ export interface components {
             hasAudio: boolean;
             hasVideo: boolean;
         };
+        ServiceTypeDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: time */
+            startTime: string;
+            scope: string;
+            items: components["schemas"]["PlanItem"][];
+            needs: components["schemas"]["PositionNeed"][];
+        };
+        ServingAnswerRequest: {
+            accept: boolean;
+            reason: null | string;
+        };
         SetPasswordRequest: {
             /** Format: uuid */
             userId: string;
@@ -5059,6 +5865,46 @@ export interface components {
         };
         /** @enum {unknown} */
         SignInStatus: "SignedIn" | "RegistrationRequired";
+        SongDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            author: null | string;
+            ccliNumber: null | string;
+            themes: string[];
+            lyrics: null | string;
+            referenceUrl: null | string;
+            arrangements: components["schemas"]["Arrangement"][];
+            /** Format: date */
+            lastUsed: null | string;
+            /** Format: int32 */
+            timesUsed: number;
+            isArchived: boolean;
+        };
+        SongSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            author: null | string;
+            ccliNumber: null | string;
+            themes: string[];
+            keys: string[];
+            /** Format: date */
+            lastUsed: null | string;
+            /** Format: int32 */
+            timesUsed: number;
+            isArchived: boolean;
+        };
+        SongUsageDto: {
+            /** Format: uuid */
+            songId: string;
+            title: string;
+            author: null | string;
+            ccliNumber: null | string;
+            /** Format: int32 */
+            times: number;
+            dates: string[];
+        };
         SpeakerDto: {
             /** Format: uuid */
             id: string;
@@ -5120,6 +5966,24 @@ export interface components {
             anonymous: boolean;
             consent: boolean;
         };
+        TeamDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description: null | string;
+            openToMinors: boolean;
+            scope: string;
+            isArchived: boolean;
+            positions: components["schemas"]["PositionDto"][];
+            members: components["schemas"]["TeamMemberDto"][];
+        };
+        TeamMemberDto: {
+            /** Format: uuid */
+            personId: string;
+            name: string;
+            positionIds: string[];
+            isLeader: boolean;
+        };
         TicketDto: {
             /** Format: uuid */
             attendeeId: string;
@@ -5137,7 +6001,7 @@ export interface components {
             refreshTokenExpiresAt: string;
         };
         /** @enum {unknown} */
-        Topic: "Live" | "Sermons" | "Events" | "Prayer" | "Announcements";
+        Topic: "Live" | "Sermons" | "Events" | "Prayer" | "Announcements" | "Serving";
         TranscriptDto: {
             text: null | string;
             info: components["schemas"]["TranscriptInfoDto"];
@@ -10888,6 +11752,964 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DraftDto"];
                 };
+            };
+        };
+    };
+    ListTeams: {
+        parameters: {
+            query?: {
+                includeArchived?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"][];
+                };
+            };
+        };
+    };
+    CreateTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveTeamRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    GetTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    UpdateTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveTeamRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    ArchiveTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    RestoreTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    AddPosition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePositionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    UpdatePosition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                positionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePositionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    ArchivePosition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                positionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    SaveTeamMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveMemberRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    RemoveTeamMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                personId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    ListServiceTypes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceTypeDto"][];
+                };
+            };
+        };
+    };
+    CreateServiceType: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveServiceTypeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceTypeDto"];
+                };
+            };
+        };
+    };
+    UpdateServiceType: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveServiceTypeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceTypeDto"];
+                };
+            };
+        };
+    };
+    ArchiveServiceType: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ListPlans: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanSummaryDto"][];
+                };
+            };
+        };
+    };
+    CreatePlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePlanRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanDto"];
+                };
+            };
+        };
+    };
+    GetPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanDto"];
+                };
+            };
+        };
+    };
+    UpdatePlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePlanDetailsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanDto"];
+                };
+            };
+        };
+    };
+    DeletePlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SetPlanItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePlanItemsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanDto"];
+                };
+            };
+        };
+    };
+    SetPlanNeeds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SavePlanNeedsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanDto"];
+                };
+            };
+        };
+    };
+    PlanCandidates: {
+        parameters: {
+            query: {
+                positionId: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateDto"][];
+                };
+            };
+        };
+    };
+    Schedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanDto"];
+                };
+            };
+        };
+    };
+    ControlLive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                action: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoLiveRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveDto"];
+                };
+            };
+        };
+    };
+    Unschedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanDto"];
+                };
+            };
+        };
+    };
+    ServingMatrix: {
+        parameters: {
+            query?: {
+                from?: string;
+                weeks?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatrixDto"];
+                };
+            };
+        };
+    };
+    ListSongs: {
+        parameters: {
+            query?: {
+                q?: string;
+                includeArchived?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongSummaryDto"][];
+                };
+            };
+        };
+    };
+    CreateSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSongRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongDto"];
+                };
+            };
+        };
+    };
+    SongUsageReport: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongUsageDto"][];
+                };
+            };
+        };
+    };
+    GetSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongDto"];
+                };
+            };
+        };
+    };
+    UpdateSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSongRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongDto"];
+                };
+            };
+        };
+    };
+    ArchiveSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongDto"];
+                };
+            };
+        };
+    };
+    RestoreSong: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SongDto"];
+                };
+            };
+        };
+    };
+    FollowLive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveDto"];
+                };
+            };
+        };
+    };
+    Rehearse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RehearsePlanDto"];
+                };
+            };
+        };
+    };
+    MySchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyAssignmentDto"][];
+                };
+            };
+        };
+    };
+    AnswerServing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServingAnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyAssignmentDto"];
+                };
+            };
+        };
+    };
+    MyBlockouts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BlockoutDto"][];
+                };
+            };
+        };
+    };
+    AddBlockout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveBlockoutRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BlockoutDto"];
+                };
+            };
+        };
+    };
+    DeleteBlockout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

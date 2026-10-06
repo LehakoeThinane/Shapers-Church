@@ -5,6 +5,7 @@ using Shapers.Identity.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Platform.Messaging;
 using Shapers.Prayer.Contracts;
+using Shapers.Services.Contracts;
 
 namespace Shapers.Communications.Application;
 
@@ -34,6 +35,29 @@ public sealed class NotifyCellFollowUpFlagged(Notifier notifier, IUserDirectory 
     {
         var pastors = await users.PeopleWithPermissionAsync(GroupsPermissions.ReportsView, e.Scope, cancellationToken);
         await notifier.ToPeopleAsync(pastors, new Notifier.Message(Topic.Prayer, "Urgent follow-up from a cell", $"The {e.CellName} cell leader asked for urgent pastoral follow-up. Open the cell report in the admin portal.", null, $"cell-urgent:{e.ReportId}", Urgent: true), cancellationToken);
+    }
+}
+
+/// <summary>Asked to serve: a push to answer in the app. The email with answer links comes from Services.</summary>
+public sealed class NotifyServingRequested(Notifier notifier) : IIntegrationEventHandler<ServingRequestedIntegrationEvent>
+{
+    public Task HandleAsync(ServingRequestedIntegrationEvent e, CancellationToken cancellationToken) =>
+        notifier.ToPeopleAsync([e.PersonId], new Notifier.Message(Topic.Serving, "Can you serve?", $"{e.Position} ({e.Team}), {e.Date:dddd d MMMM}. Tap to answer.", "/serving", $"serving:{e.AssignmentId}"), cancellationToken);
+}
+
+public sealed class NotifyServingReminder(Notifier notifier) : IIntegrationEventHandler<ServingReminderIntegrationEvent>
+{
+    public Task HandleAsync(ServingReminderIntegrationEvent e, CancellationToken cancellationToken) =>
+        notifier.ToPeopleAsync([e.PersonId], new Notifier.Message(Topic.Serving, "You're serving soon", $"{e.Position} ({e.Team}), {e.Date:dddd d MMMM}. Thank you!", "/serving", $"serving-reminder:{e.AssignmentId}"), cancellationToken);
+}
+
+/// <summary>Someone can't serve: the people who schedule that team hear straight away, so they can find someone else.</summary>
+public sealed class NotifyServingDeclined(Notifier notifier, IUserDirectory users) : IIntegrationEventHandler<ServingDeclinedIntegrationEvent>
+{
+    public async Task HandleAsync(ServingDeclinedIntegrationEvent e, CancellationToken cancellationToken)
+    {
+        var schedulers = await users.PeopleWithPermissionAsync(ServicesPermissions.Schedule, e.Scope, cancellationToken);
+        await notifier.ToPeopleAsync(schedulers, new Notifier.Message(Topic.Serving, "Someone can't serve", $"{e.Position} ({e.Team}) for {e.PlanTitle}, {e.Date:dddd d MMMM}, needs someone else.", null, $"serving-declined:{e.AssignmentId}"), cancellationToken);
     }
 }
 

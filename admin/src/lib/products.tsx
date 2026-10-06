@@ -185,8 +185,31 @@ export const productGroups: ProductGroup[] = [
   {
     title: 'Worship & teams',
     products: [
-      { key: 'services', name: 'Services', description: 'Worship planning, run sheets and team rosters', icon: icons.services, status: 'soon' },
-      { key: 'music', name: 'Music stand', description: 'Song charts and keys for the band', icon: icons.music, status: 'soon' },
+      {
+        key: 'services',
+        name: 'Services',
+        description: 'Worship planning, run sheets and team rosters',
+        icon: icons.services,
+        status: 'live',
+        to: '/services',
+        permission: [Permissions.servicesPlans, Permissions.servicesSchedule, Permissions.servicesSongs],
+        links: [
+          { to: '/services', label: 'Plans' },
+          { to: '/services/matrix', label: 'Matrix' },
+          { to: '/services/teams', label: 'Teams', permission: Permissions.servicesSchedule },
+          { to: '/services/songs', label: 'Songs' },
+          { to: '/services/types', label: 'Templates', permission: Permissions.servicesPlans },
+        ],
+      },
+      {
+        key: 'music',
+        name: 'Music stand',
+        description: 'Song charts, keys and lyrics for the band; open one from a plan',
+        icon: icons.music,
+        status: 'live',
+        to: '/services/songs',
+        permission: [Permissions.servicesPlans, Permissions.servicesSchedule, Permissions.servicesSongs],
+      },
     ],
   },
   {

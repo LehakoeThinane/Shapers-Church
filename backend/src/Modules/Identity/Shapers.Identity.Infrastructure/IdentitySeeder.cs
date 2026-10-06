@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shapers.Assist.Contracts;
+using Shapers.Services.Contracts;
 using Shapers.Church.Contracts;
 using Shapers.Identity.Contracts;
 using Shapers.Identity.Domain;
@@ -33,6 +34,8 @@ public static class SystemRoles
     public const string ContentTeam = "Content team";
     public const string ChatModerator = "Chat moderator";
     public const string Translator = "Translator";
+    public const string WorshipLeader = "Worship leader";
+    public const string ServingTeamLeader = "Serving team leader";
 
     /// <summary>Built-in roles. The church administrator always holds every permission in the catalogue.</summary>
     public static IReadOnlyDictionary<string, (string Description, IReadOnlyList<string> Permissions)> Definitions(PermissionCatalog catalog) =>
@@ -48,6 +51,7 @@ public static class SystemRoles
                 MediaPermissions.ChatModerate,
                 GroupsPermissions.CellsManage, GroupsPermissions.ReportsView,
                 AssistPermissions.DraftsCreate,
+                ServicesPermissions.PlansEdit, ServicesPermissions.Schedule, ServicesPermissions.SongsEdit,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [
@@ -68,6 +72,9 @@ public static class SystemRoles
             [
                 PrivacyPermissions.RequestsManage, PrivacyPermissions.BreachesManage, PlatformPermissions.AuditView,
             ]),
+            [WorshipLeader] = ("Plans services, keeps the song library and schedules the worship team.",
+                [ServicesPermissions.PlansEdit, ServicesPermissions.Schedule, ServicesPermissions.SongsEdit]),
+            [ServingTeamLeader] = ("Leads a serving team (e.g. production, hospitality): schedules its people and sees the plans.", [ServicesPermissions.Schedule]),
             [Translator] = ("Speaks a language the church translates into: checks and corrects translations of pages and posts before they're published.",
                 [ContentPermissions.TranslationsReview]),
             [ChatModerator] = ("Looks after the live chat during services: hides messages, times people out, sets slow mode.", [MediaPermissions.ChatModerate]),

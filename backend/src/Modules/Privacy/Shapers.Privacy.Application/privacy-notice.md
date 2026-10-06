@@ -17,6 +17,8 @@ Our Information Officer is [name], who can be reached at [email]. They answer qu
 - Connect cards you fill in during a service or on the website.
 - Which sermons you listened to and where you stopped, so you can carry on.
 - Notifications we send you, and the phones you asked us to send them to.
+- If you are in a home cell: the cell's meeting reports, which may mention you, your attendance and prayer needs.
+- If you serve: the teams you are on, when you were asked to serve and your answers, and the days you said you are away.
 
 Because this is a church, your record shows your religious belief. Prayer requests can also include health information. POPIA calls these special personal information, and we keep them only with your consent.
 
@@ -42,6 +44,8 @@ We do not sell your information, and we do not use it for advertising.
 - Connect cards: two years.
 - Listening history: one year.
 - Notifications: one year.
+- Home cell meeting reports: names, prayer needs and follow-ups are removed after one year; only attendance numbers stay.
+- Serving history (when you were asked to serve and your answers): two years. Days you marked as away: until a month after they pass.
 - Visitor details that were never confirmed: 90 days.
 - Records of who accessed sensitive information: five years.
 - Giving records: five years, as SARS requires. After that they are removed.
