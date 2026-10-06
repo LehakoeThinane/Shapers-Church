@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/client-errors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportClientError"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/church": {
         parameters: {
             query?: never;
@@ -4291,6 +4307,14 @@ export interface components {
             organisation: components["schemas"]["OrganisationDto"];
             campuses: components["schemas"]["CampusDto"][];
         };
+        ClientErrorReport: {
+            app: string;
+            version: null | string;
+            route: null | string;
+            errorType: null | string;
+            message: null | string;
+            stack: null | string;
+        };
         CompleteUploadRequest: {
             /** Format: int32 */
             durationSeconds: null | number;
@@ -4670,6 +4694,17 @@ export interface components {
         };
         /** @enum {unknown} */
         HouseholdRole: "Adult" | "Child";
+        HttpValidationProblemDetails: {
+            type?: null | string;
+            title?: null | string;
+            /** Format: int32 */
+            status?: null | number;
+            detail?: null | string;
+            instance?: null | string;
+            errors?: {
+                [key: string]: string[];
+            };
+        };
         ImportResult: {
             /** Format: int32 */
             postsImported: number;
@@ -6347,6 +6382,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BackgroundHealthDto"];
+                };
+            };
+        };
+    };
+    ReportClientError: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClientErrorReport"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
                 };
             };
         };

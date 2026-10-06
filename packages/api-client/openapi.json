@@ -25,6 +25,39 @@
         }
       }
     },
+    "/api/client-errors": {
+      "post": {
+        "tags": [
+          "Client errors"
+        ],
+        "operationId": "ReportClientError",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClientErrorReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/church": {
       "get": {
         "tags": [
@@ -10874,6 +10907,52 @@
           }
         }
       },
+      "ClientErrorReport": {
+        "required": [
+          "app",
+          "version",
+          "route",
+          "errorType",
+          "message",
+          "stack"
+        ],
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string"
+          },
+          "version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "route": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errorType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stack": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "CompleteUploadRequest": {
         "required": [
           "durationSeconds"
@@ -12353,6 +12432,51 @@
           "Adult",
           "Child"
         ]
+      },
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
       },
       "ImportResult": {
         "required": [
@@ -18979,6 +19103,9 @@
   "tags": [
     {
       "name": "Background work"
+    },
+    {
+      "name": "Client errors"
     },
     {
       "name": "Church"
