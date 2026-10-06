@@ -80,6 +80,8 @@ function Navigator() {
         <Stack.Screen name="inbox" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="prayer" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="tickets" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="serving" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="rehearse/[id]" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="privacy-notice" options={{ presentation: 'modal' }} />
         <Stack.Screen name="profile" options={{ presentation: 'modal' }} />
         <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />
