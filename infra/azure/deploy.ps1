@@ -70,7 +70,10 @@ function Use-Existing($value, [scriptblock] $create) {
     return & $create
 }
 
+# A missing secret is expected on the first run. Windows PowerShell 5.1 stops on a native command's error output
+# under 'Stop', even when it's discarded, so these lookups run under 'Continue' and check the exit code instead.
 function Get-ExistingSecret([string] $name) {
+    $ErrorActionPreference = 'Continue'
     $value = az keyvault secret show --vault-name $vaultName --name $name --query value -o tsv 2>$null
     if ($LASTEXITCODE -eq 0 -and $value) { return $value }
     return $null
@@ -88,7 +91,7 @@ Invoke-Az group create --name $ResourceGroup --location $Location --tags app=sha
 
 # ---------- Keys and passwords: reuse when they exist ----------
 
-$vaultExists = (az keyvault show --name $vaultName --query name -o tsv 2>$null) -eq $vaultName
+$vaultExists = (& { $ErrorActionPreference = 'Continue'; az keyvault show --name $vaultName --query name -o tsv 2>$null }) -eq $vaultName
 $existing = @{}
 foreach ($name in 'postgres-admin-password', 'auth-jwt-signing-key', 'auth-otp-hash-key', 'security-hash-key', 'bootstrap-admin-password') {
     $existing[$name] = if ($vaultExists) { Get-ExistingSecret $name } else { $null }

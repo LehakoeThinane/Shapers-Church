@@ -51,9 +51,13 @@ $registry = Invoke-Az acr list --resource-group $ResourceGroup --query '[0]' -o 
 $apiApp = Invoke-Az containerapp list --resource-group $ResourceGroup --query '[0]' -o json | ConvertFrom-Json
 
 # Contributor on these two resources only: run image builds in the registry, update the API's image.
+# 'Continue', so Windows PowerShell 5.1 doesn't stop on az's output when the assignment already exists.
 foreach ($scope in $registry.id, $apiApp.id) {
-    az role assignment create --assignee-object-id $principalId --assignee-principal-type ServicePrincipal `
-        --role Contributor --scope $scope -o none 2>$null
+    & {
+        $ErrorActionPreference = 'Continue'
+        az role assignment create --assignee-object-id $principalId --assignee-principal-type ServicePrincipal `
+            --role Contributor --scope $scope -o none 2>$null
+    }
 }
 
 Write-Host "`nAdd these as variables of the 'production' environment in GitHub (Settings > Environments):" -ForegroundColor Green
