@@ -21,3 +21,4 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0015](0015-production-deployment.md) | Production on Azure: Container Apps, private Postgres, Key Vault, Static Web Apps | Accepted |
 | [0016](0016-home-cells.md) | Home cells: leaders by membership, pastors by scoped permissions | Accepted |
 | [0017](0017-ai-drafting.md) | AI drafts for staff only, from public church content, within a monthly budget | Accepted |
+| [0018](0018-translations.md) | Translations as linked copies, checked by a speaker before publishing | Accepted |
