@@ -923,3 +923,68 @@ dd {
   flex-wrap: wrap;
   gap: var(--space-xs) var(--space-sm);
 }
+/* ---------- Sidebar: quiet scrolling and a compact footer ---------- */
+
+.sidebar nav {
+  /* The scrollbar sits in the sidebar's padding, and only shows while the menu is hovered or scrolled. */
+  margin-right: calc(-1 * var(--space-sm));
+  padding-right: var(--space-xs);
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  /* Items fade at the edges instead of being cut off. */
+  mask-image: linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 24px), transparent 100%);
+  overscroll-behavior: contain;
+}
+
+.sidebar nav:hover,
+.sidebar nav:focus-within {
+  scrollbar-color: var(--color-text-tertiary) transparent;
+}
+
+.sidebar nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar nav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: transparent;
+}
+
+.sidebar nav:hover::-webkit-scrollbar-thumb {
+  background: var(--color-text-tertiary);
+}
+
+.sidebar nav::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+}
+
+.sidebar-footer {
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-glass-edge);
+}
+
+.palette-select {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 13px;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 0 4px;
+}
+
+.sidebar-user > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

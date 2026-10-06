@@ -7,7 +7,7 @@ import { isLeader, useMyCells } from '../lib/cells';
 import { usePalette } from '../lib/palette-context';
 import { allowed, cellsIcon, productFor, productGroups } from '../lib/products';
 import { scopeLabel, useScope } from '../lib/scope-context';
-import { Button, Loading, Select } from './ui';
+import { Loading, Select } from './ui';
 
 export function Layout() {
   const { data: access, isPending, isError } = useAccess();
@@ -87,18 +87,19 @@ export function Layout() {
           <NavLink to="/security" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
             My security
           </NavLink>
-          <label className="field">
-            <span className="field-label">Palette</span>
-            <Select value={preference} onChange={(e) => setPreference(e.target.value as PalettePreference)}>
-              <option value="auto">Automatic</option>
-              <option value="midnight">Midnight</option>
-              <option value="rose">Rose</option>
-            </Select>
-          </label>
-          <p className="small muted">{access.displayName}</p>
-          <Button variant="ghost" onClick={signOut}>
-            Sign out
-          </Button>
+          <Select className="input palette-select" aria-label="Palette" value={preference} onChange={(e) => setPreference(e.target.value as PalettePreference)}>
+            <option value="auto">Palette: automatic</option>
+            <option value="midnight">Palette: Midnight</option>
+            <option value="rose">Palette: Rose</option>
+          </Select>
+          <div className="sidebar-user">
+            <span className="small muted" title={access.displayName}>
+              {access.displayName}
+            </span>
+            <button type="button" className="link-button small" onClick={signOut}>
+              Sign out
+            </button>
+          </div>
         </div>
       </aside>
 
