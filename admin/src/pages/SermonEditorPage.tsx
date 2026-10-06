@@ -280,6 +280,11 @@ function TranscriptCard({ sermon, onChange }: { sermon: Admin; onChange: (a: Adm
     mutationFn: async () => unwrap(await api.POST('/api/admin/media/sermons/{id}/transcript/transcribe', { params: { path: { id } } })),
     onSuccess: onChange,
   });
+  const youtube = useQuery({ queryKey: ['youtube-connection'], queryFn: async () => unwrap(await api.GET('/api/admin/media/youtube')) });
+  const captions = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/media/sermons/{id}/transcript/captions', { params: { path: { id } } })),
+    onSuccess: onChange,
+  });
 
   return (
     <Card
@@ -320,9 +325,14 @@ function TranscriptCard({ sermon, onChange }: { sermon: Admin; onChange: (a: Adm
               {info.status === 'Ready' ? 'Transcribe audio again' : 'Transcribe audio'}
             </Button>
           )}
+          {youtube.data?.connected && sermon.sermon.video && !busy && info.status !== 'Ready' && (
+            <Button busy={captions.isPending} onClick={() => captions.mutate()}>
+              Get captions from YouTube
+            </Button>
+          )}
         </div>
       )}
-      <ErrorNote error={open.error ?? save.error ?? transcribe.error} />
+      <ErrorNote error={open.error ?? save.error ?? transcribe.error ?? captions.error} />
     </Card>
   );
 }

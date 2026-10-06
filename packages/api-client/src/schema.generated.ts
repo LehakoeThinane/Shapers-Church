@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/media/sermons/{id}/transcript/captions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TranscriptFromCaptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/podcast.xml": {
         parameters: {
             query?: never;
@@ -1390,6 +1406,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["CompleteUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/youtube": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["YouTubeConnection"];
+        put?: never;
+        post?: never;
+        delete: operations["DisconnectYouTube"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/youtube/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectYouTube"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5073,6 +5121,20 @@ export interface components {
         WordListDto: {
             terms: string[];
         };
+        YouTubeConnectionDto: {
+            configured: boolean;
+            connected: boolean;
+            channelId: null | string;
+            channelTitle: null | string;
+            /** Format: date-time */
+            connectedAt: null | string;
+            isChurchChannel: boolean;
+            /** Format: int32 */
+            sermonsWaiting: number;
+        };
+        YouTubeConnectStartDto: {
+            authorizeUrl: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -5122,6 +5184,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConnectCardReceipt"];
+                };
+            };
+        };
+    };
+    TranscriptFromCaptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
                 };
             };
         };
@@ -7418,6 +7502,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetDto"];
+                };
+            };
+        };
+    };
+    YouTubeConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YouTubeConnectionDto"];
+                };
+            };
+        };
+    };
+    DisconnectYouTube: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ConnectYouTube: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["YouTubeConnectStartDto"];
                 };
             };
         };

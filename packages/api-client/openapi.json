@@ -55,6 +55,37 @@
         }
       }
     },
+    "/api/admin/media/sermons/{id}/transcript/captions": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "TranscriptFromCaptions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/podcast.xml": {
       "get": {
         "tags": [
@@ -3235,6 +3266,57 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AssetDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/youtube": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "YouTubeConnection",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YouTubeConnectionDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "DisconnectYouTube",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/media/youtube/connect": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "ConnectYouTube",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YouTubeConnectStartDto"
                 }
               }
             }
@@ -14909,6 +14991,63 @@
             }
           }
         }
+      },
+      "YouTubeConnectionDto": {
+        "required": [
+          "configured",
+          "connected",
+          "channelId",
+          "channelTitle",
+          "connectedAt",
+          "isChurchChannel",
+          "sermonsWaiting"
+        ],
+        "type": "object",
+        "properties": {
+          "configured": {
+            "type": "boolean"
+          },
+          "connected": {
+            "type": "boolean"
+          },
+          "channelId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "channelTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "connectedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "isChurchChannel": {
+            "type": "boolean"
+          },
+          "sermonsWaiting": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "YouTubeConnectStartDto": {
+        "required": [
+          "authorizeUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "authorizeUrl": {
+            "type": "string"
+          }
+        }
       }
     }
   },
@@ -14918,6 +15057,9 @@
     },
     {
       "name": "Connect"
+    },
+    {
+      "name": "Sermons admin"
     },
     {
       "name": "Sermons"
@@ -14951,9 +15093,6 @@
     },
     {
       "name": "Access"
-    },
-    {
-      "name": "Sermons admin"
     },
     {
       "name": "Live chat"

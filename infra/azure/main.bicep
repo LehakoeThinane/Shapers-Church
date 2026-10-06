@@ -63,6 +63,15 @@ param youTubeApiKey string = ''
 @secure()
 param siteRebuildToken string = ''
 
+@description('Optional: the church\'s Google OAuth client (web application) for reading YouTube captions with the channel owner\'s permission.')
+param youTubeOAuthClientId string = ''
+
+@secure()
+param youTubeOAuthClientSecret string = ''
+
+@description('Where Google returns after sign-in, as registered with the OAuth client, e.g. https://api.shaperschurch.com/api/media/youtube/callback.')
+param youTubeOAuthRedirectUri string = ''
+
 @description('AI help for staff (sermon transcripts, drafts). Creates Azure OpenAI and Speech in this region; the API signs in with its managed identity.')
 param enableAi bool = false
 
@@ -413,7 +422,8 @@ var secretNames = concat(
     'email-connection-string'
   ],
   empty(youTubeApiKey) ? [] : ['youtube-api-key'],
-  empty(siteRebuildToken) ? [] : ['site-rebuild-token']
+  empty(siteRebuildToken) ? [] : ['site-rebuild-token'],
+  empty(youTubeOAuthClientSecret) ? [] : ['youtube-oauth-client-secret']
 )
 var secretValues = {
   'postgres-admin-password': postgresAdminPassword
@@ -426,6 +436,7 @@ var secretValues = {
   'email-connection-string': communication.listKeys().primaryConnectionString
   'youtube-api-key': youTubeApiKey
   'site-rebuild-token': siteRebuildToken
+  'youtube-oauth-client-secret': youTubeOAuthClientSecret
 }
 
 resource secrets 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = [
@@ -497,6 +508,13 @@ var baseEnv = [
 var optionalEnv = concat(
   empty(youTubeApiKey) ? [] : [{ name: 'Media__YouTube__ApiKey', secretRef: 'youtube-api-key' }],
   empty(siteRebuildToken) ? [] : [{ name: 'Content__SiteRebuild__Token', secretRef: 'site-rebuild-token' }],
+  empty(youTubeOAuthClientId) || empty(youTubeOAuthClientSecret)
+    ? []
+    : [
+        { name: 'Media__YouTube__OAuthClientId', value: youTubeOAuthClientId }
+        { name: 'Media__YouTube__OAuthClientSecret', secretRef: 'youtube-oauth-client-secret' }
+      ],
+  empty(youTubeOAuthRedirectUri) ? [] : [{ name: 'Media__YouTube__OAuthRedirectUri', value: youTubeOAuthRedirectUri }],
   enableAi
     ? [
         { name: 'Assist__Provider', value: 'Azure' }

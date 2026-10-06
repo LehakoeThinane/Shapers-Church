@@ -31,10 +31,21 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
 
     public DbSet<ChatBlockedTerm> ChatBlockedTerms => Set<ChatBlockedTerm>();
 
+    public DbSet<YouTubeConnection> YouTubeConnections => Set<YouTubeConnection>();
+
     Task<int> IMediaDb.SaveChangesAsync(CancellationToken cancellationToken) => SaveChangesAsync(cancellationToken);
 
     protected override void ConfigureModel(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<YouTubeConnection>(b =>
+        {
+            b.ToTable("youtube_connections");
+            b.Property(c => c.Id).ValueGeneratedNever();
+            b.Property(c => c.ChannelId).HasMaxLength(64);
+            b.Property(c => c.ChannelTitle).HasMaxLength(200);
+            b.Property(c => c.ProtectedRefreshToken).HasMaxLength(4000);
+        });
+
         modelBuilder.Entity<Sermon>(b =>
         {
             b.ToTable("sermons");

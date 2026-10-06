@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, formatDate, unwrap, type Schemas } from '../lib/api';
+import { can, Permissions, useAccess } from '../lib/access';
 
 type Status = Schemas['SermonStatus'];
 
@@ -12,6 +13,75 @@ const statusTone: Record<Status, 'neutral' | 'accent' | 'success' | 'danger'> = 
   Published: 'success',
   Archived: 'danger',
 };
+
+/**
+ * Captions as transcripts: the channel's owner signs in with Google once (in a new tab), then sermons with a YouTube
+ * video get their captions as a transcript every hour.
+ */
+function YouTubeCaptionsCard() {
+  const { data: access } = useAccess();
+  const queryClient = useQueryClient();
+  const [connecting, setConnecting] = useState(false);
+  const status = useQuery({
+    queryKey: ['youtube-connection'],
+    queryFn: async () => unwrap(await api.GET('/api/admin/media/youtube')),
+    // After "Connect", check back while the owner signs in in the other tab.
+    refetchInterval: (q) => (q.state.data && !q.state.data.connected && connecting ? 5000 : false),
+  });
+  const connect = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/media/youtube/connect')),
+    onSuccess: (start) => {
+      setConnecting(true);
+      window.open(start.authorizeUrl, '_blank', 'noopener');
+    },
+  });
+  const disconnect = useMutation({
+    mutationFn: async () => unwrap(await api.DELETE('/api/admin/media/youtube')),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['youtube-connection'] }),
+  });
+
+  const s = status.data;
+  if (!s || !s.configured) return null;
+  const canConnect = can(access, Permissions.mediaPublish);
+  return (
+    <Card title="Transcripts from YouTube captions">
+      {s.connected ? (
+        <div className="row">
+          <span>
+            Connected to <strong>{s.channelTitle}</strong> {!s.isChurchChannel && <Badge tone="danger">Not the church's usual channel</Badge>}
+            <span className="small muted">
+              {' '}
+              · {s.sermonsWaiting > 0 ? `${s.sermonsWaiting} sermons waiting for captions; a few are fetched every hour.` : 'Every sermon with a video has been checked.'}
+            </span>
+          </span>
+          {canConnect && (
+            <Button variant="ghost" busy={disconnect.isPending} onClick={() => window.confirm('Stop reading captions from YouTube?') && disconnect.mutate()}>
+              Disconnect
+            </Button>
+          )}
+        </div>
+      ) : (
+        <div className="stack-tight">
+          <p className="small muted">
+            Sermon videos' captions can become transcripts, so AI help can draft notes and cell lessons. YouTube only shares captions with the channel's owner: the person
+            who owns the church's YouTube channel signs in with Google once.
+          </p>
+          {canConnect ? (
+            <span>
+              <Button busy={connect.isPending} onClick={() => connect.mutate()}>
+                Connect the church's channel
+              </Button>
+              {connecting && <span className="small muted"> Finish signing in on the Google tab. This updates by itself.</span>}
+            </span>
+          ) : (
+            <p className="small muted">Someone who publishes sermons can connect it.</p>
+          )}
+        </div>
+      )}
+      <ErrorNote error={status.error ?? connect.error ?? disconnect.error} />
+    </Card>
+  );
+}
 
 export function SermonsPage() {
   const queryClient = useQueryClient();
@@ -60,6 +130,7 @@ export function SermonsPage() {
         </p>
       )}
       <ErrorNote error={importFromYouTube.error} />
+      <YouTubeCaptionsCard />
 
       <Card>
         <div className="filters">
