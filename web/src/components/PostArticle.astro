@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import Cover from './Cover.astro';
+import LanguageSwitch from './LanguageSwitch.astro';
+import Share from './Share.astro';
+import type { Schemas } from '../lib/api';
+import { longDate, renderMarkdown } from '../lib/format';
+
+interface Props {
+  post: Schemas['PostDto'];
+  /** Other articles to suggest at the end (English). */
+  more: Schemas['PostSummaryDto'][];
+}
+
+const { post, more } = Astro.props;
+const p = post.post;
+const basePath = `/blog/${p.slug}`;
+const path = post.language === 'en' ? basePath : `${basePath}/${post.language}`;
+// About 220 words a minute.
+const readMinutes = Math.max(1, Math.round(post.body.split(/\s+/).length / 220));
+const alternates = post.languages.map((l) => ({ lang: l.code, href: l.code === 'en' ? basePath : `${basePath}/${l.code}` }));
+---
+
+<Base title={p.title} description={p.summary ?? undefined} image={p.coverImageUrl} lang={post.language} alternates={alternates}>
+  <section class="band band-dark band-glow detail-hero">
+    <div class="wrap prose-wrap">
+      <a class="back-link" href="/blog">Blog</a>
+      <span class="eyebrow">{p.kind === 'News' ? 'News' : 'Shapers blog'}</span>
+      <h1>{p.title}</h1>
+      <p class="detail-meta">
+        {p.author && <span>{p.author}</span>}
+        <span>{longDate(p.publishedAt)}</span>
+        <span>{readMinutes} min read</span>
+      </p>
+      <LanguageSwitch languages={post.languages} current={post.language} basePath={basePath} />
+    </div>
+    {p.coverImageUrl && <img class="detail-cover wrap" src={p.coverImageUrl} alt="" />}
+  </section>
+
+  <section class="band band-paper">
+    <article class="wrap prose-wrap" lang={post.language}>
+      <div class="prose article" set:html={renderMarkdown(post.body)} />
+      <div class="article-end">
+        <Share title={p.title} path={path} />
+      </div>
+    </article>
+  </section>
+
+  {
+    more.length > 0 && (
+      <section class="band band-raised">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>More from the blog</h2>
+            <a class="arrow-link" href="/blog">
+              All posts
+            </a>
+          </div>
+          <div class="grid three">
+            {more.map((m) => (
+              <a class="card" href={`/blog/${m.slug}`}>
+                <Cover src={m.coverImageUrl} title={m.title} kicker="Blog" />
+                <span class="label">{longDate(m.publishedAt)}</span>
+                <strong>{m.title}</strong>
+                {m.summary && <span class="muted">{m.summary}</span>}
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>

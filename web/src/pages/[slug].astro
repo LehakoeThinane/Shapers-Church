@@ -1,25 +1,15 @@
 ---
-import Base from '../layouts/Base.astro';
-import PageHeader from '../components/PageHeader.astro';
+import CmsPage from '../components/CmsPage.astro';
 import { get, type Schemas } from '../lib/api';
-import { renderMarkdown } from '../lib/format';
+import { reservedSlugs } from '../lib/church';
 
 // Pages written in the admin portal: About us, Shapers Growth Track, Contact us, Giving, ...
-const reserved = new Set(['sermons', 'events', 'live', 'blog', 'connect', 'privacy', 'about', 'growth-track', 'give', 'contact']);
-
 export async function getStaticPaths() {
   const pages = await get<Schemas['PageDto'][]>('/api/content/pages', []);
-  return pages.filter((p) => !reserved.has(p.slug)).map((p) => ({ params: { slug: p.slug }, props: { page: p } }));
+  return pages.filter((p) => !reservedSlugs.has(p.slug)).map((p) => ({ params: { slug: p.slug }, props: { page: p } }));
 }
 
 const { page } = Astro.props as { page: Schemas['PageDto'] };
 ---
 
-<Base title={page.title} description={page.summary ?? undefined}>
-  <PageHeader title={page.title} intro={page.summary ?? undefined} />
-  <section class="band band-paper">
-    <article class="wrap prose-wrap">
-      <div class="prose article" set:html={renderMarkdown(page.body)} />
-    </article>
-  </section>
-</Base>
+<CmsPage page={page} />
