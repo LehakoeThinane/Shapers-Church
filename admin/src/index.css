@@ -69,13 +69,18 @@ pre {
 
 /* ---------- Glass ---------- */
 
+/* A soft sheen from the top-left and a lit top edge make panels read as glass, not just tinted boxes. */
 .glass {
-  background: var(--color-glass-fill);
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--color-glass-highlight) 40%, transparent), transparent 42%),
+    var(--color-glass-fill);
   border: 1px solid var(--color-glass-edge);
-  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(170%);
-  backdrop-filter: blur(var(--blur-glass)) saturate(170%);
+  border-top-color: color-mix(in srgb, var(--color-glass-highlight) 70%, var(--color-glass-edge));
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(185%);
+  backdrop-filter: blur(var(--blur-glass)) saturate(185%);
   box-shadow:
     inset 0 1px 0 var(--color-glass-highlight),
+    inset 0 -1px 0 color-mix(in srgb, var(--color-glass-shadow) 40%, transparent),
     0 10px 30px var(--color-glass-shadow),
     0 0 18px var(--color-glow-edge);
 }
@@ -634,6 +639,29 @@ fieldset {
 
 /* ---------- Home ---------- */
 
+/* The church's banner photo behind Home, toned toward the background so text and cards stay readable. */
+.home-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-position: center 30%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.home-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-background) 74%, transparent),
+    color-mix(in srgb, var(--color-background) 86%, transparent) 55%,
+    var(--color-background)
+  );
+}
+
 .home-hero h1 {
   font-size: 30px;
   margin-top: 2px;
@@ -902,6 +930,8 @@ dd {
 
 @media print {
   .sidebar,
+  .rail,
+  .home-backdrop,
   .topbar,
   .page-actions,
   button,
@@ -1166,8 +1196,30 @@ dd {
   padding-left: 22px;
 }
 
+/* Minimise sits at the top, beside the name. */
 .rail-collapse {
-  color: var(--color-text-tertiary);
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid var(--color-glass-edge);
+  border-radius: 999px;
+  background: var(--color-glass-fill);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.rail-collapse:hover {
+  background: var(--color-glass-fill-active);
+  color: var(--color-text-primary);
+}
+
+.rail-collapse svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Collapsed: icons only, names as tooltips. */
@@ -1193,7 +1245,42 @@ dd {
 }
 
 .shell-collapsed .rail-brand {
+  flex-direction: column;
   justify-content: center;
+  gap: var(--space-sm);
+  padding: 4px 0;
+}
+
+.shell-collapsed .rail-collapse {
+  margin-left: 0;
+}
+
+/* On wider screens the minimised menu floats as a glass pill, centred down the left edge. */
+@media (min-width: 901px) {
+  .shell-collapsed .rail {
+    position: fixed;
+    z-index: 40;
+    top: 50%;
+    left: var(--space-lg);
+    width: 64px;
+    height: auto;
+    max-height: calc(100vh - 2 * var(--space-lg));
+    padding: var(--space-sm) 6px;
+    border-radius: 32px;
+    transform: translateY(-50%);
+  }
+
+  .shell-collapsed .main {
+    grid-column: 2;
+  }
+
+  .shell-collapsed .rail-link {
+    border-radius: 999px;
+  }
+
+  .shell-collapsed .rail-link.active {
+    box-shadow: inset 0 0 0 1px var(--color-accent);
+  }
 }
 
 /* Top bar */
@@ -1434,6 +1521,24 @@ dd {
   .shell-collapsed .rail-label,
   .shell-collapsed .rail-section-title {
     display: initial;
+  }
+
+  /* The drawer is always the full menu, even if the menu was minimised on a wider screen. */
+  .shell-collapsed .rail-brand {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 4px 8px var(--space-sm);
+  }
+
+  .shell-collapsed .rail-link {
+    justify-content: flex-start;
+    padding: 9px 12px;
+  }
+
+  .shell-collapsed .rail-section {
+    margin-top: var(--space-md);
+    padding-top: 0;
+    border-top: 0;
   }
 
   .rail-collapse {

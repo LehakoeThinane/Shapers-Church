@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
+import banner from '../assets/home-banner.jpg';
 import { Card } from '../components/ui';
 import { api, formatDateTime, unwrap } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -25,6 +26,7 @@ export function HomePage() {
 
   return (
     <>
+      <div className="home-backdrop" aria-hidden="true" style={{ backgroundImage: `url(${banner})` }} />
       <header className="home-hero">
         <p className="small muted">{greeting()}</p>
         <h1>
