@@ -232,9 +232,15 @@ public sealed class ServingEmails(IServicesDb db, IPeopleDirectory people, IEmai
     private static string Day(DateOnly date) => date.ToString("dddd d MMMM", SouthAfrica);
 }
 
-/// <summary>Daily: reminders for people who said yes to a service in the next few days; away dates long past are deleted.</summary>
+/// <summary>
+/// Daily: reminders for people who said yes to a service in the next few days. Also the retention schedule: serving
+/// history is deleted after two years, and away dates a month after they pass.
+/// </summary>
 public sealed class ServingReminderJob(IServicesDb db, IOptions<ServicesOptions> options, TimeProvider clock)
 {
+    /// <summary>How long the record of who was asked to serve, and their answers, is kept (approved 2026-10-06).</summary>
+    public const int ServingHistoryYears = 2;
+
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         var today = ServingTime.Today(clock);
@@ -250,6 +256,8 @@ public sealed class ServingReminderJob(IServicesDb db, IOptions<ServicesOptions>
 
         var stale = today.AddDays(-30);
         await db.Blockouts.Where(b => b.To < stale).ExecuteDeleteAsync(cancellationToken);
+        var expired = today.AddYears(-ServingHistoryYears);
+        await db.Assignments.Where(a => a.Date < expired).ExecuteDeleteAsync(cancellationToken);
         return reminded;
     }
 }

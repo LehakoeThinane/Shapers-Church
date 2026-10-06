@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shapers.People.Contracts;
 using Shapers.Platform;
 using Shapers.Platform.Authorization;
@@ -197,6 +198,7 @@ public static class ServicesInfrastructure
         services.AddScoped<MyServingService>();
         services.AddScoped<AnswerByLinkService>();
         services.AddScoped<ServingReminderJob>();
+        services.AddScoped<ServicesDemoSeeder>();
         services.AddScoped<IIntegrationEventHandler<ServingRequestedIntegrationEvent>, ServingEmails>();
         services.AddScoped<IIntegrationEventHandler<ServingReminderIntegrationEvent>, ServingEmails>();
         services.AddScoped<IIntegrationEventHandler<PeopleMergedIntegrationEvent>, ReplaceMergedServingPerson>();
@@ -212,5 +214,12 @@ public static class ServicesInfrastructure
     {
         await using var scope = services.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<ServicesDbContext>().Database.MigrateAsync(cancellationToken);
+
+        // Typical teams, songs and the coming Sundays, so a new development or demo database shows Services working.
+        var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
+        if (environment.IsDevelopment() || environment.IsEnvironment("Demo"))
+        {
+            await scope.ServiceProvider.GetRequiredService<ServicesDemoSeeder>().SeedAsync(cancellationToken);
+        }
     }
 }

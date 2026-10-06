@@ -35,5 +35,5 @@ The pastor asked for something like Planning Center Services. Every week, someon
 
 ## Consequences
 - Volunteers need the app, or an email address on their church record, to be asked. SMS and WhatsApp requests wait for a provider.
-- Serving history is kept until erasure; there is no retention period for it yet. It should be added to the retention schedule.
+- Serving history is deleted after two years (approved 2026-10-06), and away dates a month after they pass. Both are in the privacy notice.
 - The live run sheet uses polling, not SignalR, which is enough for one church's screens. It can move to the existing hub if needed.
