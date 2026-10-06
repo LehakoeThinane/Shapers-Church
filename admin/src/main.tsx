@@ -25,6 +25,8 @@ import { ChatConsolePage, ChatStreamsPage } from './pages/ChatModerationPage';
 import { HomePage } from './pages/HomePage';
 import { CellMaterialsPage, CellPage, CellReportPage, CellReportsPage, CellsPage, ChurchLessonsPage, MyCellPage, ReportEditorPage } from './pages/CellPages';
 import { AssistUsagePage } from './pages/AssistPage';
+import { LiveRunSheetPage, MusicStandPage, ServicePlanPage, ServicePlansPage, ServingMatrixPage } from './pages/ServicesPages';
+import { ServiceTypesPage, ServingTeamsPage, SongPage, SongsPage } from './pages/ServicesSetupPages';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -81,6 +83,15 @@ const router = createBrowserRouter([
       { path: 'cells/materials', element: <CellMaterialsPage /> },
       { path: 'cells/lessons', element: <ChurchLessonsPage /> },
       { path: 'assist', element: <AssistUsagePage /> },
+      { path: 'services', element: <ServicePlansPage /> },
+      { path: 'services/plans/:id', element: <ServicePlanPage /> },
+      { path: 'services/plans/:id/live', element: <LiveRunSheetPage /> },
+      { path: 'services/plans/:id/stand', element: <MusicStandPage /> },
+      { path: 'services/matrix', element: <ServingMatrixPage /> },
+      { path: 'services/teams', element: <ServingTeamsPage /> },
+      { path: 'services/songs', element: <SongsPage /> },
+      { path: 'services/songs/:id', element: <SongPage /> },
+      { path: 'services/types', element: <ServiceTypesPage /> },
       { path: 'cells/:id', element: <CellPage /> },
       { path: 'my-cells/:cellId', element: <MyCellPage /> },
       { path: 'my-cells/:cellId/reports/new', element: <ReportEditorPage /> },

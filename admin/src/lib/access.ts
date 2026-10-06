@@ -58,6 +58,9 @@ export const Permissions = {
   contentTranslationsReview: 'content.translations.review',
   cellsManage: 'groups.cells.manage',
   cellReportsView: 'groups.reports.view',
+  servicesPlans: 'services.plans.edit',
+  servicesSchedule: 'services.schedule',
+  servicesSongs: 'services.songs.edit',
   assistDrafts: 'assist.drafts.create',
   assistUsage: 'assist.usage.view',
 } as const;

@@ -800,3 +800,126 @@ dd {
   margin: 0;
   white-space: pre-wrap;
 }
+
+/* ---------- Services ---------- */
+
+.order-table td {
+  vertical-align: top;
+}
+
+.order-header td {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  padding-top: var(--space-md);
+}
+
+.order-current {
+  background: var(--color-tile);
+}
+
+.key-input {
+  max-width: 80px;
+}
+
+.minutes-input {
+  max-width: 76px;
+}
+
+.team-block + .team-block {
+  margin-top: var(--space-md);
+}
+
+.matrix-scroll {
+  overflow-x: auto;
+}
+
+.matrix th,
+.matrix td {
+  min-width: 140px;
+  vertical-align: top;
+}
+
+.matrix-gap {
+  background: var(--color-tile);
+}
+
+.live-now {
+  align-items: flex-start;
+}
+
+.live-title {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.live-clock {
+  font-size: 56px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.stand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: calc(100vh - 120px);
+}
+
+.stand-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stand-chart {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-glass-fill);
+  object-fit: contain;
+}
+
+.stand-lyrics {
+  flex: 1;
+  overflow: auto;
+  margin: 0;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-glass-fill);
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+@media print {
+  .sidebar,
+  .topbar,
+  .page-actions,
+  button,
+  .btn {
+    display: none !important;
+  }
+}
+.order-table .row > .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-table td:last-child .link-button + .link-button {
+  margin-left: var(--space-xs);
+}
+
+.jump-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-sm);
+}
