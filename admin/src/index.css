@@ -253,6 +253,14 @@ nav {
   margin: 0;
 }
 
+.crash-card {
+  max-width: 560px;
+}
+
+.crash-card p {
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   .app {
     grid-template-columns: 1fr;

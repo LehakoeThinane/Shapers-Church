@@ -2,6 +2,7 @@ import createClient, { type Client } from 'openapi-fetch';
 import type { components, paths } from './schema.generated';
 
 export type { components, paths };
+export { createErrorReporter, routePattern, scrub, type ClientApp, type ClientErrorReport } from './client-errors';
 export type Schemas = components['schemas'];
 export type ShapersClient = Client<paths>;
 

@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shapers.Communications.Application;
 using Shapers.Content.Application;
 using Shapers.Identity.Application;
@@ -32,6 +34,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public CapturingEmailSender Email { get; } = new();
 
     public CapturingPushSender Push { get; } = new();
+
+    public CapturingClientErrorLog ClientErrorLog { get; } = new();
 
     protected virtual bool RequireMfa => false;
 
@@ -65,6 +69,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Communications:PublicApiUrl", "https://api.test");
         builder.UseSetting("Media:Storage:LocalPath", _mediaPath);
         builder.UseSetting("Assist:Provider", "Fake");
+        builder.ConfigureLogging(logging => logging.AddProvider(ClientErrorLog));
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<ISmsSender>(Sms);
@@ -153,6 +158,31 @@ public sealed class CapturingPushSender : IPushSender
         }
 
         return Task.FromResult<IReadOnlyList<PushResult>>(results);
+    }
+}
+
+/// <summary>Keeps what the API logs about app crashes, to check nothing personal reaches the logs.</summary>
+public sealed class CapturingClientErrorLog : ILoggerProvider
+{
+    private readonly ConcurrentQueue<string> _lines = new();
+
+    public IReadOnlyList<string> Lines => [.. _lines];
+
+    public ILogger CreateLogger(string categoryName) => categoryName == "Shapers.Api.ClientErrors" ? new Logger(_lines) : NullLogger.Instance;
+
+    public void Dispose()
+    {
+    }
+
+    private sealed class Logger(ConcurrentQueue<string> lines) : ILogger
+    {
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
+            lines.Enqueue($"{logLevel}: {formatter(state, exception)}");
     }
 }
 

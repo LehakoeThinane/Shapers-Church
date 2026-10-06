@@ -635,6 +635,18 @@ var logAlerts = [
     windowSize: 'PT${backgroundAlertMinutes}M'
     threshold: 1
   }
+  {
+    // The admin portal and the member app report crashes to the API, which logs this warning with personal
+    // details stripped (backend/src/Host/Shapers.Api/Hosting/ClientErrors.cs). One crash can be a browser
+    // extension or a dropped connection; three in an hour is worth a look.
+    key: 'client-errors'
+    displayName: 'Apps: crashes reported'
+    alertDescription: 'The admin portal or the member app crashed three or more times in an hour. The log lines starting "Client error in" say which app, page and error.'
+    query: 'union isfuzzy=true (AppTraces | where Message has "Client error in"), (ContainerAppConsoleLogs_CL | where Log_s has "Client error in")'
+    evaluationFrequency: 'PT15M'
+    windowSize: 'PT1H'
+    threshold: 3
+  }
 ]
 
 resource logAlertRules 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = [
