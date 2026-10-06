@@ -113,6 +113,12 @@ const icons = {
       <path d="m9 12 2 2 4-4" />
     </>,
   ),
+  spark: icon(
+    <>
+      <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
+      <path d="m6.3 6.3 2.1 2.1M15.6 15.6l2.1 2.1M6.3 17.7l2.1-2.1M15.6 8.4l2.1-2.1" />
+    </>,
+  ),
   campus: icon(
     <>
       <path d="M3 21h18M5 21V10l7-5 7 5v11" />
@@ -152,7 +158,8 @@ export const productGroups: ProductGroup[] = [
         links: [
           { to: '/cells', label: 'Overview' },
           { to: '/cells/reports', label: 'Reports', permission: Permissions.cellReportsView },
-          { to: '/cells/materials', label: 'Teaching', permission: Permissions.cellReportsView },
+          { to: '/cells/lessons', label: 'Church lessons' },
+          { to: '/cells/materials', label: "Leaders' teaching", permission: Permissions.cellReportsView },
         ],
       },
       {
@@ -255,6 +262,15 @@ export const productGroups: ProductGroup[] = [
           { to: '/access', label: 'Roles & access', permission: Permissions.usersView },
           { to: '/audit', label: 'Audit log', permission: Permissions.auditView },
         ],
+      },
+      {
+        key: 'assist',
+        name: 'AI help',
+        description: 'What AI drafts for staff, and what it costs',
+        icon: icons.spark,
+        status: 'live',
+        to: '/assist',
+        permission: Permissions.assistUsage,
       },
       {
         key: 'privacy',

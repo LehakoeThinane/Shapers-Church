@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
+import { AiBadge } from '../components/Assist';
+import { useCanDraft, useReviewDraft } from '../lib/assist';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, ApiError, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -543,9 +545,42 @@ export function MyCellPage() {
       </Card>
       <div className="grid-2">
         <LeaderMembers cell={c} />
-        <LeaderMaterials cellId={cellId} />
+        <div className="stack">
+          <ChurchLessonsForLeader cellId={cellId} />
+          <LeaderMaterials cellId={cellId} />
+        </div>
       </div>
     </>
+  );
+}
+
+function useChurchLessons(cellId: string) {
+  return useQuery({
+    queryKey: ['my-cell-lessons', cellId],
+    queryFn: async () => unwrap(await api.GET('/api/cells/{cellId}/lessons', { params: { path: { cellId } } })),
+  });
+}
+
+/** The pastors' lessons for this cell, newest first. Opening one shows the whole lesson. */
+function ChurchLessonsForLeader({ cellId }: { cellId: string }) {
+  const lessons = useChurchLessons(cellId);
+  const [open, setOpen] = useState<string | null>(null);
+  if (lessons.data?.length === 0) return null;
+  return (
+    <Card title="From the pastors">
+      <ErrorNote error={lessons.error} />
+      <ul className="list">
+        {lessons.data?.map((l) => (
+          <li key={l.id} className="review-item stack-tight">
+            <button type="button" className="link-button" onClick={() => setOpen(open === l.id ? null : l.id)}>
+              {l.title}
+            </button>
+            <span className="small muted">{l.forDate ? `For the week of ${formatDate(l.forDate)}` : `Updated ${formatDate(l.updatedAt)}`}</span>
+            {open === l.id && <p className="quote">{l.body}</p>}
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }
 
@@ -686,7 +721,7 @@ function LeaderMaterials({ cellId }: { cellId: string }) {
           <Field label="Lesson" hint="Scripture, discussion questions, notes.">
             <textarea className="input" rows={8} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} required />
           </Field>
-          <div className="row">
+          <div className="form-grid">
             <Field label="Link (optional)">
               <TextInput type="url" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="https://" />
             </Field>
@@ -749,6 +784,7 @@ export function ReportEditorPage() {
     queryKey: ['my-cell-materials', cellId],
     queryFn: async () => unwrap(await api.GET('/api/cells/{cellId}/materials', { params: { path: { cellId } } })),
   });
+  const lessons = useChurchLessons(cellId);
 
   if (cell.isPending || (!isNew && report.isPending)) return <Loading />;
   if (!cell.data) return <LeaderError error={cell.error} />;
@@ -762,7 +798,7 @@ export function ReportEditorPage() {
       </>
     );
   }
-  return <ReportForm cell={cell.data} report={report.data} materials={materials.data ?? []} />;
+  return <ReportForm cell={cell.data} report={report.data} materials={[...(lessons.data ?? []), ...(materials.data ?? [])]} />;
 }
 
 function ReportForm({ cell, report, materials }: { cell: Cell; report?: Report; materials: Schemas['MaterialDto'][] }) {
@@ -839,10 +875,10 @@ function ReportForm({ cell, report, materials }: { cell: Cell; report?: Report; 
               </Field>
               <Field label="Lesson">
                 <Select value={form.materialId} onChange={set('materialId')}>
-                  <option value="">None of my lessons</option>
+                  <option value="">No lesson</option>
                   {materials.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {m.title}
+                      {m.isChurchLesson ? `From the pastors: ${m.title}` : m.title}
                     </option>
                   ))}
                 </Select>
@@ -970,6 +1006,216 @@ function ReportForm({ cell, report, materials }: { cell: Cell; report?: Report; 
         </div>
       </form>
     </>
+  );
+}
+
+type LessonForm = { title: string; body: string; link: string; forDate: string; sharedWithMembers: boolean; sermonId: string | null; draftId: string | null };
+
+const lessonFromDraft = (d: Schemas['DraftDto']): LessonForm => ({
+  title: d.lesson?.title ?? '',
+  body: d.lesson?.body ?? '',
+  link: '',
+  forDate: '',
+  sharedWithMembers: true,
+  sermonId: d.sourceType === 'sermon' ? (d.sourceId ?? null) : null,
+  draftId: d.id,
+});
+
+/** Pastors: church lessons for every cell, written by hand or drafted by AI from a sermon. */
+export function ChurchLessonsPage() {
+  const { data: access } = useAccess();
+  const manage = can(access, Permissions.cellsManage);
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const draftId = new URLSearchParams(useLocation().search).get('draft');
+  const [editing, setEditing] = useState<{ id: string | null; form: LessonForm } | null>(null);
+  const lessons = useQuery({ queryKey: ['church-lessons'], queryFn: async () => unwrap(await api.GET('/api/admin/cells/lessons')) });
+
+  // Arriving from a sermon's "Draft a cell lesson": open the editor with the draft.
+  const draft = useQuery({
+    queryKey: ['assist', 'draft', draftId],
+    queryFn: async () => unwrap(await api.GET('/api/admin/assist/drafts/{id}', { params: { path: { id: draftId! } } })),
+    enabled: !!draftId && manage,
+  });
+  const fromUrl = draft.data && draft.data.status === 'Pending' && !editing ? { id: null, form: lessonFromDraft(draft.data) } : null;
+  const current = editing ?? fromUrl;
+
+  const remove = useMutation({
+    mutationFn: async (lessonId: string) => unwrap(await api.DELETE('/api/admin/cells/lessons/{lessonId}', { params: { path: { lessonId } } })),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['church-lessons'] }),
+  });
+  const close = () => {
+    setEditing(null);
+    if (draftId) navigate('/cells/lessons', { replace: true });
+  };
+
+  return (
+    <>
+      <PageHeader
+        title="Church lessons"
+        subtitle="Lessons the pastors prepare for every cell, often from Sunday's sermon. Leaders see them in My cell and can pick one when they record a meeting."
+        actions={
+          manage &&
+          !current && (
+            <Button variant="primary" onClick={() => setEditing({ id: null, form: { title: '', body: '', link: '', forDate: '', sharedWithMembers: true, sermonId: null, draftId: null } })}>
+              New lesson
+            </Button>
+          )
+        }
+      />
+      <ErrorNote error={draft.error} />
+      {manage && !current && <DraftLessonFromSermon onDrafted={(d) => setEditing({ id: null, form: lessonFromDraft(d) })} />}
+      {current && <LessonEditor key={current.id ?? current.form.draftId ?? 'new'} lessonId={current.id} initial={current.form} onDone={close} />}
+      <ErrorNote error={lessons.error ?? remove.error} />
+      {lessons.isPending ? (
+        <Loading />
+      ) : lessons.data?.length === 0 ? (
+        <Card>
+          <Empty>No church lessons yet.</Empty>
+        </Card>
+      ) : (
+        <div className="stack">
+          {lessons.data?.map((m) => (
+            <MaterialCard
+              key={m.id}
+              material={m}
+              actions={
+                manage && (
+                  <span className="row">
+                    <button
+                      type="button"
+                      className="link-button"
+                      onClick={() =>
+                        setEditing({
+                          id: m.id,
+                          form: { title: m.title, body: m.body, link: m.link ?? '', forDate: m.forDate ?? '', sharedWithMembers: m.sharedWithMembers, sermonId: m.sermonId, draftId: null },
+                        })
+                      }
+                    >
+                      Edit
+                    </button>
+                    <button type="button" className="link-button" onClick={() => window.confirm(`Delete “${m.title}”?`) && remove.mutate(m.id)}>
+                      Delete
+                    </button>
+                  </span>
+                )
+              }
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+/** Pick a recent sermon and let AI draft a lesson from its transcript. */
+function DraftLessonFromSermon({ onDrafted }: { onDrafted: (d: Schemas['DraftDto']) => void }) {
+  const canDraft = useCanDraft();
+  const [sermonId, setSermonId] = useState('');
+  const sermons = useQuery({
+    queryKey: ['public-sermons', 'recent'],
+    queryFn: async () => unwrap(await api.GET('/api/media/sermons', { params: { query: { Page: 1, PageSize: 20 } } })),
+    enabled: canDraft,
+  });
+  const draft = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/assist/drafts/sermon-lesson', { body: { sermonId } })),
+    onSuccess: onDrafted,
+  });
+
+  if (!canDraft) return null;
+  return (
+    <Card title="Draft a lesson from a sermon">
+      <div className="row">
+        <Select value={sermonId} onChange={(e) => setSermonId(e.target.value)} aria-label="Sermon">
+          <option value="">Choose a sermon</option>
+          {sermons.data?.items.map((s) => (
+            <option key={s.id} value={s.id}>
+              {formatDate(s.preachedOn)}: {s.title}
+            </option>
+          ))}
+        </Select>
+        <Button busy={draft.isPending} disabled={!sermonId} onClick={() => draft.mutate()}>
+          Draft with AI
+        </Button>
+      </div>
+      {draft.isPending && <p className="small muted">Writing… this can take up to a minute.</p>}
+      <p className="small muted">AI works from the sermon's transcript only. You'll review and edit the lesson before leaders see it.</p>
+      <ErrorNote error={draft.error} />
+    </Card>
+  );
+}
+
+function LessonEditor({ lessonId, initial, onDone }: { lessonId: string | null; initial: LessonForm; onDone: () => void }) {
+  const queryClient = useQueryClient();
+  const review = useReviewDraft();
+  const [form, setForm] = useState(initial);
+  const save = useMutation({
+    mutationFn: async () => {
+      const body = {
+        title: form.title,
+        body: form.body,
+        link: form.link || null,
+        forDate: form.forDate || null,
+        sharedWithMembers: form.sharedWithMembers,
+        sermonId: form.sermonId,
+        scope: null,
+      };
+      return lessonId
+        ? unwrap(await api.PUT('/api/admin/cells/lessons/{lessonId}', { params: { path: { lessonId } }, body }))
+        : unwrap(await api.POST('/api/admin/cells/lessons', { body }));
+    },
+    onSuccess: () => {
+      if (form.draftId) review.mutate({ id: form.draftId, action: 'accept' });
+      void queryClient.invalidateQueries({ queryKey: ['church-lessons'] });
+      onDone();
+    },
+  });
+  const cancel = () => {
+    if (form.draftId) review.mutate({ id: form.draftId, action: 'discard' });
+    onDone();
+  };
+
+  return (
+    <Card title={<>{lessonId ? 'Edit lesson' : 'New church lesson'} {form.draftId && <AiBadge />}</>}>
+      <form
+        className="stack"
+        onSubmit={(e) => {
+          e.preventDefault();
+          save.mutate();
+        }}
+      >
+        {form.draftId && (
+          <p className="note note-accent small">
+            AI wrote this draft from the sermon's transcript. Read it against what was preached, fix anything that isn't right, and make it sound like Shapers before saving.
+          </p>
+        )}
+        <Field label="Title">
+          <TextInput value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required maxLength={160} />
+        </Field>
+        <Field label="Lesson">
+          <textarea className="input" rows={16} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} required />
+        </Field>
+        <div className="form-grid">
+          <Field label="Link (optional)">
+            <TextInput type="url" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="https://" />
+          </Field>
+          <Field label="For the week of">
+            <TextInput type="date" value={form.forDate} onChange={(e) => setForm({ ...form, forDate: e.target.value })} />
+          </Field>
+        </div>
+        <label className="checkbox">
+          <input type="checkbox" checked={form.sharedWithMembers} onChange={(e) => setForm({ ...form, sharedWithMembers: e.target.checked })} />
+          Members can read it in the app too
+        </label>
+        <ErrorNote error={save.error} />
+        <div className="row">
+          <Button variant="primary" type="submit" busy={save.isPending}>
+            {lessonId ? 'Save' : 'Publish to cells'}
+          </Button>
+          <Button onClick={cancel}>{form.draftId ? 'Discard draft' : 'Cancel'}</Button>
+        </div>
+      </form>
+    </Card>
   );
 }
 

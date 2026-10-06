@@ -782,3 +782,21 @@ fieldset {
 dd {
   margin: 0;
 }
+
+/* ---------- AI help ---------- */
+
+.ai-help {
+  margin-top: var(--space-xs);
+}
+
+.ai-suggestion {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-tile-edge);
+  background: var(--color-tile);
+}
+
+.pre-wrap {
+  margin: 0;
+  white-space: pre-wrap;
+}

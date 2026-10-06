@@ -23,7 +23,8 @@ import { AnnouncementEditorPage, AnnouncementsPage } from './pages/AnnouncementP
 import { LivestreamConsolePage, LivestreamsPage } from './pages/LivestreamPages';
 import { ChatConsolePage, ChatStreamsPage } from './pages/ChatModerationPage';
 import { HomePage } from './pages/HomePage';
-import { CellMaterialsPage, CellPage, CellReportPage, CellReportsPage, CellsPage, MyCellPage, ReportEditorPage } from './pages/CellPages';
+import { CellMaterialsPage, CellPage, CellReportPage, CellReportsPage, CellsPage, ChurchLessonsPage, MyCellPage, ReportEditorPage } from './pages/CellPages';
+import { AssistUsagePage } from './pages/AssistPage';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -77,6 +78,8 @@ const router = createBrowserRouter([
       { path: 'cells/reports', element: <CellReportsPage /> },
       { path: 'cells/reports/:reportId', element: <CellReportPage /> },
       { path: 'cells/materials', element: <CellMaterialsPage /> },
+      { path: 'cells/lessons', element: <ChurchLessonsPage /> },
+      { path: 'assist', element: <AssistUsagePage /> },
       { path: 'cells/:id', element: <CellPage /> },
       { path: 'my-cells/:cellId', element: <MyCellPage /> },
       { path: 'my-cells/:cellId/reports/new', element: <ReportEditorPage /> },
