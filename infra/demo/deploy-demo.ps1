@@ -180,9 +180,10 @@ Remove-Item $envFile, $adminTar
 # ---------- 5. Start ----------
 
 Write-Host "[6/6] Starting..."
+# Caddy is restarted so it reads a changed Caddyfile.
 # The folder is emptied rather than replaced: the web server container holds it open, and a new folder would leave
 # it serving the old, deleted one (every page a 404) until restarted.
-Invoke-Vm 'set -e; cd /opt/shapers; sudo mkdir -p admin; sudo find admin -mindepth 1 -delete; sudo tar -xzf ~/admin.tgz -C admin; rm ~/admin.tgz; sudo mv ~/docker-compose.yml ~/Caddyfile /opt/shapers/; sudo mv ~/shapers.env /opt/shapers/.env; sudo chmod 600 /opt/shapers/.env; sudo docker compose up -d --remove-orphans; sudo docker image prune -f >/dev/null' | Out-Null
+Invoke-Vm 'set -e; cd /opt/shapers; sudo mkdir -p admin; sudo find admin -mindepth 1 -delete; sudo tar -xzf ~/admin.tgz -C admin; rm ~/admin.tgz; sudo mv ~/docker-compose.yml ~/Caddyfile /opt/shapers/; sudo mv ~/shapers.env /opt/shapers/.env; sudo chmod 600 /opt/shapers/.env; sudo docker compose up -d --remove-orphans; sudo docker compose restart caddy; sudo docker image prune -f >/dev/null' | Out-Null
 
 $healthy = $false
 for ($i = 0; $i -lt 40 -and -not $healthy; $i++) {
