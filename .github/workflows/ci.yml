@@ -37,18 +37,20 @@ jobs:
         working-directory: .
         run: git diff --exit-code -- packages/api-client/openapi.json
 
+      # Every project under tests/ runs, so a new module's tests can't be left out. The integration tests
+      # run in the next step. Each project runs even if an earlier one fails; the step fails at the end.
       - name: Unit and architecture tests
         run: |
-          dotnet test --no-build -c Release --project tests/Shapers.ArchitectureTests
-          dotnet test --no-build -c Release --project tests/Shapers.Platform.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.Identity.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.People.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.Media.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.Events.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.Prayer.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.Communications.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.Privacy.Tests
-          dotnet test --no-build -c Release --project tests/Modules/Shapers.Content.Tests
+          failed=()
+          while IFS= read -r project; do
+            echo "::group::$project"
+            dotnet test --no-build -c Release --project "$project" || failed+=("$project")
+            echo "::endgroup::"
+          done < <(find tests -name '*.csproj' ! -name 'Shapers.IntegrationTests.csproj' | sort)
+          if [ ${#failed[@]} -gt 0 ]; then
+            printf '::error::Tests failed in %s\n' "${failed[@]}"
+            exit 1
+          fi
 
       - name: Integration tests (PostgreSQL via Testcontainers)
         run: dotnet test --no-build -c Release --project tests/Shapers.IntegrationTests
