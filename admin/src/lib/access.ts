@@ -55,4 +55,6 @@ export const Permissions = {
   privacyBreaches: 'privacy.breaches.manage',
   contentEdit: 'content.edit',
   contentPublish: 'content.publish',
+  cellsManage: 'groups.cells.manage',
+  cellReportsView: 'groups.reports.view',
 } as const;

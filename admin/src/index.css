@@ -778,3 +778,7 @@ fieldset {
   max-height: 60vh;
   overflow-y: auto;
 }
+
+dd {
+  margin: 0;
+}

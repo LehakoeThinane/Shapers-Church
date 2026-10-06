@@ -4,12 +4,14 @@ import { Link } from 'react-router';
 import { Badge, Card } from '../components/ui';
 import { api, formatDateTime, unwrap } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
+import { isLeader, useMyCells } from '../lib/cells';
 import { allowed, productGroups } from '../lib/products';
 
 /** The first page after sign-in: what's waiting for you, what's coming up, and every product. */
 export function HomePage() {
   const { data: access } = useAccess();
   const name = access?.displayName.split(' ')[0] ?? '';
+  const led = useMyCells().data?.filter((c) => isLeader(c.myRole)) ?? [];
   const anyTasks = [
     Permissions.prayerModerate,
     Permissions.peopleView,
@@ -17,7 +19,8 @@ export function HomePage() {
     Permissions.privacyRequests,
     Permissions.eventsEdit,
     Permissions.eventsCheckIn,
-  ].some((p) => can(access, p));
+    Permissions.cellReportsView,
+  ].some((p) => can(access, p)) || led.length > 0;
 
   return (
     <>
@@ -32,6 +35,10 @@ export function HomePage() {
         <h2 id="tasks-heading">Waiting for you</h2>
         {!anyTasks && <NothingWaiting />}
         <div className="task-grid">
+          {led.map((c) => (
+            <LeaderTask key={c.id} cellId={c.id} name={c.name} />
+          ))}
+          {can(access, Permissions.cellReportsView) && <CellsTasks />}
           {can(access, Permissions.prayerModerate) && <PrayerTask />}
           {can(access, Permissions.peopleView) && <ConnectTask />}
           {can(access, Permissions.announcementsApprove) && <ApprovalTask />}
@@ -130,6 +137,49 @@ function PrivacyTask() {
       count={q.data?.length}
       label="Privacy requests open"
       detail={overdue > 0 ? <span className="danger-text">{overdue} overdue</span> : next ? `Next due ${formatDateTime(next)}` : undefined}
+    />
+  );
+}
+
+function CellsTasks() {
+  const q = useQuery({ queryKey: ['cells'], queryFn: async () => unwrap(await api.GET('/api/admin/cells')) });
+  const missing = q.data?.filter((c) => !c.reportedThisWeek);
+  const urgent = q.data?.reduce((sum, c) => sum + c.openUrgentFollowUps, 0);
+  return (
+    <>
+      <Task
+        to="/cells"
+        loading={q.isPending}
+        failed={q.isError}
+        count={missing?.length}
+        label="Cell reports missing"
+        detail={missing && missing.length > 0 ? `${missing.slice(0, 3).map((c) => c.name).join(', ')}${missing.length > 3 ? '…' : ''}` : undefined}
+      />
+      <Task to="/cells/reports?urgent=1" loading={q.isPending} failed={q.isError} count={urgent} label="Urgent cell follow-ups" detail="Flagged by cell leaders for a pastor" />
+    </>
+  );
+}
+
+/** Leaders: a nudge to write up this week's meeting. */
+function LeaderTask({ cellId, name }: { cellId: string; name: string }) {
+  const q = useQuery({
+    queryKey: ['my-cell-reports', cellId, 'this-week'],
+    queryFn: async () => {
+      const reports = unwrap(await api.GET('/api/cells/{cellId}/reports', { params: { path: { cellId } } }));
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      return reports.filter((r) => r.meetingDate >= weekAgo);
+    },
+  });
+  const drafts = q.data?.filter((r) => r.status === 'Draft') ?? [];
+  const submitted = (q.data?.length ?? 0) - drafts.length;
+  return (
+    <Task
+      to={drafts[0] ? `/my-cells/${cellId}/reports/${drafts[0].id}` : submitted > 0 ? `/my-cells/${cellId}` : `/my-cells/${cellId}/reports/new`}
+      loading={q.isPending}
+      failed={q.isError}
+      count={submitted > 0 && drafts.length === 0 ? 0 : 1}
+      label={`${name}: this week's report`}
+      detail={drafts.length > 0 ? 'A draft is waiting to be submitted' : 'Record who came and how it went'}
     />
   );
 }

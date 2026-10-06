@@ -121,6 +121,8 @@ const icons = {
   ),
 };
 
+export const cellsIcon = icons.cells;
+
 export const productGroups: ProductGroup[] = [
   {
     title: 'People & communication',
@@ -144,7 +146,14 @@ export const productGroups: ProductGroup[] = [
         name: 'Cells',
         description: 'Home cells: leaders, meetings, reports and teaching',
         icon: icons.cells,
-        status: 'soon',
+        status: 'live',
+        to: '/cells',
+        permission: [Permissions.cellsManage, Permissions.cellReportsView],
+        links: [
+          { to: '/cells', label: 'Overview' },
+          { to: '/cells/reports', label: 'Reports', permission: Permissions.cellReportsView },
+          { to: '/cells/materials', label: 'Teaching', permission: Permissions.cellReportsView },
+        ],
       },
       {
         key: 'announcements',

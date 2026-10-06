@@ -3,8 +3,9 @@ import { NavLink, Navigate, Outlet, useLocation, useNavigate } from 'react-route
 import type { PalettePreference } from '@shapers/tokens';
 import { api } from '../lib/api';
 import { useAccess } from '../lib/access';
+import { isLeader, useMyCells } from '../lib/cells';
 import { usePalette } from '../lib/palette-context';
-import { allowed, productFor, productGroups } from '../lib/products';
+import { allowed, cellsIcon, productFor, productGroups } from '../lib/products';
 import { scopeLabel, useScope } from '../lib/scope-context';
 import { Button, Loading, Select } from './ui';
 
@@ -15,6 +16,8 @@ export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const myCells = useMyCells();
+  const led = myCells.data?.filter((c) => isLeader(c.myRole)) ?? [];
 
   if (isPending) return <Loading />;
   if (isError || !access) return <Navigate to={`/login?next=${encodeURIComponent(location.pathname)}`} replace />;
@@ -38,6 +41,17 @@ export function Layout() {
           <NavLink to="/" end className={({ isActive }) => `nav-link nav-home${isActive ? ' active' : ''}`}>
             Home
           </NavLink>
+          {led.length > 0 && (
+            <div className="nav-group">
+              <span className="nav-group-title">My cell</span>
+              {led.map((c) => (
+                <NavLink key={c.id} to={`/my-cells/${c.id}`} className={({ isActive }) => `nav-link nav-product${isActive ? ' active' : ''}`}>
+                  <span className="nav-icon">{cellsIcon}</span>
+                  {c.name}
+                </NavLink>
+              ))}
+            </div>
+          )}
           {productGroups.map((group) => {
             const products = group.products.filter((p) => p.status === 'live' && allowed(access, p.permission));
             if (products.length === 0) return null;
