@@ -69,6 +69,9 @@ export function Layout() {
             <span className="brand-mark">Shapers</span>
             <span className="small muted">Church admin</span>
           </span>
+          <button type="button" className="rail-collapse" onClick={toggleCollapsed} aria-label={collapsed ? 'Expand the menu' : 'Minimise the menu'} aria-expanded={!collapsed} title={collapsed ? 'Expand' : 'Minimise'}>
+            {collapsed ? navIcons.expand : navIcons.collapse}
+          </button>
         </div>
 
         <nav className="rail-nav">
@@ -93,8 +96,8 @@ export function Layout() {
           })}
         </nav>
 
-        <div className="rail-foot">
-          {settings.length > 0 && (
+        {settings.length > 0 && (
+          <div className="rail-foot">
             <details className="rail-settings" open={settings.some((i) => i.key === current?.key) || undefined}>
               <summary className="rail-link" title="Settings">
                 <span className="rail-icon">{navIcons.settings}</span>
@@ -104,12 +107,8 @@ export function Layout() {
                 <RailItem key={i.key} item={i} active={current?.key === i.key} access={access} />
               ))}
             </details>
-          )}
-          <button type="button" className="rail-link rail-collapse" onClick={toggleCollapsed} aria-label={collapsed ? 'Expand the menu' : 'Collapse the menu'} title={collapsed ? 'Expand' : 'Collapse'}>
-            <span className="rail-icon">{collapsed ? navIcons.expand : navIcons.collapse}</span>
-            <span className="rail-label">Collapse</span>
-          </button>
-        </div>
+          </div>
+        )}
       </aside>
       <button type="button" className="drawer-scrim" aria-label="Close the menu" onClick={() => setDrawerOpen(false)} />
 
