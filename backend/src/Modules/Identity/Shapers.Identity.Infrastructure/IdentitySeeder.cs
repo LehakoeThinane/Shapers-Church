@@ -22,7 +22,7 @@ namespace Shapers.Identity.Infrastructure;
 
 public static class SystemRoles
 {
-    public const string ChurchAdministrator = "Church administrator";
+    public const string ChurchAdministrator = Role.FullAccessName;
     public const string CampusPastor = "Campus pastor";
     public const string CampusAdministrator = "Campus administrator";
     public const string MinistryLeader = "Ministry leader";
@@ -36,6 +36,7 @@ public static class SystemRoles
     public const string Translator = "Translator";
     public const string WorshipLeader = "Worship leader";
     public const string ServingTeamLeader = "Serving team leader";
+    public const string AccessManager = "Access manager";
 
     /// <summary>Built-in roles. The church administrator always holds every permission in the catalogue.</summary>
     public static IReadOnlyDictionary<string, (string Description, IReadOnlyList<string> Permissions)> Definitions(PermissionCatalog catalog) =>
@@ -51,7 +52,7 @@ public static class SystemRoles
                 MediaPermissions.ChatModerate,
                 GroupsPermissions.CellsManage, GroupsPermissions.ReportsView,
                 AssistPermissions.DraftsCreate,
-                ServicesPermissions.PlansEdit, ServicesPermissions.Schedule, ServicesPermissions.SongsEdit,
+                ServicesPermissions.PlansEdit, ServicesPermissions.Schedule, ServicesPermissions.SongsEdit, ServicesPermissions.CategoriesManage,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [
@@ -77,6 +78,10 @@ public static class SystemRoles
             [ServingTeamLeader] = ("Leads a serving team (e.g. production, hospitality): schedules its people and sees the plans.", [ServicesPermissions.Schedule]),
             [Translator] = ("Speaks a language the church translates into: checks and corrects translations of pages and posts before they're published.",
                 [ContentPermissions.TranslationsReview]),
+            [AccessManager] = ("Changes what roles allow and who holds them. They can only hand out access they have themselves.",
+            [
+                IdentityPermissions.UsersView, IdentityPermissions.RolesManage, IdentityPermissions.GrantsManage, PlatformPermissions.AuditView,
+            ]),
             [ChatModerator] = ("Looks after the live chat during services: hides messages, times people out, sets slow mode.", [MediaPermissions.ChatModerate]),
             [PrayerTeam] = ("Reviews requests for the prayer wall. Pastors-only requests stay with the pastors.", [PrayerPermissions.RequestsModerate]),
             [MediaTeam] = ("Prepares and publishes sermons, series and speakers.",
@@ -85,6 +90,12 @@ public static class SystemRoles
                 AssistPermissions.DraftsCreate,
             ]),
         };
+}
+
+internal sealed class SystemRoleDefaults(PermissionCatalog catalog) : Application.ISystemRoleDefaults
+{
+    public (string Description, IReadOnlyList<string> Permissions)? For(string roleName) =>
+        SystemRoles.Definitions(catalog).TryGetValue(roleName, out var shipped) ? shipped : null;
 }
 
 public sealed class BootstrapAdminOptions

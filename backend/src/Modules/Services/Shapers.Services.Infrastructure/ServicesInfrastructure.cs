@@ -27,6 +27,8 @@ public sealed class ServicesDbContext(DbContextOptions<ServicesDbContext> option
 
     public override string Schema => SchemaName;
 
+    public DbSet<TeamCategory> Categories => Set<TeamCategory>();
+
     public DbSet<Team> Teams => Set<Team>();
 
     public DbSet<TeamPosition> Positions => Set<TeamPosition>();
@@ -47,9 +49,19 @@ public sealed class ServicesDbContext(DbContextOptions<ServicesDbContext> option
 
     protected override void ConfigureModel(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<TeamCategory>(b =>
+        {
+            b.ToTable("categories");
+            b.Property(c => c.Id).ValueGeneratedNever();
+            b.Property(c => c.Name).HasMaxLength(60);
+            b.Property(c => c.Description).HasMaxLength(200);
+            b.Property(c => c.Scope).HasMaxLength(512);
+        });
+
         modelBuilder.Entity<Team>(b =>
         {
             b.ToTable("teams");
+            b.HasIndex(t => t.CategoryId);
             b.Property(t => t.Id).ValueGeneratedNever();
             b.Property(t => t.Name).HasMaxLength(80);
             b.Property(t => t.Description).HasMaxLength(500);
@@ -191,6 +203,7 @@ public static class ServicesInfrastructure
 
         services.AddScoped<PlanReader>();
         services.AddScoped<TeamService>();
+        services.AddScoped<CategoryService>();
         services.AddScoped<PlanService>();
         services.AddScoped<ScheduleService>();
         services.AddScoped<LiveService>();
@@ -214,6 +227,9 @@ public static class ServicesInfrastructure
     {
         await using var scope = services.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<ServicesDbContext>().Database.MigrateAsync(cancellationToken);
+
+        // Every church starts with the typical team categories; it can change them afterwards.
+        await scope.ServiceProvider.GetRequiredService<CategoryService>().EnsureTypicalAsync(cancellationToken);
 
         // Typical teams, songs and the coming Sundays, so a new development or demo database shows Services working.
         var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();

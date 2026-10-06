@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import QRCode from 'qrcode';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
@@ -170,77 +170,6 @@ export function ChurchPage() {
           <ErrorNote error={addMinistry.error} />
         </Card>
       </div>
-    </>
-  );
-}
-
-// ---------- Roles ----------
-
-export function RolesPage() {
-  const { data: access } = useAccess();
-  const queryClient = useQueryClient();
-  const roles = useQuery({ queryKey: ['roles'], queryFn: async () => unwrap(await api.GET('/api/admin/roles')) });
-  const permissions = useQuery({ queryKey: ['permissions'], queryFn: async () => unwrap(await api.GET('/api/admin/permissions')) });
-  const [name, setName] = useState('');
-  const [selected, setSelected] = useState<string[]>([]);
-  const describe = (key: string) => permissions.data?.find((p) => p.key === key)?.description ?? key;
-
-  const create = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/admin/roles', { body: { name, description: null, permissions: selected } })),
-    onSuccess: () => {
-      setName('');
-      setSelected([]);
-      void queryClient.invalidateQueries({ queryKey: ['roles'] });
-    },
-  });
-
-  return (
-    <>
-      <PageHeader title="Roles and access" subtitle="A role is a set of permissions. Give someone a role at a campus or ministry from their person record." />
-      <ErrorNote error={roles.error ?? permissions.error} />
-      <div className="grid-2">
-        {roles.data?.map((r) => (
-          <Card key={r.id} title={r.name} actions={r.isSystem ? <Badge>Built in</Badge> : <Badge tone="accent">Custom</Badge>}>
-            {r.description && <p className="muted small">{r.description}</p>}
-            <ul className="list small">
-              {r.permissions.map((p) => (
-                <li key={p}>{describe(p)}</li>
-              ))}
-            </ul>
-          </Card>
-        ))}
-      </div>
-
-      {can(access, Permissions.rolesManage) && (
-        <Card title="New custom role">
-          <form
-            className="stack"
-            onSubmit={(e: FormEvent) => {
-              e.preventDefault();
-              create.mutate();
-            }}>
-            <Field label="Role name">
-              <TextInput required value={name} onChange={(e) => setName(e.target.value)} />
-            </Field>
-            <div className="checks">
-              {permissions.data?.map((p) => (
-                <label key={p.key} className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(p.key)}
-                    onChange={(e) => setSelected(e.target.checked ? [...selected, p.key] : selected.filter((k) => k !== p.key))}
-                  />
-                  {p.description} {p.isSensitive && <Badge tone="accent">Sensitive</Badge>}
-                </label>
-              ))}
-            </div>
-            <ErrorNote error={create.error} />
-            <Button variant="primary" type="submit" busy={create.isPending} disabled={selected.length === 0}>
-              Create role
-            </Button>
-          </form>
-        </Card>
-      )}
     </>
   );
 }

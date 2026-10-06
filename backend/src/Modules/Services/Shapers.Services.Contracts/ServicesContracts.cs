@@ -10,6 +10,9 @@ public static class ServicesPermissions
 
     /// <summary>Keep the song library: songs, arrangements, keys, charts and lyrics.</summary>
     public const string SongsEdit = "services.songs.edit";
+
+    /// <summary>Add, rename and remove the categories teams are grouped in (Ministries, Disciplines, ...).</summary>
+    public const string CategoriesManage = "services.categories.manage";
 }
 
 /// <summary>Someone was asked to serve. Notifications push it to their phone; the email with answer links is sent by Services.</summary>

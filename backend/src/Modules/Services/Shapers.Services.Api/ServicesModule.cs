@@ -52,6 +52,13 @@ public sealed class ServicesModule : IModule
         teams.MapDelete("/{id:guid}/members/{personId:guid}", async (Guid id, Guid personId, TeamService s, CancellationToken ct) =>
             (await s.RemoveMemberAsync(id, personId, ct)).ToHttp()).WithName("RemoveTeamMember");
 
+        var categories = admin.MapGroup("/categories");
+        categories.MapGet("/", (CategoryService s, CancellationToken ct) => s.ListAsync(ct)).WithName("ListTeamCategories");
+        categories.MapPost("/", async (SaveCategoryRequest r, CategoryService s, CancellationToken ct) => (await s.CreateAsync(r, ct)).ToHttp()).WithName("CreateTeamCategory");
+        categories.MapPut("/{id:guid}", async (Guid id, SaveCategoryRequest r, CategoryService s, CancellationToken ct) => (await s.UpdateAsync(id, r, ct)).ToHttp())
+            .WithName("UpdateTeamCategory");
+        categories.MapDelete("/{id:guid}", async (Guid id, CategoryService s, CancellationToken ct) => (await s.ArchiveAsync(id, ct)).ToHttp()).WithName("RemoveTeamCategory");
+
         var types = admin.MapGroup("/types");
         types.MapGet("/", (PlanService s, CancellationToken ct) => s.TypesAsync(ct)).WithName("ListServiceTypes");
         types.MapPost("/", async (SaveServiceTypeRequest r, PlanService s, CancellationToken ct) => (await s.CreateTypeAsync(r, ct)).ToHttp()).WithName("CreateServiceType");

@@ -53,6 +53,12 @@ public interface IUserAccounts
     Task RelinkPersonAsync(Guid userId, Guid personId, CancellationToken cancellationToken);
 }
 
+/// <summary>How each built-in role ships, so a role the church changed can be put back.</summary>
+public interface ISystemRoleDefaults
+{
+    (string Description, IReadOnlyList<string> Permissions)? For(string roleName);
+}
+
 public sealed record AccessToken(string Token, DateTimeOffset ExpiresAt);
 
 public interface ITokenIssuer
@@ -94,7 +100,7 @@ public sealed class IdentityPermissionProvider : IPermissionProvider
     public IEnumerable<PermissionDefinition> GetPermissions() =>
     [
         new(IdentityPermissions.UsersView, "identity", "See who has a login and what access they have"),
-        new(IdentityPermissions.RolesManage, "identity", "Create and edit custom roles", IsSensitive: true),
+        new(IdentityPermissions.RolesManage, "identity", "Create roles and change what any role allows", IsSensitive: true),
         new(IdentityPermissions.GrantsManage, "identity", "Give and remove access (never beyond your own)", IsSensitive: true),
     ];
 }

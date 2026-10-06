@@ -7,6 +7,8 @@ namespace Shapers.Services.Application;
 
 public interface IServicesDb
 {
+    DbSet<TeamCategory> Categories { get; }
+
     DbSet<Team> Teams { get; }
 
     DbSet<TeamPosition> Positions { get; }
@@ -53,12 +55,17 @@ public sealed class ServicesPermissionProvider : IPermissionProvider
         new(ServicesPermissions.PlansEdit, "services", "Plan services: orders of service, templates, the live run sheet"),
         new(ServicesPermissions.Schedule, "services", "Manage serving teams and schedule people"),
         new(ServicesPermissions.SongsEdit, "services", "Keep the song library: arrangements, keys, charts and lyrics"),
+        new(ServicesPermissions.CategoriesManage, "services", "Manage the categories teams are grouped in (Ministries, Disciplines, Departments)"),
     ];
 }
 
 // ---------- Teams ----------
 
-public sealed record SaveTeamRequest(string Name, string? Description, bool OpenToMinors, string? Scope);
+public sealed record SaveTeamRequest(string Name, string? Description, bool OpenToMinors, string? Scope, Guid? CategoryId = null);
+
+public sealed record SaveCategoryRequest(string Name, string? Description, int Order);
+
+public sealed record CategoryDto(Guid Id, string Name, string? Description, int Order);
 
 public sealed record SavePositionRequest(string Name, int Order);
 
@@ -68,7 +75,7 @@ public sealed record PositionDto(Guid Id, string Name, int Order);
 
 public sealed record TeamMemberDto(Guid PersonId, string Name, IReadOnlyList<Guid> PositionIds, bool IsLeader);
 
-public sealed record TeamDto(Guid Id, string Name, string? Description, bool OpenToMinors, string Scope, bool IsArchived, IReadOnlyList<PositionDto> Positions, IReadOnlyList<TeamMemberDto> Members);
+public sealed record TeamDto(Guid Id, string Name, string? Description, bool OpenToMinors, string Scope, bool IsArchived, IReadOnlyList<PositionDto> Positions, IReadOnlyList<TeamMemberDto> Members, Guid? CategoryId);
 
 // ---------- Plans ----------
 

@@ -91,7 +91,12 @@ public sealed class TeamService(IServicesDb db, IPeopleDirectory people, IChurch
             return Error.Conflict("services.team_exists", "There's already a team with that name here.");
         }
 
-        var team = Team.Create(request.Name, scope.Value, request.Description, request.OpenToMinors, clock.GetUtcNow());
+        if (request.CategoryId is { } categoryId && !await db.Categories.AnyAsync(c => c.Id == categoryId && !c.IsArchived, cancellationToken))
+        {
+            return Error.NotFound("services.category_not_found", "Category not found.");
+        }
+
+        var team = Team.Create(request.Name, scope.Value, request.Description, request.OpenToMinors, clock.GetUtcNow(), request.CategoryId);
         db.Teams.Add(team);
         await db.SaveChangesAsync(cancellationToken);
         await AuditAsync("services.team.created", team, cancellationToken);
@@ -99,10 +104,15 @@ public sealed class TeamService(IServicesDb db, IPeopleDirectory people, IChurch
     }
 
     public Task<Result<TeamDto>> UpdateAsync(Guid id, SaveTeamRequest request, CancellationToken cancellationToken) =>
-        ChangeAsync(id, "services.team.updated", (team, _) =>
+        ChangeAsync(id, "services.team.updated", async (team, ct) =>
         {
-            team.Update(request.Name, request.Description, request.OpenToMinors);
-            return Task.FromResult(Result.Success());
+            if (request.CategoryId is { } categoryId && !await db.Categories.AnyAsync(c => c.Id == categoryId && !c.IsArchived, ct))
+            {
+                return Error.NotFound("services.category_not_found", "Category not found.");
+            }
+
+            team.Update(request.Name, request.Description, request.OpenToMinors, request.CategoryId);
+            return Result.Success();
         }, cancellationToken);
 
     public Task<Result<TeamDto>> ArchiveAsync(Guid id, bool archive, CancellationToken cancellationToken) =>
@@ -234,7 +244,8 @@ public sealed class TeamService(IServicesDb db, IPeopleDirectory people, IChurch
                 members.Where(m => m.TeamId == t.Id)
                     .Select(m => new TeamMemberDto(m.PersonId, names.GetValueOrDefault(m.PersonId)?.DisplayName ?? "Unknown", m.PositionIds, m.IsLeader))
                     .OrderByDescending(m => m.IsLeader).ThenBy(m => m.Name)
-                    .ToList()))
+                    .ToList(),
+                t.CategoryId))
             .ToList();
     }
 

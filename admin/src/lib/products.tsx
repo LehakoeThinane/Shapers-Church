@@ -20,13 +20,13 @@ export type Product = {
 
 export type ProductGroup = { title: string; products: Product[] };
 
-const icon = (path: ReactNode) => (
+export const icon = (path: ReactNode) => (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     {path}
   </svg>
 );
 
-const icons = {
+export const icons = {
   people: icon(
     <>
       <circle cx="9" cy="8" r="3.2" />

@@ -61,6 +61,7 @@ export const Permissions = {
   servicesPlans: 'services.plans.edit',
   servicesSchedule: 'services.schedule',
   servicesSongs: 'services.songs.edit',
+  servicesCategories: 'services.categories.manage',
   assistDrafts: 'assist.drafts.create',
   assistUsage: 'assist.usage.view',
 } as const;
