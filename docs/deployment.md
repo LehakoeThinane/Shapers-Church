@@ -29,8 +29,9 @@ konsoleH (xneelo)        DNS and the church's email only
    ```
 2. **Deploy.** This takes 15–25 minutes the first time. It asks for confirmation before changing anything.
    ```powershell
-   ./infra/azure/deploy.ps1 -AdminEmail admin@shaperschurch.com
+   ./infra/azure/deploy.ps1 -AdminEmail admin@shaperschurch.com -AlertEmail <team email>
    ```
+   `-AlertEmail` is where alerts go (see *Alerts* below). Until the church has a team address, use the address of whoever looks after the platform. The repository is public, so the address is passed here and not stored in the code. `-MonthlyBudget` sets the cost budget (default 2000, in the subscription's billing currency; 0 leaves it out).
    Add `-YouTubeApiKey <key>` to enable the sermon import, and `-SiteRebuildToken <token>` (a GitHub fine-grained token with *Contents: read & write* on this repository) so the website rebuilds the moment something is published.
    For **sermon transcripts from YouTube captions**, add `-YouTubeOAuthClientId`, `-YouTubeOAuthClientSecret` and `-YouTubeOAuthRedirectUri https://api.shaperschurch.com/api/media/youtube/callback` (see *YouTube captions* below).
    Add `-EnableAi` (optionally `-AiMonthlyBudgetZar 300`) for AI help: it creates Azure OpenAI and Speech in South Africa North and lets the API use them with its managed identity, so no keys are involved (ADR 0017). AI pauses for the rest of the month once the estimated spend reaches the budget.
@@ -90,7 +91,23 @@ Leave the existing **MX** and email records alone.
   ```
 - **Background jobs:** `https://api.shaperschurch.com/jobs` (staff with the jobs permission only).
 - **Change a setting:** non-secret settings go in `backend/src/Host/Shapers.Api/appsettings.Production.json`; secrets go in Key Vault (`kv-shapers-prod`), then run the deploy script again.
+- **Change who gets alerts or the budget:** run the deploy script again with a different `-AlertEmail` or `-MonthlyBudget`.
 - **Choose an SMS provider:** add a sender for it in the Identity module, put its key in Key Vault, and set `Sms:Provider`. Until then members see "Signing in with a code by SMS isn't available yet"; staff are unaffected.
+
+## Alerts
+
+The deploy script sets these up and emails them to `-AlertEmail`. Each alert also sends a "resolved" email when things recover.
+
+| Alert | Fires when | First thing to do |
+|---|---|---|
+| **API: server errors** | 5 or more requests fail with a server error in 15 minutes | Application Insights, then *Failures*: look at the top exception and which page it came from. If it started after a deploy, roll back (above). |
+| **API: readiness check failing** | The readiness check fails 3 or more times in 10 minutes. The API takes no traffic while it fails | Usually the database. Check the PostgreSQL server is running in the portal, then the API logs. |
+| **API restarts** | The API container restarted | Check the logs just before the restart (out of memory, a crash at start-up, a failing migration). One restart after a deploy can be normal; repeated restarts are not. |
+| **Database CPU** | Average above 80% for 30 minutes | The B1ms server is small and runs on CPU credits. Look for a slow query or a stuck job (`/jobs`). If it's normal load, move up a size. |
+| **Database storage** | Above 80% full | Storage grows by itself, which raises the cost. Check what grew (sermon files are in Blob Storage, not here). |
+| **Cost budget** | 80% of the monthly budget spent, or 100% forecast | Azure portal, then *Cost Management*, then *Cost analysis* for this resource group. |
+
+To check the email arrives: Azure portal, then *Monitor*, then *Alerts*, then *Action groups*, then `ag-shapers-prod`, then *Test*.
 
 ## Backups and restore
 - **Database:** automatic, restorable to any minute in the last **14 days**. Restoring creates a *new* server, so nothing is overwritten:
@@ -118,8 +135,9 @@ Leave the existing **MX** and email records alone.
 | Container Registry (Basic) | ~R90 |
 | Log Analytics / Application Insights | R50–R150 |
 | Storage, Key Vault, email | under R100 |
+| Alerts (2 log alerts every 5 minutes, 3 metric alerts; email and the budget are free) | about R60 |
 | Static Web Apps (Free) ×2, private network | R0 |
-| **Total** | **about R800–R1,400** |
+| **Total** | **about R850–R1,450** |
 
 Check the Azure pricing calculator before committing; a nonprofit grant may cover most of this.
 
@@ -130,7 +148,7 @@ Check the Azure pricing calculator before committing; a nonprofit grant may cove
 - [ ] Email domain verified; a test event booking email arrives and isn't marked as spam.
 - [ ] A test sermon upload (audio and PDF) plays from the website.
 - [ ] Database restore practised once.
-- [ ] Alerts: Application Insights *Failures* alert to the team email.
+- [ ] Alerts: a test from the action group (see *Alerts*) arrives at the alert email and isn't marked as spam.
 - [ ] WordPress backup taken in konsoleH, and blog images copied before WordPress is switched off.
 - [ ] SMS provider chosen (members can't sign in to the app until then).
 
