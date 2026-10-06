@@ -63,6 +63,12 @@ param youTubeApiKey string = ''
 @secure()
 param siteRebuildToken string = ''
 
+@description('AI help for staff (sermon transcripts, drafts). Creates Azure OpenAI and Speech in this region; the API signs in with its managed identity.')
+param enableAi bool = false
+
+@description('Estimated monthly AI spend after which AI help pauses until the 1st.')
+param aiMonthlyBudgetZar int = 300
+
 var suffix = '${name}-prod'
 var compact = '${name}prod'
 var tags = { app: 'shapers', environment: 'production' }
@@ -72,6 +78,8 @@ var roles = {
   keyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
   keyVaultSecretsOfficer: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
   acrPull: '7f951dda-4ed3-4ff4-a3b3-0b2a7dc2a1c8'
+  cognitiveServicesOpenAiUser: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+  cognitiveServicesUser: 'a97b65f3-24c7-4388-baec-2e87135dc908'
 }
 
 // ---------- Monitoring ----------
@@ -293,6 +301,66 @@ resource acrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
+// ---------- AI help (optional) ----------
+// Accounts in South Africa North; the writing model is only offered as Global Standard, so prompts may be processed
+// outside South Africa. Only public church content is sent (ADR 0017). Keys are disabled: the API uses its identity.
+
+resource openAi 'Microsoft.CognitiveServices/accounts@2024-10-01' = if (enableAi) {
+  name: 'oai-${suffix}'
+  location: location
+  tags: tags
+  kind: 'OpenAI'
+  sku: { name: 'S0' }
+  properties: {
+    customSubDomainName: 'oai-${suffix}'
+    disableLocalAuth: true
+    publicNetworkAccess: 'Enabled'
+  }
+}
+
+resource chatModel 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = if (enableAi) {
+  parent: openAi
+  name: 'gpt-5.4-mini'
+  sku: { name: 'GlobalStandard', capacity: 50 }
+  properties: {
+    model: { format: 'OpenAI', name: 'gpt-5.4-mini', version: '2026-03-17' }
+    versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
+  }
+}
+
+resource speech 'Microsoft.CognitiveServices/accounts@2024-10-01' = if (enableAi) {
+  name: 'spch-${suffix}'
+  location: location
+  tags: tags
+  kind: 'SpeechServices'
+  sku: { name: 'S0' }
+  properties: {
+    customSubDomainName: 'spch-${suffix}'
+    disableLocalAuth: true
+    publicNetworkAccess: 'Enabled'
+  }
+}
+
+resource openAiApiUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableAi) {
+  scope: openAi
+  name: guid(openAi.id, apiIdentity.id, roles.cognitiveServicesOpenAiUser)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roles.cognitiveServicesOpenAiUser)
+    principalId: apiIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource speechApiUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableAi) {
+  scope: speech
+  name: guid(speech.id, apiIdentity.id, roles.cognitiveServicesUser)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roles.cognitiveServicesUser)
+    principalId: apiIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // ---------- Secrets ----------
 
 resource vault 'Microsoft.KeyVault/vaults@2023-07-01' = {
@@ -428,7 +496,18 @@ var baseEnv = [
 ]
 var optionalEnv = concat(
   empty(youTubeApiKey) ? [] : [{ name: 'Media__YouTube__ApiKey', secretRef: 'youtube-api-key' }],
-  empty(siteRebuildToken) ? [] : [{ name: 'Content__SiteRebuild__Token', secretRef: 'site-rebuild-token' }]
+  empty(siteRebuildToken) ? [] : [{ name: 'Content__SiteRebuild__Token', secretRef: 'site-rebuild-token' }],
+  enableAi
+    ? [
+        { name: 'Assist__Provider', value: 'Azure' }
+        { name: 'Assist__MonthlyBudgetZar', value: string(aiMonthlyBudgetZar) }
+        { name: 'Assist__Azure__OpenAiEndpoint', value: openAi!.properties.endpoint }
+        { name: 'Assist__Azure__ChatDeployment', value: chatModel.name }
+        { name: 'Assist__Azure__SpeechEndpoint', value: speech!.properties.endpoint }
+        // DefaultAzureCredential uses this user-assigned identity.
+        { name: 'AZURE_CLIENT_ID', value: apiIdentity.properties.clientId }
+      ]
+    : []
 )
 
 resource api 'Microsoft.App/containerApps@2025-01-01' = if (deployApi) {

@@ -32,6 +32,7 @@ konsoleH (xneelo)        DNS and the church's email only
    ./infra/azure/deploy.ps1 -AdminEmail admin@shaperschurch.com
    ```
    Add `-YouTubeApiKey <key>` to enable the sermon import, and `-SiteRebuildToken <token>` (a GitHub fine-grained token with *Contents: read & write* on this repository) so the website rebuilds the moment something is published.
+   Add `-EnableAi` (optionally `-AiMonthlyBudgetZar 300`) for AI help: it creates Azure OpenAI and Speech in South Africa North and lets the API use them with its managed identity, so no keys are involved (ADR 0017). AI pauses for the rest of the month once the estimated spend reaches the budget.
    The script prints the first administrator's password **once**. Sign in, set up the authenticator app, then change the password.
 3. **Check it.** Open the API's temporary address the script printed, ending in `/health/ready`. It should answer `Healthy`.
 4. **Connect `api.shaperschurch.com`.** Get the verification ID:

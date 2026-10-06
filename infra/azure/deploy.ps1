@@ -14,6 +14,9 @@
 
 .EXAMPLE
   ./infra/azure/deploy.ps1 -AdminEmail pastor@shaperschurch.com
+
+.EXAMPLE
+  ./infra/azure/deploy.ps1 -AdminEmail pastor@shaperschurch.com -EnableAi -AiMonthlyBudgetZar 300
 #>
 [CmdletBinding()]
 param(
@@ -22,7 +25,10 @@ param(
     [string] $Location = 'southafricanorth',
     [string] $YouTubeApiKey = '',
     [string] $SiteRebuildToken = '',
-    [switch] $UseCustomEmailDomain
+    [switch] $UseCustomEmailDomain,
+    # AI help for staff: Azure OpenAI and Speech, paused once the month's estimated spend reaches the budget (ADR 0017).
+    [switch] $EnableAi,
+    [int] $AiMonthlyBudgetZar = 300
 )
 
 $ErrorActionPreference = 'Stop'
@@ -111,6 +117,8 @@ function Deploy([bool] $withApi, [string] $image) {
             bootstrapAdminPassword = @{ value = $secrets.bootstrapAdminPassword }
             youTubeApiKey          = @{ value = $YouTubeApiKey }
             siteRebuildToken       = @{ value = $SiteRebuildToken }
+            enableAi               = @{ value = [bool] $EnableAi }
+            aiMonthlyBudgetZar     = @{ value = $AiMonthlyBudgetZar }
         }
     }
     $file = New-TemporaryFile

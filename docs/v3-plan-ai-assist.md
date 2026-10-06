@@ -1,6 +1,6 @@
 # Plan: AI help for staff (sermons, cell lessons, translation, search)
 
-Status: proposed (2026-10-06). Directions approved: Azure OpenAI; sermon → cell lesson first, then translation; sermon text from both audio and YouTube captions.
+Status: approved (2026-10-06). Built: steps 1–3 except YouTube captions, plus writing help from step 5 (ADR 0017). Next: YouTube captions, then translation.
 
 ## Rules (from the project brief)
 - **AI only drafts.** Nothing it writes is published or sent until a named person reviews, edits and accepts it. Everything it produces is labelled *AI draft* until then.
