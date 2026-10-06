@@ -64,6 +64,10 @@ public static class MediaInfrastructure
         services.AddScoped<ChatModerationService>();
         services.AddScoped<ChatRetention>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, ChatPersonalData>();
+        services.AddScoped<TranscriptionJob>();
+        services.AddScoped<ISermonSource, SermonSource>();
+        services.AddSingleton(new RecurringJobDefinition("media-transcription", "*/5 * * * *", (sp, ct) =>
+            sp.GetRequiredService<TranscriptionJob>().RunAsync(ct)));
 
         services.AddSingleton(new RecurringJobDefinition("media-publish-scheduled", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<ScheduledPublisher>().PublishDueAsync(ct)));

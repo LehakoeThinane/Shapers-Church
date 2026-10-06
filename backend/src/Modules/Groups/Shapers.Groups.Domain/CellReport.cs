@@ -291,8 +291,9 @@ public sealed class CellReport : AggregateRoot<Guid>
 }
 
 /// <summary>
-/// What a leader teaches: their own notes for a meeting or series. Pastors see every leader's materials;
-/// members see only the ones the leader shares with them.
+/// What a cell teaches. Either a leader's own notes for their cell, or a church lesson the pastors write for every
+/// cell in a campus or the whole church (often from Sunday's sermon). Pastors see all of them; members see only
+/// the ones shared with them.
 /// </summary>
 public sealed class CellMaterial : AggregateRoot<Guid>
 {
@@ -302,7 +303,13 @@ public sealed class CellMaterial : AggregateRoot<Guid>
     {
     }
 
-    public Guid CellId { get; private set; }
+    /// <summary>The leader's cell, or null for a church lesson.</summary>
+    public Guid? CellId { get; private set; }
+
+    /// <summary>The sermon a church lesson follows, if any.</summary>
+    public Guid? SermonId { get; private set; }
+
+    public bool IsChurchLesson => CellId is null;
 
     public string Scope { get; private set; } = null!;
 
@@ -330,6 +337,18 @@ public sealed class CellMaterial : AggregateRoot<Guid>
         material.Update(title, body, link, forDate, sharedWithMembers, now);
         return material;
     }
+
+    /// <summary>A lesson for every cell within <paramref name="scope"/> (the church or a campus).</summary>
+    public static CellMaterial WriteChurchLesson(ScopePath scope, string title, string body, string? link, DateOnly? forDate, bool sharedWithMembers, Guid? sermonId, Guid writtenBy, DateTimeOffset now)
+    {
+        var lesson = new CellMaterial { Id = Guid.CreateVersion7(), CellId = null, SermonId = sermonId, Scope = scope.Value, WrittenByPersonId = writtenBy, CreatedAt = now };
+        lesson.Update(title, body, link, forDate, sharedWithMembers, now);
+        return lesson;
+    }
+
+    /// <summary>True when this church lesson is meant for a cell at <paramref name="cellScope"/>.</summary>
+    public bool IsFor(string cellScope) =>
+        IsChurchLesson && (cellScope == Scope || cellScope.StartsWith(Scope + ".", StringComparison.Ordinal));
 
     public void Update(string title, string body, string? link, DateOnly? forDate, bool sharedWithMembers, DateTimeOffset now)
     {

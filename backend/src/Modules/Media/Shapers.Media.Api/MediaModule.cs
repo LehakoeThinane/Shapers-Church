@@ -149,6 +149,16 @@ public sealed class MediaModule : IModule
                 (await service.SetNotesPdfAsync(id, request, ct)).ToHttp())
             .WithName("SetSermonNotesPdf")
             .RequirePermission(MediaPermissions.SermonsEdit);
+        sermons.MapGet("/{id:guid}/transcript", async (Guid id, SermonAdminService service, CancellationToken ct) => (await service.GetTranscriptAsync(id, ct)).ToHttp())
+            .WithName("GetSermonTranscript")
+            .RequirePermission(MediaPermissions.SermonsEdit);
+        sermons.MapPut("/{id:guid}/transcript", async (Guid id, SetTranscriptRequest request, SermonAdminService service, CancellationToken ct) =>
+                (await service.SetTranscriptAsync(id, request, ct)).ToHttp())
+            .WithName("SetSermonTranscript")
+            .RequirePermission(MediaPermissions.SermonsEdit);
+        sermons.MapPost("/{id:guid}/transcript/transcribe", async (Guid id, SermonAdminService service, CancellationToken ct) => (await service.TranscribeAsync(id, ct)).ToHttp())
+            .WithName("TranscribeSermon")
+            .RequirePermission(MediaPermissions.SermonsEdit);
         sermons.MapPost("/{id:guid}/publish", async (Guid id, SermonAdminService service, CancellationToken ct) => (await service.PublishAsync(id, ct)).ToHttp())
             .WithName("PublishSermon")
             .RequirePermission(MediaPermissions.SermonsPublish);

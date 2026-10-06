@@ -45,6 +45,7 @@ public sealed class GroupsModule : IModule
                 (await s.UpdateReportAsync(cellId, reportId, request, ct)).ToHttp())
             .WithName("LeaderUpdateReport");
         lead.MapGet("/materials", async (Guid cellId, CellLeaderService s, CancellationToken ct) => (await s.MaterialsAsync(cellId, ct)).ToHttp()).WithName("LeaderMaterials");
+        lead.MapGet("/lessons", async (Guid cellId, CellLeaderService s, CancellationToken ct) => (await s.LessonsAsync(cellId, ct)).ToHttp()).WithName("LeaderChurchLessons");
         lead.MapPost("/materials", async (Guid cellId, SaveMaterialRequest request, CellLeaderService s, CancellationToken ct) => (await s.CreateMaterialAsync(cellId, request, ct)).ToHttp())
             .WithName("LeaderCreateMaterial");
         lead.MapPut("/materials/{materialId:guid}", async (Guid cellId, Guid materialId, SaveMaterialRequest request, CellLeaderService s, CancellationToken ct) =>
@@ -75,6 +76,19 @@ public sealed class GroupsModule : IModule
         admin.MapGet("/materials", (Guid? cellId, CellReportsService s, CancellationToken ct) => s.MaterialsAsync(cellId, ct))
             .WithName("ListCellMaterials")
             .RequirePermission(GroupsPermissions.ReportsView);
+        admin.MapGet("/lessons", (ChurchLessonService s, CancellationToken ct) => s.ListAsync(ct))
+            .WithName("ListChurchLessons")
+            .RequireAnyPermission(GroupsPermissions.CellsManage, GroupsPermissions.ReportsView);
+        admin.MapPost("/lessons", async (SaveLessonRequest request, ChurchLessonService s, CancellationToken ct) => (await s.CreateAsync(request, ct)).ToHttp())
+            .WithName("CreateChurchLesson")
+            .RequirePermission(GroupsPermissions.CellsManage);
+        admin.MapPut("/lessons/{lessonId:guid}", async (Guid lessonId, SaveLessonRequest request, ChurchLessonService s, CancellationToken ct) =>
+                (await s.UpdateAsync(lessonId, request, ct)).ToHttp())
+            .WithName("UpdateChurchLesson")
+            .RequirePermission(GroupsPermissions.CellsManage);
+        admin.MapDelete("/lessons/{lessonId:guid}", async (Guid lessonId, ChurchLessonService s, CancellationToken ct) => (await s.DeleteAsync(lessonId, ct)).ToHttp())
+            .WithName("DeleteChurchLesson")
+            .RequirePermission(GroupsPermissions.CellsManage);
         admin.MapGet("/{id:guid}", async (Guid id, CellAdminService s, CancellationToken ct) => (await s.GetAsync(id, ct)).ToHttp())
             .WithName("GetCell")
             .RequireAnyPermission(GroupsPermissions.CellsManage, GroupsPermissions.ReportsView);

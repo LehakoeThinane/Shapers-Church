@@ -2295,6 +2295,107 @@
         }
       }
     },
+    "/api/admin/media/sermons/{id}/transcript": {
+      "get": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "GetSermonTranscript",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranscriptDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "SetSermonTranscript",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTranscriptRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/media/sermons/{id}/transcript/transcribe": {
+      "post": {
+        "tags": [
+          "Sermons admin"
+        ],
+        "operationId": "TranscribeSermon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SermonAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/media/sermons/{id}/publish": {
       "post": {
         "tags": [
@@ -4949,6 +5050,40 @@
         }
       }
     },
+    "/api/cells/{cellId}/lessons": {
+      "get": {
+        "tags": [
+          "Cells (leaders)"
+        ],
+        "operationId": "LeaderChurchLessons",
+        "parameters": [
+          {
+            "name": "cellId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cells/{cellId}/materials/{materialId}": {
       "put": {
         "tags": [
@@ -5230,6 +5365,120 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/lessons": {
+      "get": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "ListChurchLessons",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "CreateChurchLesson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLessonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/cells/lessons/{lessonId}": {
+      "put": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "UpdateChurchLesson",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLessonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cells admin"
+        ],
+        "operationId": "DeleteChurchLesson",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
           }
         }
       }
@@ -6925,6 +7174,271 @@
           }
         }
       }
+    },
+    "/api/admin/assist/status": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "AssistStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistStatusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/usage": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "AssistUsage",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/sermon-lesson": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftSermonLesson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SermonDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/sermon-notes": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftSermonNotes",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SermonDraftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/rewrite": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftRewrite",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RewriteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DraftsForSource",
+        "parameters": [
+          {
+            "name": "sourceType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DraftDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/{id}": {
+      "get": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "GetDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/{id}/accept": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "AcceptDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/assist/drafts/{id}/discard": {
+      "post": {
+        "tags": [
+          "AI help"
+        ],
+        "operationId": "DiscardDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -7089,6 +7603,13 @@
             }
           }
         }
+      },
+      "AiOperation": {
+        "enum": [
+          "Chat",
+          "Transcription",
+          "Embedding"
+        ]
       },
       "AnnouncementDto": {
         "required": [
@@ -7261,6 +7782,35 @@
           },
           "status": {
             "$ref": "#/components/schemas/MediaAssetStatus"
+          }
+        }
+      },
+      "AssistStatusDto": {
+        "required": [
+          "enabled",
+          "canDraft",
+          "budgetZar",
+          "spentThisMonthZar",
+          "budgetReached"
+        ],
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "canDraft": {
+            "type": "boolean"
+          },
+          "budgetZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "spentThisMonthZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "budgetReached": {
+            "type": "boolean"
           }
         }
       },
@@ -8881,6 +9431,102 @@
           "Skipped"
         ]
       },
+      "DraftDto": {
+        "required": [
+          "id",
+          "kind",
+          "sourceType",
+          "sourceId",
+          "status",
+          "model",
+          "promptVersion",
+          "requestedAt",
+          "requestedByMe",
+          "lesson",
+          "notes",
+          "rewrite"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DraftKind"
+          },
+          "sourceType": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DraftStatus"
+          },
+          "model": {
+            "type": "string"
+          },
+          "promptVersion": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestedByMe": {
+            "type": "boolean"
+          },
+          "lesson": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LessonDraft"
+              }
+            ]
+          },
+          "notes": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/NotesDraft"
+              }
+            ]
+          },
+          "rewrite": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RewriteDraft"
+              }
+            ]
+          }
+        }
+      },
+      "DraftKind": {
+        "enum": [
+          "SermonLesson",
+          "SermonNotes",
+          "Rewrite"
+        ]
+      },
+      "DraftStatus": {
+        "enum": [
+          "Pending",
+          "Accepted",
+          "Discarded"
+        ]
+      },
       "DuplicateCandidateDto": {
         "required": [
           "id",
@@ -9492,6 +10138,51 @@
           "Contract"
         ]
       },
+      "LessonDraft": {
+        "required": [
+          "title",
+          "summary",
+          "keyVerses",
+          "icebreaker",
+          "questions",
+          "application",
+          "prayerFocus",
+          "body"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "keyVerses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "icebreaker": {
+            "type": "string"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "application": {
+            "type": "string"
+          },
+          "prayerFocus": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      },
       "LiveNowDto": {
         "required": [
           "state",
@@ -9662,7 +10353,9 @@
           "forDate",
           "sharedWithMembers",
           "writtenBy",
-          "updatedAt"
+          "updatedAt",
+          "isChurchLesson",
+          "sermonId"
         ],
         "type": "object",
         "properties": {
@@ -9671,7 +10364,10 @@
             "format": "uuid"
           },
           "cellId": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "uuid"
           },
           "cellName": {
@@ -9705,6 +10401,16 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "isChurchLesson": {
+            "type": "boolean"
+          },
+          "sermonId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           }
         }
       },
@@ -10268,6 +10974,28 @@
           "Serving",
           "Leadership"
         ]
+      },
+      "NotesDraft": {
+        "required": [
+          "summary",
+          "notes",
+          "topics"
+        ],
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "NotificationDto": {
         "required": [
@@ -12039,6 +12767,39 @@
           }
         }
       },
+      "RewriteDraft": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "RewriteMode": {
+        "enum": [
+          "Tidy",
+          "Shorter",
+          "Longer"
+        ]
+      },
+      "RewriteRequest": {
+        "required": [
+          "text",
+          "mode"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/RewriteMode"
+          }
+        }
+      },
       "RoleDto": {
         "required": [
           "id",
@@ -12356,6 +13117,55 @@
             "items": {
               "$ref": "#/components/schemas/QuestionInput"
             }
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SaveLessonRequest": {
+        "required": [
+          "title",
+          "body",
+          "link",
+          "forDate",
+          "sharedWithMembers",
+          "sermonId",
+          "scope"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "forDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "sharedWithMembers": {
+            "type": "boolean"
+          },
+          "sermonId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           },
           "scope": {
             "type": [
@@ -12975,7 +13785,8 @@
           "scope",
           "importSource",
           "publishProblems",
-          "updatedAt"
+          "updatedAt",
+          "transcript"
         ],
         "type": "object",
         "properties": {
@@ -13010,6 +13821,9 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "transcript": {
+            "$ref": "#/components/schemas/TranscriptInfoDto"
           }
         }
       },
@@ -13176,6 +13990,18 @@
           }
         }
       },
+      "SermonDraftRequest": {
+        "required": [
+          "sermonId"
+        ],
+        "type": "object",
+        "properties": {
+          "sermonId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
       "SermonStatus": {
         "enum": [
           "Draft",
@@ -13311,6 +14137,20 @@
               "string"
             ],
             "format": "uuid"
+          }
+        }
+      },
+      "SetTranscriptRequest": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -13665,6 +14505,83 @@
           "Announcements"
         ]
       },
+      "TranscriptDto": {
+        "required": [
+          "text",
+          "info"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "info": {
+            "$ref": "#/components/schemas/TranscriptInfoDto"
+          }
+        }
+      },
+      "TranscriptInfoDto": {
+        "required": [
+          "status",
+          "source",
+          "length",
+          "error",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/TranscriptStatus"
+          },
+          "source": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TranscriptSource"
+              }
+            ]
+          },
+          "length": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "updatedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "TranscriptSource": {
+        "enum": [
+          "Pasted",
+          "Audio",
+          "Captions",
+          null
+        ]
+      },
+      "TranscriptStatus": {
+        "enum": [
+          "None",
+          "Queued",
+          "Working",
+          "Ready",
+          "Failed"
+        ]
+      },
       "TwoFactorStatus": {
         "required": [
           "enabled",
@@ -13816,6 +14733,118 @@
           }
         }
       },
+      "UsageCallDto": {
+        "required": [
+          "occurredAt",
+          "operation",
+          "purpose",
+          "model",
+          "inputTokens",
+          "outputTokens",
+          "audioSeconds",
+          "costZar",
+          "succeeded"
+        ],
+        "type": "object",
+        "properties": {
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/AiOperation"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "inputTokens": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "outputTokens": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "audioSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "costZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "succeeded": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UsageDto": {
+        "required": [
+          "enabled",
+          "provider",
+          "chatModel",
+          "budgetZar",
+          "spentThisMonthZar",
+          "months",
+          "recent"
+        ],
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "chatModel": {
+            "type": "string"
+          },
+          "budgetZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "spentThisMonthZar": {
+            "type": "number",
+            "format": "double"
+          },
+          "months": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageMonthDto"
+            }
+          },
+          "recent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UsageCallDto"
+            }
+          }
+        }
+      },
+      "UsageMonthDto": {
+        "required": [
+          "month",
+          "calls",
+          "costZar"
+        ],
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "calls": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "costZar": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "VerifyCodeRequest": {
         "required": [
           "challengeId",
@@ -13961,6 +14990,9 @@
     },
     {
       "name": "Content admin"
+    },
+    {
+      "name": "AI help"
     }
   ]
 }

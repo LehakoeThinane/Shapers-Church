@@ -108,7 +108,7 @@ namespace Shapers.Groups.Infrastructure.Migrations
                         .HasColumnType("character varying(20000)")
                         .HasColumnName("body");
 
-                    b.Property<Guid>("CellId")
+                    b.Property<Guid?>("CellId")
                         .HasColumnType("uuid")
                         .HasColumnName("cell_id");
 
@@ -130,6 +130,10 @@ namespace Shapers.Groups.Infrastructure.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)")
                         .HasColumnName("scope");
+
+                    b.Property<Guid?>("SermonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("sermon_id");
 
                     b.Property<bool>("SharedWithMembers")
                         .HasColumnType("boolean")

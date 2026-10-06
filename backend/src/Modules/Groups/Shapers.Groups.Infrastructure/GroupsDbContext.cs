@@ -84,6 +84,7 @@ public sealed class GroupsDbContext(DbContextOptions<GroupsDbContext> options) :
             b.Property(m => m.Body).HasMaxLength(CellMaterial.MaxBodyLength);
             b.Property(m => m.Link).HasMaxLength(500);
             b.HasIndex(m => new { m.CellId, m.UpdatedAt });
+            b.Ignore(m => m.IsChurchLesson);
             b.HasIndex(m => m.Scope).HasOperators("text_pattern_ops");
         });
     }

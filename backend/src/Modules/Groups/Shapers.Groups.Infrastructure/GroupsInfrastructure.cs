@@ -25,6 +25,7 @@ public static class GroupsInfrastructure
         services.AddScoped<CellAdminService>();
         services.AddScoped<CellReportsService>();
         services.AddScoped<CellLeaderService>();
+        services.AddScoped<ChurchLessonService>();
         services.AddScoped<MyCellsService>();
         services.AddScoped<CellReportRetentionJob>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, GroupsPersonalData>();

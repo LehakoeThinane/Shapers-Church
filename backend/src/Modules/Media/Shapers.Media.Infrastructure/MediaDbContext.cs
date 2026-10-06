@@ -46,6 +46,10 @@ public sealed class MediaDbContext(DbContextOptions<MediaDbContext> options) : M
             b.Property(s => s.Status).HasConversion<string>().HasMaxLength(20);
             b.Property(s => s.Language).HasMaxLength(10);
             b.Property(s => s.ImportSource).HasMaxLength(100);
+            b.Property(s => s.TranscriptSource).HasConversion<string>().HasMaxLength(10);
+            b.Property(s => s.TranscriptStatus).HasConversion<string>().HasMaxLength(10);
+            b.Property(s => s.TranscriptError).HasMaxLength(300);
+            b.HasIndex(s => s.TranscriptStatus).HasFilter("transcript_status IN ('Queued', 'Working')");
             b.Ignore(s => s.IsPublic);
             b.HasIndex(s => s.Slug).IsUnique();
             b.HasIndex(s => s.ImportSource).IsUnique().HasFilter("import_source IS NOT NULL");

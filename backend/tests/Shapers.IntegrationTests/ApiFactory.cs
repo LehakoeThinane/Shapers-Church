@@ -64,6 +64,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Communications:QuietHours", "false");
         builder.UseSetting("Communications:PublicApiUrl", "https://api.test");
         builder.UseSetting("Media:Storage:LocalPath", _mediaPath);
+        builder.UseSetting("Assist:Provider", "Fake");
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<ISmsSender>(Sms);

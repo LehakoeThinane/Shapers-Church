@@ -192,6 +192,90 @@ public sealed class CellReportsService(IGroupsDb db, IPeopleDirectory people, IA
     }
 }
 
+/// <summary>Pastors: church lessons for every cell in a campus or the whole church, often drafted from Sunday's sermon.</summary>
+public sealed class ChurchLessonService(
+    IGroupsDb db,
+    IPeopleDirectory people,
+    IAuthorizer authorizer,
+    ICurrentUser currentUser,
+    IAuditLog audit,
+    TimeProvider clock)
+{
+    private static readonly Error NotFound = Error.NotFound("groups.lesson_not_found", "Lesson not found.");
+
+    public async Task<IReadOnlyList<MaterialDto>> ListAsync(CancellationToken cancellationToken)
+    {
+        var scopes = (await authorizer.ScopesForAsync(GroupsPermissions.CellsManage, cancellationToken))
+            .Concat(await authorizer.ScopesForAsync(GroupsPermissions.ReportsView, cancellationToken))
+            .ToList();
+        var lessons = await db.Materials.AsNoTracking()
+            .Where(m => m.CellId == null)
+            .WithinScopes(m => m.Scope, scopes)
+            .OrderByDescending(m => m.UpdatedAt)
+            .Take(200)
+            .ToListAsync(cancellationToken);
+        return await ReportMapper.MaterialsAsync(db, people, lessons, cancellationToken);
+    }
+
+    public async Task<Result<MaterialDto>> CreateAsync(SaveLessonRequest request, CancellationToken cancellationToken)
+    {
+        var scopes = await authorizer.ScopesForAsync(GroupsPermissions.CellsManage, cancellationToken);
+        ScopePath scope;
+        if (string.IsNullOrWhiteSpace(request.Scope))
+        {
+            if (scopes.Count == 0)
+            {
+                return Error.Forbidden("groups.forbidden", "You can't write church lessons.");
+            }
+
+            scope = ScopeSet.Collapse(scopes)[0];
+        }
+        else if (!ScopePath.TryParse(request.Scope, out scope) || !await authorizer.CanAsync(GroupsPermissions.CellsManage, scope, cancellationToken))
+        {
+            return Error.Forbidden("groups.forbidden", "You can't write lessons for those cells.");
+        }
+
+        if (currentUser.PersonId is not { } me)
+        {
+            return Error.Unauthorized("groups.sign_in", "Sign in to write lessons.");
+        }
+
+        var lesson = CellMaterial.WriteChurchLesson(scope, request.Title, request.Body, request.Link, request.ForDate, request.SharedWithMembers, request.SermonId, me, clock.GetUtcNow());
+        db.Materials.Add(lesson);
+        await db.SaveChangesAsync(cancellationToken);
+        await audit.RecordAsync(new AuditRecord("groups.lesson.created", "cell_material", lesson.Id.ToString(), scope, new { lesson.Title, lesson.SermonId }), cancellationToken);
+        return (await ReportMapper.MaterialsAsync(db, people, [lesson], cancellationToken))[0];
+    }
+
+    public async Task<Result<MaterialDto>> UpdateAsync(Guid id, SaveLessonRequest request, CancellationToken cancellationToken)
+    {
+        var lesson = await db.Materials.SingleOrDefaultAsync(m => m.Id == id && m.CellId == null, cancellationToken);
+        if (lesson is null || !await authorizer.CanAsync(GroupsPermissions.CellsManage, ScopePath.Parse(lesson.Scope), cancellationToken))
+        {
+            return NotFound;
+        }
+
+        lesson.Update(request.Title, request.Body, request.Link, request.ForDate, request.SharedWithMembers, clock.GetUtcNow());
+        await db.SaveChangesAsync(cancellationToken);
+        await audit.RecordAsync(new AuditRecord("groups.lesson.updated", "cell_material", lesson.Id.ToString(), ScopePath.Parse(lesson.Scope)), cancellationToken);
+        return (await ReportMapper.MaterialsAsync(db, people, [lesson], cancellationToken))[0];
+    }
+
+    public async Task<Result> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var lesson = await db.Materials.SingleOrDefaultAsync(m => m.Id == id && m.CellId == null, cancellationToken);
+        if (lesson is null || !await authorizer.CanAsync(GroupsPermissions.CellsManage, ScopePath.Parse(lesson.Scope), cancellationToken))
+        {
+            return NotFound;
+        }
+
+        db.Materials.Remove(lesson);
+        await db.SaveChangesAsync(cancellationToken);
+        await audit.RecordAsync(new AuditRecord("groups.lesson.deleted", "cell_material", lesson.Id.ToString(), ScopePath.Parse(lesson.Scope), new { lesson.Title }), cancellationToken);
+        return Result.Success();
+    }
+}
+
 /// <summary>
 /// Cell leaders: their own cell only. Leadership comes from being the cell's leader or co-leader (not a role grant),
 /// and a two-step sign-in is required because reports hold special personal information.
@@ -347,6 +431,22 @@ public sealed class CellLeaderService(
         return Result<IReadOnlyList<MaterialDto>>.Ok(await ReportMapper.MaterialsAsync(db, people, materials, cancellationToken));
     }
 
+    /// <summary>The pastors' church lessons meant for this cell (its campus or the whole church), newest first.</summary>
+    public async Task<Result<IReadOnlyList<MaterialDto>>> LessonsAsync(Guid cellId, CancellationToken cancellationToken)
+    {
+        var access = await LedCellAsync(cellId, tracked: false, cancellationToken);
+        if (access.IsFailure)
+        {
+            return access.Error!;
+        }
+
+        var lessons = (await db.Materials.AsNoTracking().Where(m => m.CellId == null).OrderByDescending(m => m.UpdatedAt).Take(200).ToListAsync(cancellationToken))
+            .Where(m => m.IsFor(access.Value.Scope))
+            .Take(50)
+            .ToList();
+        return Result<IReadOnlyList<MaterialDto>>.Ok(await ReportMapper.MaterialsAsync(db, people, lessons, cancellationToken));
+    }
+
     public async Task<Result<MaterialDto>> CreateMaterialAsync(Guid cellId, SaveMaterialRequest request, CancellationToken cancellationToken)
     {
         var access = await LedCellAsync(cellId, tracked: false, cancellationToken);
@@ -438,8 +538,14 @@ public sealed class MyCellsService(IGroupsDb db, IPeopleDirectory people, ICurre
             .OrderBy(c => c.Name)
             .ToListAsync(cancellationToken);
         var ids = cells.Select(c => c.Id).ToList();
-        var shared = await db.Materials.AsNoTracking().Where(m => ids.Contains(m.CellId) && m.SharedWithMembers).OrderByDescending(m => m.UpdatedAt).ToListAsync(cancellationToken);
+        var shared = await db.Materials.AsNoTracking()
+            .Where(m => m.SharedWithMembers && (m.CellId == null || ids.Contains(m.CellId.Value)))
+            .OrderByDescending(m => m.UpdatedAt)
+            .Take(200)
+            .ToListAsync(cancellationToken);
         var materials = await ReportMapper.MaterialsAsync(db, people, shared, cancellationToken);
+        var byId = shared.ToDictionary(m => m.Id);
+        bool SharedWith(Cell cell, MaterialDto m) => m.CellId == cell.Id || byId[m.Id].IsFor(cell.Scope);
         var leaderIds = cells.SelectMany(c => c.ActiveMembers.Where(m => m.Role != CellRole.Member).Select(m => m.PersonId)).Distinct().ToList();
         var names = await people.GetManyAsync(leaderIds, cancellationToken);
 
@@ -452,7 +558,7 @@ public sealed class MyCellsService(IGroupsDb db, IPeopleDirectory people, ICurre
                 c.Address,
                 c.ActiveMembers.Single(m => m.PersonId == me).Role,
                 c.ActiveMembers.Where(m => m.Role != CellRole.Member).OrderBy(m => m.Role).Select(m => names.GetValueOrDefault(m.PersonId)?.DisplayName ?? "Unknown").ToList(),
-                materials.Where(m => m.CellId == c.Id).ToList()))
+                materials.Where(m => SharedWith(c, m)).ToList()))
             .ToList();
     }
 }
@@ -547,12 +653,22 @@ internal static class ReportMapper
 
     public static async Task<IReadOnlyList<MaterialDto>> MaterialsAsync(IGroupsDb db, IPeopleDirectory people, IReadOnlyList<CellMaterial> materials, CancellationToken cancellationToken)
     {
-        var cellIds = materials.Select(m => m.CellId).Distinct().ToList();
+        var cellIds = materials.Select(m => m.CellId).OfType<Guid>().Distinct().ToList();
         var cells = await db.Cells.AsNoTracking().Where(c => cellIds.Contains(c.Id)).ToDictionaryAsync(c => c.Id, c => c.Name, cancellationToken);
         var writers = await people.GetManyAsync(materials.Select(m => m.WrittenByPersonId).Distinct().ToList(), cancellationToken);
         return materials.Select(m => new MaterialDto(
-                m.Id, m.CellId, cells.GetValueOrDefault(m.CellId) ?? "Cell", m.Title, m.Body, m.Link, m.ForDate, m.SharedWithMembers,
-                writers.GetValueOrDefault(m.WrittenByPersonId)?.DisplayName ?? "A leader", m.UpdatedAt))
+                m.Id,
+                m.CellId,
+                m.CellId is { } cellId ? cells.GetValueOrDefault(cellId) ?? "Cell" : "All cells",
+                m.Title,
+                m.Body,
+                m.Link,
+                m.ForDate,
+                m.SharedWithMembers,
+                writers.GetValueOrDefault(m.WrittenByPersonId)?.DisplayName ?? (m.IsChurchLesson ? "The pastors" : "A leader"),
+                m.UpdatedAt,
+                m.IsChurchLesson,
+                m.SermonId))
             .ToList();
     }
 }

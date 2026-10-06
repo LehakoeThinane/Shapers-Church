@@ -43,6 +43,14 @@
     <Project Path="src/Modules/Prayer/Shapers.Prayer.Domain/Shapers.Prayer.Domain.csproj" />
     <Project Path="src/Modules/Prayer/Shapers.Prayer.Infrastructure/Shapers.Prayer.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Assist/">
+    <Project Path="src/Modules/Assist/Shapers.Assist.Api/Shapers.Assist.Api.csproj" />
+    <Project Path="src/Modules/Assist/Shapers.Assist.Application/Shapers.Assist.Application.csproj" />
+    <Project Path="src/Modules/Assist/Shapers.Assist.Contracts/Shapers.Assist.Contracts.csproj" />
+    <Project Path="src/Modules/Assist/Shapers.Assist.Domain/Shapers.Assist.Domain.csproj" />
+    <Project Path="src/Modules/Assist/Shapers.Assist.Infrastructure/Shapers.Assist.Infrastructure.csproj" />
+    <Project Path="tests/Modules/Shapers.Assist.Tests/Shapers.Assist.Tests.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Groups/">
     <Project Path="src/Modules/Groups/Shapers.Groups.Api/Shapers.Groups.Api.csproj" />
     <Project Path="src/Modules/Groups/Shapers.Groups.Application/Shapers.Groups.Application.csproj" />

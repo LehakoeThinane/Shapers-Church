@@ -28,3 +28,20 @@ public sealed record SermonPublishedIntegrationEvent(Guid SermonId, string Title
 
 /// <summary>A service is live now. Notifications will send "We're live".</summary>
 public sealed record LivestreamStartedIntegrationEvent(Guid LivestreamId, string Title, string Scope) : IntegrationEvent;
+
+/// <summary>What AI drafting may read about a sermon: the preached message only, nothing about listeners.</summary>
+public sealed record SermonForDrafting(
+    Guid Id,
+    string Title,
+    DateOnly PreachedOn,
+    string Scope,
+    IReadOnlyList<string> Speakers,
+    IReadOnlyList<string> Scripture,
+    string? Summary,
+    string? Transcript);
+
+/// <summary>Reads sermons for other modules. The caller checks its own permissions against <see cref="SermonForDrafting.Scope"/>.</summary>
+public interface ISermonSource
+{
+    Task<SermonForDrafting?> GetForDraftingAsync(Guid sermonId, CancellationToken cancellationToken);
+}

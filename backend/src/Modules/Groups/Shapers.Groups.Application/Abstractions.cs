@@ -127,9 +127,10 @@ public sealed record ReportDto(
 
 public sealed record SaveMaterialRequest(string Title, string Body, string? Link, DateOnly? ForDate, bool SharedWithMembers);
 
+/// <param name="CellId">Null for a church lesson, written by the pastors for every cell.</param>
 public sealed record MaterialDto(
     Guid Id,
-    Guid CellId,
+    Guid? CellId,
     string CellName,
     string Title,
     string Body,
@@ -137,7 +138,12 @@ public sealed record MaterialDto(
     DateOnly? ForDate,
     bool SharedWithMembers,
     string WrittenBy,
-    DateTimeOffset UpdatedAt);
+    DateTimeOffset UpdatedAt,
+    bool IsChurchLesson,
+    Guid? SermonId);
+
+/// <param name="Scope">Which cells it is for: the church or a campus. Defaults to the widest scope the pastor manages.</param>
+public sealed record SaveLessonRequest(string Title, string Body, string? Link, DateOnly? ForDate, bool SharedWithMembers, Guid? SermonId, string? Scope);
 
 /// <summary>A cell as one of its members or leaders sees it.</summary>
 public sealed record MyCellDto(

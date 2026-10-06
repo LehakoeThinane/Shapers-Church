@@ -500,6 +500,30 @@ namespace Shapers.Media.Infrastructure.Migrations
                         .HasColumnType("text[]")
                         .HasColumnName("topics");
 
+                    b.Property<string>("Transcript")
+                        .HasColumnType("text")
+                        .HasColumnName("transcript");
+
+                    b.Property<string>("TranscriptError")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("transcript_error");
+
+                    b.Property<string>("TranscriptSource")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("transcript_source");
+
+                    b.Property<string>("TranscriptStatus")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("transcript_status");
+
+                    b.Property<DateTimeOffset?>("TranscriptUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("transcript_updated_at");
+
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -539,6 +563,10 @@ namespace Shapers.Media.Infrastructure.Migrations
                         .HasDatabaseName("ix_sermons_topics");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Topics"), "gin");
+
+                    b.HasIndex("TranscriptStatus")
+                        .HasDatabaseName("ix_sermons_transcript_status")
+                        .HasFilter("transcript_status IN ('Queued', 'Working')");
 
                     b.HasIndex("Status", "PreachedOn")
                         .HasDatabaseName("ix_sermons_status_preached_on");

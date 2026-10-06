@@ -1012,6 +1012,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/media/sermons/{id}/transcript": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetSermonTranscript"];
+        put: operations["SetSermonTranscript"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/media/sermons/{id}/transcript/transcribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TranscribeSermon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/media/sermons/{id}/publish": {
         parameters: {
             query?: never;
@@ -2132,6 +2164,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/cells/{cellId}/lessons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LeaderChurchLessons"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/cells/{cellId}/materials/{materialId}": {
         parameters: {
             query?: never;
@@ -2223,6 +2271,38 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/cells/lessons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListChurchLessons"];
+        put?: never;
+        post: operations["CreateChurchLesson"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/cells/lessons/{lessonId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateChurchLesson"];
+        post?: never;
+        delete: operations["DeleteChurchLesson"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2964,6 +3044,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/assist/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AssistStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AssistUsage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts/sermon-lesson": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DraftSermonLesson"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts/sermon-notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DraftSermonNotes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts/rewrite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DraftRewrite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DraftsForSource"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetDraft"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AcceptDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/assist/drafts/{id}/discard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DiscardDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3005,6 +3229,8 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** @enum {unknown} */
+        AiOperation: "Chat" | "Transcription" | "Embedding";
         AnnouncementDto: {
             /** Format: uuid */
             id: string;
@@ -3046,6 +3272,15 @@ export interface components {
             /** Format: int32 */
             durationSeconds: null | number;
             status: components["schemas"]["MediaAssetStatus"];
+        };
+        AssistStatusDto: {
+            enabled: boolean;
+            canDraft: boolean;
+            /** Format: double */
+            budgetZar: number;
+            /** Format: double */
+            spentThisMonthZar: number;
+            budgetReached: boolean;
         };
         AttendeeRowDto: {
             /** Format: uuid */
@@ -3472,6 +3707,27 @@ export interface components {
         };
         /** @enum {unknown} */
         DeliveryStatus: "Pending" | "Sent" | "Failed" | "Skipped";
+        DraftDto: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["DraftKind"];
+            sourceType: string;
+            /** Format: uuid */
+            sourceId: null | string;
+            status: components["schemas"]["DraftStatus"];
+            model: string;
+            promptVersion: string;
+            /** Format: date-time */
+            requestedAt: string;
+            requestedByMe: boolean;
+            lesson: null | components["schemas"]["LessonDraft"];
+            notes: null | components["schemas"]["NotesDraft"];
+            rewrite: null | components["schemas"]["RewriteDraft"];
+        };
+        /** @enum {unknown} */
+        DraftKind: "SermonLesson" | "SermonNotes" | "Rewrite";
+        /** @enum {unknown} */
+        DraftStatus: "Pending" | "Accepted" | "Discarded";
         DuplicateCandidateDto: {
             /** Format: uuid */
             id: string;
@@ -3639,6 +3895,16 @@ export interface components {
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
         /** @enum {unknown} */
         LawfulBasis: "Consent" | "LegitimateInterest" | "LegalObligation" | "Contract";
+        LessonDraft: {
+            title: string;
+            summary: string;
+            keyVerses: string[];
+            icebreaker: string;
+            questions: string[];
+            application: string;
+            prayerFocus: string;
+            body: string;
+        };
         LiveNowDto: {
             state: components["schemas"]["LiveState"];
             stream: null | components["schemas"]["PublicLivestreamDto"];
@@ -3679,7 +3945,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
-            cellId: string;
+            cellId: null | string;
             cellName: string;
             title: string;
             body: string;
@@ -3690,6 +3956,9 @@ export interface components {
             writtenBy: string;
             /** Format: date-time */
             updatedAt: string;
+            isChurchLesson: boolean;
+            /** Format: uuid */
+            sermonId: null | string;
         };
         /** @enum {unknown} */
         MediaAssetStatus: "Pending" | "Ready";
@@ -3837,6 +4106,11 @@ export interface components {
         };
         /** @enum {unknown} */
         NextStep: "Baptism" | "GrowthTrack" | "Serving" | "Leadership";
+        NotesDraft: {
+            summary: string;
+            notes: string;
+            topics: string[];
+        };
         NotificationDto: {
             /** Format: uuid */
             id: string;
@@ -4288,6 +4562,15 @@ export interface components {
             wallText: null | string;
             note: null | string;
         };
+        RewriteDraft: {
+            text: string;
+        };
+        /** @enum {unknown} */
+        RewriteMode: "Tidy" | "Shorter" | "Longer";
+        RewriteRequest: {
+            text: string;
+            mode: components["schemas"]["RewriteMode"];
+        };
         RoleDto: {
             /** Format: uuid */
             id: string;
@@ -4361,6 +4644,17 @@ export interface components {
             /** Format: int32 */
             maxPerRegistration: number;
             questions: components["schemas"]["QuestionInput"][];
+            scope: null | string;
+        };
+        SaveLessonRequest: {
+            title: string;
+            body: string;
+            link: null | string;
+            /** Format: date */
+            forDate: null | string;
+            sharedWithMembers: boolean;
+            /** Format: uuid */
+            sermonId: null | string;
             scope: null | string;
         };
         SaveLivestreamRequest: {
@@ -4507,6 +4801,7 @@ export interface components {
             publishProblems: string[];
             /** Format: date-time */
             updatedAt: string;
+            transcript: components["schemas"]["TranscriptInfoDto"];
         };
         SermonAdminListItemDto: {
             /** Format: uuid */
@@ -4541,6 +4836,10 @@ export interface components {
             /** Format: date-time */
             publishedAt: null | string;
         };
+        SermonDraftRequest: {
+            /** Format: uuid */
+            sermonId: string;
+        };
         /** @enum {unknown} */
         SermonStatus: "Draft" | "Scheduled" | "Published" | "Archived";
         SermonSummaryDto: {
@@ -4574,6 +4873,9 @@ export interface components {
         SetSermonAssetRequest: {
             /** Format: uuid */
             assetId: null | string;
+        };
+        SetTranscriptRequest: {
+            text: null | string;
         };
         ShowCueRequest: {
             /** Format: uuid */
@@ -4666,6 +4968,23 @@ export interface components {
         };
         /** @enum {unknown} */
         Topic: "Live" | "Sermons" | "Events" | "Prayer" | "Announcements";
+        TranscriptDto: {
+            text: null | string;
+            info: components["schemas"]["TranscriptInfoDto"];
+        };
+        TranscriptInfoDto: {
+            status: components["schemas"]["TranscriptStatus"];
+            source: null | components["schemas"]["TranscriptSource"];
+            /** Format: int32 */
+            length: number;
+            error: null | string;
+            /** Format: date-time */
+            updatedAt: null | string;
+        };
+        /** @enum {unknown} */
+        TranscriptSource: "Pasted" | "Audio" | "Captions" | null;
+        /** @enum {unknown} */
+        TranscriptStatus: "None" | "Queued" | "Working" | "Ready" | "Failed";
         TwoFactorStatus: {
             enabled: boolean;
             /** Format: int32 */
@@ -4702,6 +5021,40 @@ export interface components {
             };
             /** Format: date-time */
             expiresAt: string;
+        };
+        UsageCallDto: {
+            /** Format: date-time */
+            occurredAt: string;
+            operation: components["schemas"]["AiOperation"];
+            purpose: string;
+            model: string;
+            /** Format: int32 */
+            inputTokens: number;
+            /** Format: int32 */
+            outputTokens: number;
+            /** Format: int32 */
+            audioSeconds: number;
+            /** Format: double */
+            costZar: number;
+            succeeded: boolean;
+        };
+        UsageDto: {
+            enabled: boolean;
+            provider: string;
+            chatModel: string;
+            /** Format: double */
+            budgetZar: number;
+            /** Format: double */
+            spentThisMonthZar: number;
+            months: components["schemas"]["UsageMonthDto"][];
+            recent: components["schemas"]["UsageCallDto"][];
+        };
+        UsageMonthDto: {
+            month: string;
+            /** Format: int32 */
+            calls: number;
+            /** Format: double */
+            costZar: number;
         };
         VerifyCodeRequest: {
             /** Format: uuid */
@@ -6384,6 +6737,76 @@ export interface operations {
                 "application/json": components["schemas"]["SetSermonAssetRequest"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    GetSermonTranscript: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TranscriptDto"];
+                };
+            };
+        };
+    };
+    SetSermonTranscript: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetTranscriptRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SermonAdminDto"];
+                };
+            };
+        };
+    };
+    TranscribeSermon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -8257,6 +8680,28 @@ export interface operations {
             };
         };
     };
+    LeaderChurchLessons: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                cellId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialDto"][];
+                };
+            };
+        };
+    };
     LeaderUpdateMaterial: {
         parameters: {
             query?: never;
@@ -8438,6 +8883,96 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MaterialDto"][];
                 };
+            };
+        };
+    };
+    ListChurchLessons: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialDto"][];
+                };
+            };
+        };
+    };
+    CreateChurchLesson: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveLessonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialDto"];
+                };
+            };
+        };
+    };
+    UpdateChurchLesson: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lessonId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveLessonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialDto"];
+                };
+            };
+        };
+    };
+    DeleteChurchLesson: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lessonId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -9696,6 +10231,207 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PostAdminDto"];
+                };
+            };
+        };
+    };
+    AssistStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistStatusDto"];
+                };
+            };
+        };
+    };
+    AssistUsage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsageDto"];
+                };
+            };
+        };
+    };
+    DraftSermonLesson: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SermonDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"];
+                };
+            };
+        };
+    };
+    DraftSermonNotes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SermonDraftRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"];
+                };
+            };
+        };
+    };
+    DraftRewrite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RewriteRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"];
+                };
+            };
+        };
+    };
+    DraftsForSource: {
+        parameters: {
+            query: {
+                sourceType: string;
+                sourceId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"][];
+                };
+            };
+        };
+    };
+    GetDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"];
+                };
+            };
+        };
+    };
+    AcceptDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"];
+                };
+            };
+        };
+    };
+    DiscardDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftDto"];
                 };
             };
         };
