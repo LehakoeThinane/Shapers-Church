@@ -13,14 +13,18 @@
   4. Deploys the API and prints the addresses and the DNS records to add in konsoleH.
 
 .EXAMPLE
-  ./infra/azure/deploy.ps1 -AdminEmail pastor@shaperschurch.com
+  ./infra/azure/deploy.ps1 -AdminEmail pastor@shaperschurch.com -AlertEmail team@example.org
 
 .EXAMPLE
-  ./infra/azure/deploy.ps1 -AdminEmail pastor@shaperschurch.com -EnableAi -AiMonthlyBudgetZar 300
+  ./infra/azure/deploy.ps1 -AdminEmail pastor@shaperschurch.com -AlertEmail team@example.org -EnableAi -AiMonthlyBudgetZar 300
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] [string] $AdminEmail,
+    # Alerts (API failures, readiness, restarts, database load, cost budget) are emailed here.
+    [Parameter(Mandatory)] [string] $AlertEmail,
+    # Monthly cost budget in the subscription's billing currency; 0 leaves it out.
+    [int] $MonthlyBudget = 2000,
     [string] $ResourceGroup = 'rg-shapers-prod',
     [string] $Location = 'southafricanorth',
     [string] $YouTubeApiKey = '',
@@ -106,6 +110,12 @@ $secrets = @{
     bootstrapAdminPassword = Use-Existing $existing['bootstrap-admin-password'] { New-Password 20 }
 }
 
+# The cost budget keeps the month it was created in, so running this again doesn't move its start date.
+$budgetId = "/subscriptions/$($account.id)/resourceGroups/$ResourceGroup/providers/Microsoft.Consumption/budgets/budget-shapers-prod"
+# Not finding it is expected on the first run; Windows PowerShell 5.1 would otherwise stop on az's error output.
+$budgetStart = & { $ErrorActionPreference = 'Continue'; az resource show --ids $budgetId --api-version 2023-11-01 --query properties.timePeriod.startDate -o tsv 2>$null }
+$budgetStartMonth = if ($LASTEXITCODE -eq 0 -and $budgetStart) { $budgetStart.Substring(0, 7) } else { (Get-Date).ToUniversalTime().ToString('yyyy-MM') }
+
 function Deploy([bool] $withApi, [string] $image) {
     # Secure values go through a temporary parameters file, never the command line.
     $parameters = @{
@@ -129,6 +139,9 @@ function Deploy([bool] $withApi, [string] $image) {
             youTubeOAuthRedirectUri  = @{ value = $YouTubeOAuthRedirectUri }
             enableAi               = @{ value = [bool] $EnableAi }
             aiMonthlyBudgetZar     = @{ value = $AiMonthlyBudgetZar }
+            alertEmail             = @{ value = $AlertEmail }
+            monthlyBudget          = @{ value = $MonthlyBudget }
+            budgetStartMonth       = @{ value = $budgetStartMonth }
         }
     }
     $file = New-TemporaryFile

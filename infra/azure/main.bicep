@@ -78,6 +78,15 @@ param enableAi bool = false
 @description('Estimated monthly AI spend after which AI help pauses until the 1st.')
 param aiMonthlyBudgetZar int = 300
 
+@description('Where alerts are emailed: API failures, readiness, restarts, database load and the cost budget.')
+param alertEmail string
+
+@description('Monthly cost budget for this resource group, in the subscription\'s billing currency. 0 leaves the budget out.')
+param monthlyBudget int = 2000
+
+@description('Month the budget counts from (yyyy-MM). The deploy script passes the existing budget\'s month so it never moves.')
+param budgetStartMonth string = utcNow('yyyy-MM')
+
 var suffix = '${name}-prod'
 var compact = '${name}prod'
 var tags = { app: 'shapers', environment: 'production' }
@@ -573,6 +582,176 @@ resource api 'Microsoft.App/containerApps@2025-01-01' = if (deployApi) {
     }
   }
   dependsOn: [acrPull, vaultApiReader, secrets]
+}
+
+// ---------- Alerts (emailed to alertEmail; what to do for each is in docs/deployment.md) ----------
+
+resource alertGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
+  name: 'ag-${suffix}'
+  location: 'global'
+  tags: tags
+  properties: {
+    groupShortName: 'Shapers'
+    enabled: true
+    emailReceivers: [{ name: 'team', emailAddress: alertEmail, useCommonAlertSchema: true }]
+  }
+}
+
+// The API sends traces, not metrics, so failures are counted from the requests table. The readiness probe's own
+// requests are recorded there too; if the API stops answering altogether, the liveness probe restarts it and the
+// restart alert fires.
+var logAlerts = [
+  {
+    key: 'api-failures'
+    displayName: 'API: server errors'
+    alertDescription: 'Five or more requests failed with a server error (5xx) in 15 minutes.'
+    query: 'AppRequests | where toint(ResultCode) >= 500 and Url !has "/health/"'
+    windowSize: 'PT15M'
+    threshold: 5
+  }
+  {
+    key: 'api-not-ready'
+    displayName: 'API: readiness check failing'
+    alertDescription: 'The readiness check (database reachable) failed three or more times in 10 minutes; the API takes no traffic while it fails.'
+    query: 'AppRequests | where Url has "/health/ready" and Success == false'
+    windowSize: 'PT10M'
+    threshold: 3
+  }
+]
+
+resource logAlertRules 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = [
+  for alert in logAlerts: {
+    name: 'alert-${suffix}-${alert.key}'
+    location: location
+    tags: tags
+    properties: {
+      displayName: alert.displayName
+      description: alert.alertDescription
+      severity: 1
+      enabled: true
+      scopes: [logs.id]
+      evaluationFrequency: 'PT5M'
+      windowSize: alert.windowSize
+      criteria: {
+        allOf: [
+          {
+            query: alert.query
+            timeAggregation: 'Count'
+            operator: 'GreaterThanOrEqual'
+            threshold: alert.threshold
+            failingPeriods: { numberOfEvaluationPeriods: 1, minFailingPeriodsToAlert: 1 }
+          }
+        ]
+      }
+      autoMitigate: true
+      actions: { actionGroups: [alertGroup.id] }
+    }
+  }
+]
+
+var databaseAlerts = [
+  {
+    key: 'database-cpu'
+    alertDescription: 'Database CPU averaged above 80% for 30 minutes.'
+    metricName: 'cpu_percent'
+    timeAggregation: 'Average'
+    windowSize: 'PT30M'
+  }
+  {
+    key: 'database-storage'
+    alertDescription: 'Database storage is above 80% full (it grows automatically; check the cost).'
+    metricName: 'storage_percent'
+    timeAggregation: 'Maximum'
+    windowSize: 'PT1H'
+  }
+]
+
+resource databaseAlertRules 'Microsoft.Insights/metricAlerts@2018-03-01' = [
+  for alert in databaseAlerts: {
+    name: 'alert-${suffix}-${alert.key}'
+    location: 'global'
+    tags: tags
+    properties: {
+      description: alert.alertDescription
+      severity: 2
+      enabled: true
+      scopes: [postgres.id]
+      evaluationFrequency: 'PT15M'
+      windowSize: alert.windowSize
+      criteria: {
+        'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+        allOf: [
+          {
+            criterionType: 'StaticThresholdCriterion'
+            name: alert.metricName
+            metricNamespace: 'Microsoft.DBforPostgreSQL/flexibleServers'
+            metricName: alert.metricName
+            timeAggregation: alert.timeAggregation
+            operator: 'GreaterThan'
+            threshold: 80
+          }
+        ]
+      }
+      autoMitigate: true
+      actions: [{ actionGroupId: alertGroup.id }]
+    }
+  }
+]
+
+resource apiRestartsAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if (deployApi) {
+  name: 'alert-${suffix}-api-restarts'
+  location: 'global'
+  tags: tags
+  properties: {
+    description: 'The API container restarted (crash, out of memory or failed liveness check).'
+    severity: 1
+    enabled: true
+    scopes: [api.id]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      allOf: [
+        {
+          criterionType: 'StaticThresholdCriterion'
+          name: 'RestartCount'
+          metricNamespace: 'Microsoft.App/containerApps'
+          metricName: 'RestartCount'
+          timeAggregation: 'Total'
+          operator: 'GreaterThan'
+          threshold: 0
+        }
+      ]
+    }
+    autoMitigate: true
+    actions: [{ actionGroupId: alertGroup.id }]
+  }
+}
+
+resource budget 'Microsoft.Consumption/budgets@2023-11-01' = if (monthlyBudget > 0) {
+  name: 'budget-${suffix}'
+  properties: {
+    category: 'Cost'
+    amount: monthlyBudget
+    timeGrain: 'Monthly'
+    timePeriod: { startDate: '${budgetStartMonth}-01' }
+    notifications: {
+      spent80: {
+        enabled: true
+        operator: 'GreaterThanOrEqualTo'
+        threshold: 80
+        thresholdType: 'Actual'
+        contactEmails: [alertEmail]
+      }
+      forecast100: {
+        enabled: true
+        operator: 'GreaterThanOrEqualTo'
+        threshold: 100
+        thresholdType: 'Forecasted'
+        contactEmails: [alertEmail]
+      }
+    }
+  }
 }
 
 // ---------- Static sites ----------
