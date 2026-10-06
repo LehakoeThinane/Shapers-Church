@@ -1,6 +1,6 @@
 # Plan: Services (worship planning, teams and scheduling)
 
-Status: proposed (2026-10-06). The pastor asked for something like Planning Center Services. It fills the "Services" and "Music stand" products already shown as coming soon in the admin portal.
+Status: built (2026-10-06): all five parts, the church holds a CCLI licence (ADR 0019). The pastor asked for something like Planning Center Services. It fills the "Services" and "Music stand" products already shown as coming soon in the admin portal.
 
 ## What it does, in Planning Center's terms
 

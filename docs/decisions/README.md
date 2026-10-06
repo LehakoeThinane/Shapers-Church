@@ -22,3 +22,4 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0016](0016-home-cells.md) | Home cells: leaders by membership, pastors by scoped permissions | Accepted |
 | [0017](0017-ai-drafting.md) | AI drafts for staff only, from public church content, within a monthly budget | Accepted |
 | [0018](0018-translations.md) | Translations as linked copies, checked by a speaker before publishing | Accepted |
+| [0019](0019-services.md) | Services: plans, teams, scheduling with safeguarding, songs, live run sheet | Accepted |

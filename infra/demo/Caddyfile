@@ -18,7 +18,7 @@
 	# Admin portal (a single-page app): unknown paths load index.html.
 	handle {
 		header {
-			Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self'; connect-src 'self' wss://{$SITE_HOST}; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+			Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self'; connect-src 'self' wss://{$SITE_HOST}; worker-src 'self' blob:; frame-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 			Permissions-Policy "camera=(self), microphone=(), geolocation=()"
 			X-Robots-Tag "noindex, nofollow"
 		}
