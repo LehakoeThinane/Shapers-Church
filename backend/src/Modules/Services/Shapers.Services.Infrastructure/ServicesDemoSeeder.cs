@@ -5,19 +5,29 @@ using Shapers.Services.Domain;
 namespace Shapers.Services.Infrastructure;
 
 /// <summary>
-/// Development and the demo only: typical church teams, a few well-known worship songs, a Sunday template and the
-/// coming Sundays, so the pastor can see Services working and say what Shapers actually needs. Never runs once any
-/// team exists. Lyrics are left out: the church adds them under its own CCLI licence.
+/// Development and the demo only: typical church teams in their categories, a few well-known worship songs, a Sunday
+/// template and the coming Sundays, so the pastor can see Services working and say what Shapers actually needs.
+/// On a database that already has teams it only fills gaps (missing typical teams, positions and categories).
+/// Lyrics are left out: the church adds them under its own CCLI licence.
 /// </summary>
 internal sealed class ServicesDemoSeeder(ServicesDbContext db, IChurchDirectory church, TimeProvider clock)
 {
-    private static readonly (string Team, bool OpenToMinors, string[] Positions)[] Teams =
+    private static readonly (string Team, string Category, bool OpenToMinors, string[] Positions, string[] Aliases)[] Teams =
     [
-        ("Worship", false, ["Worship leader", "Vocals", "Keys", "Acoustic guitar", "Electric guitar", "Bass", "Drums"]),
-        ("Production", true, ["Sound", "Slides", "Livestream", "Camera", "Lighting"]),
-        ("Hospitality", true, ["Welcome team", "Ushers", "Refreshments", "Parking"]),
-        ("Kids church", false, ["Kids leader", "Kids helper", "Check-in desk"]),
-        ("Prayer ministry", false, ["Prayer team"]),
+        ("Kids ministry", "Ministries", false, ["Kids pastor", "Kids leader", "Kids helper", "Check-in desk"], ["Kids church"]),
+        ("Youth ministry", "Ministries", true, ["Youth pastor", "Youth leader", "Youth helper"], []),
+        ("Young adults", "Ministries", false, ["Young adults leader", "Small group host"], []),
+        ("Men's ministry", "Ministries", false, ["Men's ministry leader", "Committee member"], []),
+        ("Women's ministry", "Ministries", false, ["Women's ministry leader", "Committee member"], []),
+        ("Worship", "Disciplines", false, ["Worship pastor", "Worship leader", "Vocals", "Keys", "Acoustic guitar", "Electric guitar", "Bass", "Drums"], []),
+        ("Production", "Disciplines", true, ["Production lead", "Sound", "Slides", "Livestream", "Camera", "Lighting"], []),
+        ("Hospitality", "Disciplines", true, ["Hospitality lead", "Welcome team", "Ushers", "Refreshments", "Parking"], []),
+        ("Prayer ministry", "Disciplines", false, ["Prayer coordinator", "Prayer team"], []),
+        ("Administration", "Departments", false, ["Church administrator", "Office volunteer"], []),
+        ("Finance", "Departments", false, ["Treasurer", "Counting team"], []),
+        ("Facilities", "Departments", false, ["Facilities lead", "Maintenance volunteer"], []),
+        ("Growth Track", "Spiritual growth", false, ["Growth Track lead", "Facilitator", "Host"], []),
+        ("Discipleship and Bible study", "Spiritual growth", false, ["Discipleship lead", "Teacher", "Facilitator"], []),
     ];
 
     private static readonly (string Title, string Author, string Ccli, string Key, int Bpm)[] Songs =
@@ -42,29 +52,54 @@ internal sealed class ServicesDemoSeeder(ServicesDbContext db, IChurchDirectory 
 
     public async Task SeedAsync(CancellationToken cancellationToken)
     {
-        if (await db.Teams.AnyAsync(cancellationToken))
-        {
-            return;
-        }
-
+        var fresh = !await db.Teams.AnyAsync(cancellationToken);
         var now = clock.GetUtcNow();
         var campus = (await church.GetCampusesAsync(cancellationToken)).FirstOrDefault(c => c.IsPrimary);
-        var scope = ScopePath.Parse(campus?.Scope ?? (await church.GetRootScopeAsync(cancellationToken)).Path);
         var root = ScopePath.Parse((await church.GetRootScopeAsync(cancellationToken)).Path);
+        var scope = ScopePath.Parse(campus?.Scope ?? root.Value);
 
-        var positions = new Dictionary<string, TeamPosition>();
-        foreach (var (name, openToMinors, names) in Teams)
+        var categories = await db.Categories.Where(c => !c.IsArchived).ToDictionaryAsync(c => c.Name, cancellationToken);
+        var teams = await db.Teams.ToListAsync(cancellationToken);
+        var positions = await db.Positions.Where(p => !p.IsArchived).ToListAsync(cancellationToken);
+        var byName = new Dictionary<string, TeamPosition>();
+
+        foreach (var (name, categoryName, openToMinors, positionNames, aliases) in Teams)
         {
-            var team = Team.Create(name, scope, null, openToMinors, now);
-            db.Teams.Add(team);
-            for (var i = 0; i < names.Length; i++)
+            var categoryId = categories.TryGetValue(categoryName, out var category) ? category.Id : (Guid?)null;
+            var team = teams.FirstOrDefault(t => t.Name == name || aliases.Contains(t.Name));
+            if (team is null)
             {
-                var position = TeamPosition.Create(team.Id, names[i], i + 1);
-                db.Positions.Add(position);
-                positions[names[i]] = position;
+                team = Team.Create(name, scope, null, openToMinors, now, categoryId);
+                db.Teams.Add(team);
+            }
+            else if (team.CategoryId is null && categoryId is not null)
+            {
+                team.Update(team.Name, team.Description, team.OpenToMinors, categoryId);
+            }
+
+            for (var i = 0; i < positionNames.Length; i++)
+            {
+                var position = positions.FirstOrDefault(p => p.TeamId == team.Id && p.Name == positionNames[i]);
+                if (position is null)
+                {
+                    position = TeamPosition.Create(team.Id, positionNames[i], i + 1);
+                    db.Positions.Add(position);
+                }
+
+                byName.TryAdd(positionNames[i], position);
             }
         }
 
+        if (fresh)
+        {
+            SeedSongsAndSundays(root, scope, byName, now);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private void SeedSongsAndSundays(ScopePath root, ScopePath scope, Dictionary<string, TeamPosition> positions, DateTimeOffset now)
+    {
         var songs = Songs.Select(s =>
         {
             var song = Song.Create(s.Title, root, now);
@@ -102,7 +137,5 @@ internal sealed class ServicesDemoSeeder(ServicesDbContext db, IChurchDirectory 
         {
             db.Plans.Add(Plan.FromType(type, sunday.AddDays(7 * week), null, now));
         }
-
-        await db.SaveChangesAsync(cancellationToken);
     }
 }

@@ -3,61 +3,185 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, unwrap, type Schemas } from '../lib/api';
+import { can, Permissions, useAccess } from '../lib/access';
 import { hhmm, positionsOf, shortDay, useSongs, useTeams, type PlanItem } from '../lib/services';
 import { uploadFile } from '../lib/upload';
 import { OrderEditor } from './ServicesPages';
 
 type Team = Schemas['TeamDto'];
+type Category = Schemas['CategoryDto'];
 
 // ---------- Teams ----------
 
-/** Serving teams, their positions, and who plays which. */
+function useCategories() {
+  return useQuery({ queryKey: ['services', 'categories'], queryFn: async () => unwrap(await api.GET('/api/admin/services/categories')) });
+}
+
+/** Teams grouped by category (Ministries, Disciplines, ...), their positions, and who serves in which. */
 export function ServingTeamsPage() {
+  const { data: access } = useAccess();
   const teams = useTeams();
+  const categories = useCategories();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState({ name: '', openToMinors: false });
+  const [form, setForm] = useState({ name: '', categoryId: '', openToMinors: false });
   const create = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/admin/services/teams', { body: { name: form.name, description: null, openToMinors: form.openToMinors, scope: null } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/admin/services/teams', {
+          body: { name: form.name, description: null, openToMinors: form.openToMinors, scope: null, categoryId: form.categoryId || null },
+        }),
+      ),
     onSuccess: () => {
-      setForm({ name: '', openToMinors: false });
+      setForm({ name: '', categoryId: form.categoryId, openToMinors: false });
       void queryClient.invalidateQueries({ queryKey: ['services', 'teams'] });
     },
   });
 
+  const groups: { category: Category | null; teams: Team[] }[] = [
+    ...(categories.data ?? []).map((c) => ({ category: c, teams: (teams.data ?? []).filter((t) => t.categoryId === c.id) })),
+    { category: null, teams: (teams.data ?? []).filter((t) => !t.categoryId || !categories.data?.some((c) => c.id === t.categoryId)) },
+  ].filter((g) => g.category || g.teams.length > 0);
+
   return (
     <>
-      <PageHeader title="Teams" subtitle="Who serves where. People are scheduled only to positions they're on." />
-      <Card title="New team">
-        <form
-          className="row"
-          onSubmit={(e) => {
-            e.preventDefault();
-            create.mutate();
-          }}
-        >
-          <TextInput required maxLength={80} placeholder="e.g. Worship, Production, Hospitality" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} aria-label="Team name" />
-          <label className="checkbox">
-            <input type="checkbox" checked={form.openToMinors} onChange={(e) => setForm({ ...form, openToMinors: e.target.checked })} />
-            Open to under-18s
-          </label>
-          <Button variant="primary" type="submit" busy={create.isPending}>
-            Add team
-          </Button>
-        </form>
-        <ErrorNote error={create.error} />
-      </Card>
-      <ErrorNote error={teams.error} />
-      {teams.isPending ? <Loading /> : teams.data?.length === 0 ? <Card><Empty>No teams yet.</Empty></Card> : teams.data?.map((t) => <TeamEditor key={t.id} team={t} />)}
+      <PageHeader title="Teams" subtitle="Ministries, disciplines and departments, the roles in each, and who holds them. People are scheduled only to positions they hold." />
+      <div className="grid-2">
+        <Card title="New team">
+          <form
+            className="stack"
+            onSubmit={(e) => {
+              e.preventDefault();
+              create.mutate();
+            }}
+          >
+            <div className="form-grid">
+              <Field label="Name">
+                <TextInput required maxLength={80} placeholder="e.g. Youth ministry, Worship, Finance" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </Field>
+              <Field label="Category">
+                <Select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}>
+                  <option value="">No category</option>
+                  {categories.data?.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+            </div>
+            <label className="checkbox">
+              <input type="checkbox" checked={form.openToMinors} onChange={(e) => setForm({ ...form, openToMinors: e.target.checked })} />
+              Under-18s may serve on this team (always with an adult from the team)
+            </label>
+            <ErrorNote error={create.error} />
+            <div>
+              <Button variant="primary" type="submit" busy={create.isPending}>
+                Add team
+              </Button>
+            </div>
+          </form>
+        </Card>
+        {can(access, Permissions.servicesCategories) && <CategoriesCard categories={categories.data ?? []} />}
+      </div>
+      <ErrorNote error={teams.error ?? categories.error} />
+      {teams.isPending ? (
+        <Loading />
+      ) : teams.data?.length === 0 ? (
+        <Card>
+          <Empty>No teams yet.</Empty>
+        </Card>
+      ) : (
+        groups.map((g) => (
+          <section key={g.category?.id ?? 'none'} className="stack">
+            <div className="category-head">
+              <h2>{g.category?.name ?? 'Other teams'}</h2>
+              {g.category?.description && <span className="small muted">{g.category.description}</span>}
+            </div>
+            {g.teams.length === 0 ? (
+              <p className="small muted">No teams in this category yet.</p>
+            ) : (
+              g.teams.map((t) => <TeamEditor key={t.id} team={t} categories={categories.data ?? []} />)
+            )}
+          </section>
+        ))
+      )}
     </>
   );
 }
 
-function TeamEditor({ team }: { team: Team }) {
+/** Only people allowed to manage categories see this. */
+function CategoriesCard({ categories }: { categories: Category[] }) {
+  const queryClient = useQueryClient();
+  const refresh = () => void queryClient.invalidateQueries({ queryKey: ['services'] });
+  const [name, setName] = useState('');
+  const [editing, setEditing] = useState<{ id: string; name: string } | null>(null);
+  const add = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/admin/services/categories', { body: { name, description: null, order: categories.length + 1 } })),
+    onSuccess: () => {
+      setName('');
+      refresh();
+    },
+  });
+  const rename = useMutation({
+    mutationFn: async (c: Category) =>
+      unwrap(await api.PUT('/api/admin/services/categories/{id}', { params: { path: { id: c.id } }, body: { name: editing!.name, description: c.description, order: c.order } })),
+    onSuccess: () => {
+      setEditing(null);
+      refresh();
+    },
+  });
+  const remove = useMutation({
+    mutationFn: async (id: string) => unwrap(await api.DELETE('/api/admin/services/categories/{id}', { params: { path: { id } } })),
+    onSuccess: refresh,
+  });
+
+  return (
+    <Card title="Categories">
+      <ul className="list">
+        {categories.map((c) => (
+          <li key={c.id} className="list-row">
+            {editing?.id === c.id ? (
+              <span className="row">
+                <TextInput value={editing.name} maxLength={60} onChange={(e) => setEditing({ id: c.id, name: e.target.value })} aria-label="Category name" />
+                <button type="button" className="link-button" onClick={() => rename.mutate(c)}>
+                  Save
+                </button>
+              </span>
+            ) : (
+              <span>{c.name}</span>
+            )}
+            <span className="row">
+              <button type="button" className="link-button" onClick={() => setEditing({ id: c.id, name: c.name })}>
+                Rename
+              </button>
+              <button type="button" className="link-button" onClick={() => window.confirm(`Remove ${c.name}? Its teams stay, without a category.`) && remove.mutate(c.id)}>
+                Remove
+              </button>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <form
+        className="row"
+        onSubmit={(e) => {
+          e.preventDefault();
+          add.mutate();
+        }}
+      >
+        <TextInput required maxLength={60} placeholder="New category, e.g. Outreach" value={name} onChange={(e) => setName(e.target.value)} aria-label="New category" />
+        <Button type="submit" busy={add.isPending}>
+          Add
+        </Button>
+      </form>
+      <ErrorNote error={add.error ?? rename.error ?? remove.error} />
+    </Card>
+  );
+}
+
+function TeamEditor({ team, categories }: { team: Team; categories: Category[] }) {
   const queryClient = useQueryClient();
   const saved = () => void queryClient.invalidateQueries({ queryKey: ['services', 'teams'] });
   const [position, setPosition] = useState('');
-  const [search, setSearch] = useState('');
-  const [chosen, setChosen] = useState<string[]>([]);
   const addPosition = useMutation({
     mutationFn: async () => unwrap(await api.POST('/api/admin/services/teams/{id}/positions', { params: { path: { id: team.id } }, body: { name: position, order: team.positions.length + 1 } })),
     onSuccess: () => {
@@ -72,25 +196,81 @@ function TeamEditor({ team }: { team: Team }) {
   const saveMember = useMutation({
     mutationFn: async (m: { personId: string; positionIds: string[]; isLeader: boolean }) =>
       unwrap(await api.PUT('/api/admin/services/teams/{id}/members', { params: { path: { id: team.id } }, body: m })),
-    onSuccess: () => {
-      setSearch('');
-      saved();
-    },
+    onSuccess: saved,
   });
   const removeMember = useMutation({
     mutationFn: async (personId: string) => unwrap(await api.DELETE('/api/admin/services/teams/{id}/members/{personId}', { params: { path: { id: team.id, personId } } })),
     onSuccess: saved,
   });
-  const people = useQuery({
-    queryKey: ['people-pick', search],
-    queryFn: async () => unwrap(await api.GET('/api/admin/people', { params: { query: { Search: search, Page: 1, PageSize: 6 } } })),
-    enabled: search.trim().length >= 2,
+  const move = useMutation({
+    mutationFn: async (categoryId: string) =>
+      unwrap(
+        await api.PUT('/api/admin/services/teams/{id}', {
+          params: { path: { id: team.id } },
+          body: { name: team.name, description: team.description, openToMinors: team.openToMinors, scope: null, categoryId: categoryId || null },
+        }),
+      ),
+    onSuccess: saved,
   });
   const toggle = (ids: string[], id: string) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]);
+  const positionName = (id: string) => team.positions.find((p) => p.id === id)?.name;
 
   return (
-    <Card title={<>{team.name} {team.openToMinors && <Badge>Open to under-18s</Badge>}</>}>
+    <Card
+      title={
+        <>
+          {team.name} {team.openToMinors && <Badge>Open to under-18s</Badge>}
+        </>
+      }
+      actions={
+        <Select value={team.categoryId ?? ''} onChange={(e) => move.mutate(e.target.value)} aria-label={`Category of ${team.name}`}>
+          <option value="">No category</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </Select>
+      }
+    >
       <div className="grid-2">
+        <div className="stack-tight">
+          <h3 className="small">People ({team.members.length})</h3>
+          {team.members.length === 0 && <p className="small muted">No one yet.</p>}
+          <ul className="list">
+            {team.members.map((m) => (
+              <li key={m.personId} className="review-item stack-tight">
+                <span className="list-row">
+                  <span>
+                    <Link to={`/people/${m.personId}`}>{m.name}</Link>
+                    {m.positionIds.length > 0 && <span className="small muted"> · {m.positionIds.map(positionName).filter(Boolean).join(', ')}</span>}{' '}
+                    {m.isLeader && <Badge tone="accent">Leads</Badge>}
+                  </span>
+                  <button type="button" className="link-button" onClick={() => window.confirm(`Remove ${m.name} from ${team.name}?`) && removeMember.mutate(m.personId)}>
+                    Remove
+                  </button>
+                </span>
+                <span className="row">
+                  {team.positions.map((p) => (
+                    <label key={p.id} className="checkbox small">
+                      <input
+                        type="checkbox"
+                        checked={m.positionIds.includes(p.id)}
+                        onChange={() => saveMember.mutate({ personId: m.personId, positionIds: toggle(m.positionIds, p.id), isLeader: m.isLeader })}
+                      />
+                      {p.name}
+                    </label>
+                  ))}
+                  <label className="checkbox small">
+                    <input type="checkbox" checked={m.isLeader} onChange={() => saveMember.mutate({ personId: m.personId, positionIds: m.positionIds, isLeader: !m.isLeader })} />
+                    Leads the team
+                  </label>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <AddPerson team={team} onAdded={saved} />
+        </div>
         <div className="stack-tight">
           <h3 className="small">Positions</h3>
           <ul className="list">
@@ -110,72 +290,200 @@ function TeamEditor({ team }: { team: Team }) {
               addPosition.mutate();
             }}
           >
-            <TextInput required maxLength={60} placeholder="e.g. Keys, Sound desk, Welcome" value={position} onChange={(e) => setPosition(e.target.value)} aria-label="New position" />
+            <TextInput required maxLength={60} placeholder="e.g. Youth pastor, Keys, Treasurer" value={position} onChange={(e) => setPosition(e.target.value)} aria-label="New position" />
             <Button type="submit" busy={addPosition.isPending}>
               Add
             </Button>
           </form>
         </div>
+      </div>
+      <ErrorNote error={addPosition.error ?? archivePosition.error ?? saveMember.error ?? removeMember.error ?? move.error} />
+    </Card>
+  );
+}
+
+const NEW_POSITION = '__new__';
+
+/**
+ * Adds someone to the team in one go: find them (or create their church record), choose their position (or type a
+ * new one, e.g. "Youth pastor"), and say whether they lead the team.
+ */
+function AddPerson({ team, onAdded }: { team: Team; onAdded: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<'find' | 'new'>('find');
+  const [search, setSearch] = useState('');
+  const [personId, setPersonId] = useState<string | null>(null);
+  const [newPerson, setNewPerson] = useState({ firstName: '', lastName: '', mobile: '', email: '' });
+  const [positionId, setPositionId] = useState(team.positions[0]?.id ?? NEW_POSITION);
+  const [positionName, setPositionName] = useState('');
+  const [isLeader, setIsLeader] = useState(false);
+  const people = useQuery({
+    queryKey: ['people-pick', search],
+    queryFn: async () => unwrap(await api.GET('/api/admin/people', { params: { query: { Search: search, Page: 1, PageSize: 6 } } })),
+    enabled: mode === 'find' && search.trim().length >= 2,
+  });
+  const add = useMutation({
+    mutationFn: async () => {
+      let person = personId;
+      if (mode === 'new') {
+        const created = unwrap(
+          await api.POST('/api/admin/people', {
+            body: {
+              firstName: newPerson.firstName,
+              lastName: newPerson.lastName,
+              preferredName: null,
+              dateOfBirth: null,
+              gender: null,
+              campusId: null,
+              membershipStatusId: null,
+              email: newPerson.email || null,
+              mobile: newPerson.mobile || null,
+            },
+          }),
+        );
+        person = created.id;
+      }
+
+      let position = positionId;
+      if (positionId === NEW_POSITION) {
+        const updated = unwrap(
+          await api.POST('/api/admin/services/teams/{id}/positions', { params: { path: { id: team.id } }, body: { name: positionName, order: team.positions.length + 1 } }),
+        );
+        position = updated.positions.find((p) => p.name.toLowerCase() === positionName.trim().toLowerCase())?.id ?? '';
+      }
+
+      const existing = team.members.find((m) => m.personId === person);
+      return unwrap(
+        await api.PUT('/api/admin/services/teams/{id}/members', {
+          params: { path: { id: team.id } },
+          body: { personId: person!, positionIds: [...new Set([...(existing?.positionIds ?? []), position].filter(Boolean))], isLeader: isLeader || !!existing?.isLeader },
+        }),
+      );
+    },
+    onSuccess: () => {
+      setOpen(false);
+      setSearch('');
+      setPersonId(null);
+      setNewPerson({ firstName: '', lastName: '', mobile: '', email: '' });
+      setPositionName('');
+      setIsLeader(false);
+      onAdded();
+    },
+  });
+
+  if (!open) {
+    return (
+      <div>
+        <Button onClick={() => setOpen(true)}>Add someone</Button>
+      </div>
+    );
+  }
+
+  const chosen = people.data?.items.find((p) => p.id === personId);
+  const ready =
+    (mode === 'find' ? !!personId : !!newPerson.firstName.trim() && !!newPerson.lastName.trim()) &&
+    (positionId !== NEW_POSITION || !!positionName.trim());
+
+  return (
+    <form
+      className="ai-suggestion stack"
+      onSubmit={(e) => {
+        e.preventDefault();
+        add.mutate();
+      }}
+    >
+      <div className="row">
+        <Button variant={mode === 'find' ? 'primary' : 'ghost'} onClick={() => setMode('find')}>
+          Someone on our records
+        </Button>
+        <Button variant={mode === 'new' ? 'primary' : 'ghost'} onClick={() => setMode('new')}>
+          Someone new
+        </Button>
+      </div>
+
+      {mode === 'find' ? (
         <div className="stack-tight">
-          <h3 className="small">People ({team.members.length})</h3>
-          <ul className="list">
-            {team.members.map((m) => (
-              <li key={m.personId} className="review-item stack-tight">
-                <span className="list-row">
+          <TextInput
+            autoFocus
+            placeholder="Name, email or phone"
+            value={chosen ? chosen.displayName : search}
+            onChange={(e) => {
+              setPersonId(null);
+              setSearch(e.target.value);
+            }}
+            aria-label="Find a person"
+          />
+          {!personId && people.data && (
+            <ul className="list">
+              {people.data.items.map((p) => (
+                <li key={p.id} className="list-row">
                   <span>
-                    <Link to={`/people/${m.personId}`}>{m.name}</Link> {m.isLeader && <Badge tone="accent">Leader</Badge>}
+                    {p.displayName} <span className="small muted">{p.primaryMobile ?? p.primaryEmail ?? ''}</span>
                   </span>
-                  <button type="button" className="link-button" onClick={() => removeMember.mutate(m.personId)}>
-                    Remove
+                  <button type="button" className="link-button" onClick={() => setPersonId(p.id)}>
+                    Choose
                   </button>
-                </span>
-                <span className="row">
-                  {team.positions.map((p) => (
-                    <label key={p.id} className="checkbox small">
-                      <input
-                        type="checkbox"
-                        checked={m.positionIds.includes(p.id)}
-                        onChange={() => saveMember.mutate({ personId: m.personId, positionIds: toggle(m.positionIds, p.id), isLeader: m.isLeader })}
-                      />
-                      {p.name}
-                    </label>
-                  ))}
-                  <label className="checkbox small">
-                    <input type="checkbox" checked={m.isLeader} onChange={() => saveMember.mutate({ personId: m.personId, positionIds: m.positionIds, isLeader: !m.isLeader })} />
-                    Leads
-                  </label>
-                </span>
-              </li>
-            ))}
-          </ul>
-          <TextInput placeholder="Add someone: name, email or phone" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Find a person" />
-          {people.data && (
-            <div className="stack-tight">
-              <span className="row small">
-                Positions:
-                {team.positions.map((p) => (
-                  <label key={p.id} className="checkbox small">
-                    <input type="checkbox" checked={chosen.includes(p.id)} onChange={() => setChosen(toggle(chosen, p.id))} />
-                    {p.name}
-                  </label>
-                ))}
-              </span>
-              <ul className="list">
-                {people.data.items.map((p) => (
-                  <li key={p.id} className="list-row">
-                    {p.displayName}
-                    <button type="button" className="link-button" onClick={() => saveMember.mutate({ personId: p.id, positionIds: chosen, isLeader: false })}>
-                      Add to {team.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                </li>
+              ))}
+              {people.data.items.length === 0 && (
+                <li className="small muted">
+                  No one found.{' '}
+                  <button type="button" className="link-button" onClick={() => setMode('new')}>
+                    Add them as someone new
+                  </button>
+                </li>
+              )}
+            </ul>
           )}
         </div>
+      ) : (
+        <div className="form-grid">
+          <Field label="First name">
+            <TextInput required maxLength={60} value={newPerson.firstName} onChange={(e) => setNewPerson({ ...newPerson, firstName: e.target.value })} />
+          </Field>
+          <Field label="Last name">
+            <TextInput required maxLength={60} value={newPerson.lastName} onChange={(e) => setNewPerson({ ...newPerson, lastName: e.target.value })} />
+          </Field>
+          <Field label="Mobile (optional)">
+            <TextInput type="tel" value={newPerson.mobile} onChange={(e) => setNewPerson({ ...newPerson, mobile: e.target.value })} />
+          </Field>
+          <Field label="Email (optional)">
+            <TextInput type="email" value={newPerson.email} onChange={(e) => setNewPerson({ ...newPerson, email: e.target.value })} />
+          </Field>
+        </div>
+      )}
+
+      <div className="form-grid">
+        <Field label="Position">
+          <Select value={positionId} onChange={(e) => setPositionId(e.target.value)}>
+            {team.positions.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+            <option value={NEW_POSITION}>New position…</option>
+          </Select>
+        </Field>
+        {positionId === NEW_POSITION && (
+          <Field label="Name of the position">
+            <TextInput required maxLength={60} placeholder="e.g. Youth pastor" value={positionName} onChange={(e) => setPositionName(e.target.value)} />
+          </Field>
+        )}
       </div>
-      <ErrorNote error={addPosition.error ?? archivePosition.error ?? saveMember.error ?? removeMember.error ?? people.error} />
-    </Card>
+      <label className="checkbox">
+        <input type="checkbox" checked={isLeader} onChange={(e) => setIsLeader(e.target.checked)} />
+        Leads {team.name}
+      </label>
+      <ErrorNote error={add.error} />
+      <div className="row">
+        <Button variant="primary" type="submit" busy={add.isPending} disabled={!ready}>
+          Add to {team.name}
+        </Button>
+        <Button variant="ghost" onClick={() => setOpen(false)}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }
 

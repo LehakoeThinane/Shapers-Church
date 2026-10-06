@@ -51,7 +51,7 @@ public static class SystemRoles
                 MediaPermissions.ChatModerate,
                 GroupsPermissions.CellsManage, GroupsPermissions.ReportsView,
                 AssistPermissions.DraftsCreate,
-                ServicesPermissions.PlansEdit, ServicesPermissions.Schedule, ServicesPermissions.SongsEdit,
+                ServicesPermissions.PlansEdit, ServicesPermissions.Schedule, ServicesPermissions.SongsEdit, ServicesPermissions.CategoriesManage,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [

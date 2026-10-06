@@ -988,3 +988,14 @@ dd {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.category-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.category-head h2 {
+  margin: 0;
+}

@@ -3460,6 +3460,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/services/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListTeamCategories"];
+        put?: never;
+        post: operations["CreateTeamCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateTeamCategory"];
+        post?: never;
+        delete: operations["RemoveTeamCategory"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/services/types": {
         parameters: {
             query?: never;
@@ -4064,6 +4096,14 @@ export interface components {
             reason: null | string;
             /** Format: date */
             lastServed: null | string;
+        };
+        CategoryDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description: null | string;
+            /** Format: int32 */
+            order: number;
         };
         CellDetailDto: {
             /** Format: uuid */
@@ -5523,6 +5563,12 @@ export interface components {
             /** Format: date-time */
             peopleNotifiedAt: null | string;
         };
+        SaveCategoryRequest: {
+            name: string;
+            description: null | string;
+            /** Format: int32 */
+            order: number;
+        };
         SaveCellRequest: {
             name: string;
             /** Format: uuid */
@@ -5708,6 +5754,8 @@ export interface components {
             description: null | string;
             openToMinors: boolean;
             scope: null | string;
+            /** Format: uuid */
+            categoryId?: null | string;
         };
         ScheduleRequest: {
             /** Format: date-time */
@@ -5976,6 +6024,8 @@ export interface components {
             isArchived: boolean;
             positions: components["schemas"]["PositionDto"][];
             members: components["schemas"]["TeamMemberDto"][];
+            /** Format: uuid */
+            categoryId: null | string;
         };
         TeamMemberDto: {
             /** Format: uuid */
@@ -12015,6 +12065,96 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TeamDto"];
                 };
+            };
+        };
+    };
+    ListTeamCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"][];
+                };
+            };
+        };
+    };
+    CreateTeamCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveCategoryRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
+            };
+        };
+    };
+    UpdateTeamCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveCategoryRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
+            };
+        };
+    };
+    RemoveTeamCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -1,6 +1,43 @@
 namespace Shapers.Services.Domain;
 
 /// <summary>
+/// How teams are grouped, e.g. Ministries (Kids, Youth), Disciplines (Worship, Production), Departments (Finance).
+/// The church keeps its own list; only people allowed to manage categories change it.
+/// </summary>
+public sealed class TeamCategory : Entity<Guid>
+{
+    private TeamCategory()
+    {
+    }
+
+    public string Name { get; private set; } = null!;
+
+    public string? Description { get; private set; }
+
+    public int Order { get; private set; }
+
+    public string Scope { get; private set; } = null!;
+
+    public bool IsArchived { get; private set; }
+
+    public static TeamCategory Create(string name, string? description, int order, ScopePath scope)
+    {
+        var category = new TeamCategory { Id = Guid.CreateVersion7(), Scope = scope.Value };
+        category.Update(name, description, order);
+        return category;
+    }
+
+    public void Update(string name, string? description, int order)
+    {
+        Name = Text.Required(name, 60, "Give the category a name, e.g. Ministries.");
+        Description = Text.Optional(description, 200);
+        Order = order;
+    }
+
+    public void Archive() => IsArchived = true;
+}
+
+/// <summary>
 /// A serving team, e.g. Worship, Production, Hospitality. Its scope (a campus or a ministry) decides who may schedule it.
 /// Teams not open to minors refuse under-18s; on teams that are, a minor never serves without an adult from the team.
 /// </summary>
@@ -18,22 +55,26 @@ public sealed class Team : AggregateRoot<Guid>
 
     public bool OpenToMinors { get; private set; }
 
+    /// <summary>Ministries, Disciplines, Departments, ... Null while uncategorised.</summary>
+    public Guid? CategoryId { get; private set; }
+
     public bool IsArchived { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
 
-    public static Team Create(string name, ScopePath scope, string? description, bool openToMinors, DateTimeOffset now)
+    public static Team Create(string name, ScopePath scope, string? description, bool openToMinors, DateTimeOffset now, Guid? categoryId = null)
     {
         var team = new Team { Id = Guid.CreateVersion7(), Scope = scope.Value, CreatedAt = now };
-        team.Update(name, description, openToMinors);
+        team.Update(name, description, openToMinors, categoryId);
         return team;
     }
 
-    public void Update(string name, string? description, bool openToMinors)
+    public void Update(string name, string? description, bool openToMinors, Guid? categoryId)
     {
         Name = Text.Required(name, 80, "Give the team a name.");
         Description = Text.Optional(description, 500);
         OpenToMinors = openToMinors;
+        CategoryId = categoryId;
     }
 
     public void Archive() => IsArchived = true;
