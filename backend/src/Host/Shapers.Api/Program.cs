@@ -52,6 +52,7 @@ foreach (var module in modules)
 
 builder.Services.AddEmail(builder.Configuration, builder.Environment);
 builder.Services.AddShapersJobs(builder.Configuration);
+builder.Services.AddBackgroundHealth();
 builder.Services.ConfigureHttpJsonOptions(o =>
 {
     o.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
@@ -133,6 +134,7 @@ app.MapHealthChecks("/health/live", new() { Predicate = _ => false });
 app.MapHealthChecks("/health/ready", new() { Predicate = c => c.Tags.Contains("ready") });
 
 app.MapPlatformEndpoints();
+app.MapBackgroundHealth();
 foreach (var module in modules)
 {
     module.MapEndpoints(app);

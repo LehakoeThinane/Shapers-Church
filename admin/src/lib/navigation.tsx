@@ -42,6 +42,7 @@ export const navIcons = {
     </>,
   ),
   menu: icon(<path d="M4 7h16M4 12h16M4 17h16" />),
+  pulse: icon(<path d="M3 12h4l2.5-6 5 12 2.5-6h4" />),
   collapse: icon(<path d="m14 6-6 6 6 6" />),
   expand: icon(<path d="m10 6 6 6-6 6" />),
 };
@@ -162,6 +163,7 @@ export const settingsItems: NavItem[] = [
     ],
   },
   { key: 'assist', label: 'AI help', icon: icons.spark, to: '/assist', permission: Permissions.assistUsage },
+  { key: 'background', label: 'Background work', icon: navIcons.pulse, to: '/background-work', permission: Permissions.jobsView },
 ];
 
 const all = () => [...navSections.flatMap((s) => s.items), ...settingsItems];

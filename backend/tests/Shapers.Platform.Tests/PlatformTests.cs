@@ -205,4 +205,24 @@ public sealed class IntegrationEventDispatcherTests
         Assert.Contains("\"detail\":\"detail\"", message.Payload, StringComparison.Ordinal);
         Assert.Null(message.ProcessedAt);
     }
+
+    [Theory]
+    [InlineData("System.InvalidOperationException: Person jane@example.org was not found\n   at Something()", "InvalidOperationException")]
+    [InlineData("Npgsql.PostgresException (0x80004005): 23505: duplicate key value (email)=(jane@example.org)", "PostgresException")]
+    [InlineData("Npgsql.PostgresException", "PostgresException")]
+    [InlineData("TimeoutException", "TimeoutException")]
+    [InlineData("", null)]
+    [InlineData(null, null)]
+    public void Outbox_errors_show_only_the_exception_type(string? lastError, string? expected)
+    {
+        Assert.Equal(expected, OutboxProblem.ErrorTypeOf(lastError));
+    }
+
+    [Fact]
+    public void An_outbox_needs_attention_when_anything_waits_or_was_given_up()
+    {
+        Assert.False(new OutboxHealth("prayer", 0, 0, []).NeedsAttention);
+        Assert.True(new OutboxHealth("prayer", 1, 0, []).NeedsAttention);
+        Assert.True(new OutboxHealth("prayer", 0, 1, []).NeedsAttention);
+    }
 }
