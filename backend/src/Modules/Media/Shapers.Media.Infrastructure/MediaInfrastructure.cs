@@ -60,6 +60,7 @@ public static class MediaInfrastructure
         services.AddScoped<LivestreamService>();
         services.AddScoped<MediaDemoSeeder>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, MediaPersonalData>();
+        services.AddScoped<Shapers.Platform.Calendar.ICalendarSource, LivestreamCalendar>();
         services.AddScoped<LiveChatService>();
         services.AddScoped<ChatModerationService>();
         services.AddScoped<ChatRetention>();

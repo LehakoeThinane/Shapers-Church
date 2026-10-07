@@ -47,6 +47,16 @@ export function Badge({ tone = 'neutral', children }: { tone?: 'neutral' | 'acce
   return <span className={`badge badge-${tone}`}>{children}</span>;
 }
 
+/** A filter that is on or off. `dot` names a colour class (e.g. "kind-event") shown before the label as its key. */
+export function ToggleChip({ on, onChange, dot, children }: { on: boolean; onChange: (on: boolean) => void; dot?: string; children: ReactNode }) {
+  return (
+    <button type="button" className={`chip${on ? ' chip-on' : ''}`} aria-pressed={on} onClick={() => onChange(!on)}>
+      {dot && <span className={`chip-dot ${dot}`} aria-hidden="true" />}
+      {children}
+    </button>
+  );
+}
+
 export function ErrorNote({ error }: { error: unknown }) {
   if (!error) return null;
   return (

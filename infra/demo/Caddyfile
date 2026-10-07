@@ -10,7 +10,7 @@
 		-Server
 	}
 
-	@api path /api/* /hubs/* /jobs /jobs/* /health/* /podcast.xml /media-files/*
+	@api path /api/* /hubs/* /jobs /jobs/* /health/* /podcast.xml /calendar.ics /media-files/*
 	handle @api {
 		reverse_proxy api:8080
 	}

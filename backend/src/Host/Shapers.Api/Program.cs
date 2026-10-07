@@ -140,6 +140,7 @@ app.MapHealthChecks("/health/ready", new() { Predicate = c => c.Tags.Contains("r
 app.MapPlatformEndpoints();
 app.MapBackgroundHealth();
 app.MapClientErrors();
+app.MapCalendar();
 foreach (var module in modules)
 {
     module.MapEndpoints(app);

@@ -29,6 +29,7 @@ import { HomePage } from './pages/HomePage';
 import { CellMaterialsPage, CellPage, CellReportPage, CellReportsPage, CellsPage, ChurchLessonsPage, MyCellPage, ReportEditorPage } from './pages/CellPages';
 import { AssistUsagePage } from './pages/AssistPage';
 import { BackgroundWorkPage } from './pages/BackgroundWorkPage';
+import { CalendarPage } from './pages/CalendarPage';
 import { LiveRunSheetPage, MusicStandPage, ServicePlanPage, ServicePlansPage, ServingMatrixPage } from './pages/ServicesPages';
 import { ServiceTypesPage, ServingTeamsPage, SongPage, SongsPage } from './pages/ServicesSetupPages';
 import './index.css';
@@ -93,6 +94,7 @@ const router = createBrowserRouter([
           { path: 'cells/lessons', element: <ChurchLessonsPage /> },
           { path: 'assist', element: <AssistUsagePage /> },
           { path: 'background-work', element: <BackgroundWorkPage /> },
+          { path: 'calendar', element: <CalendarPage /> },
           { path: 'services', element: <ServicePlansPage /> },
           { path: 'services/plans/:id', element: <ServicePlanPage /> },
           { path: 'services/plans/:id/live', element: <LiveRunSheetPage /> },
