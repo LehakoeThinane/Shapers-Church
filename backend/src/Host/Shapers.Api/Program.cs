@@ -13,6 +13,7 @@ using Shapers.Events.Api;
 using Shapers.Media.Api;
 using Shapers.Prayer.Api;
 using Shapers.Groups.Api;
+using Shapers.Kids.Api;
 using Shapers.Assist.Api;
 using Shapers.Services.Api;
 using Shapers.Communications.Api;
@@ -42,7 +43,7 @@ if (generatingOpenApi)
 }
 
 // Initialisation order matters (see DatabaseInitialiser).
-IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule(), new MediaModule(), new EventsModule(), new PrayerModule(), new GroupsModule(), new CommunicationsModule(), new PrivacyModule(), new ContentModule(), new AssistModule(), new ServicesModule()];
+IModule[] modules = [new ChurchModule(), new PeopleModule(), new IdentityModule(), new MediaModule(), new EventsModule(), new PrayerModule(), new GroupsModule(), new CommunicationsModule(), new PrivacyModule(), new ContentModule(), new AssistModule(), new ServicesModule(), new KidsModule()];
 
 builder.Services.AddPlatform(builder.Configuration);
 foreach (var module in modules)

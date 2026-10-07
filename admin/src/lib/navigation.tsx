@@ -117,6 +117,18 @@ export const navSections: NavSection[] = [
         ],
       },
       { key: 'chat', label: 'Live chat', icon: icons.chat, to: '/chat', permission: Permissions.chatModerate },
+      {
+        key: 'kids',
+        label: 'Kids',
+        icon: icons.checkins,
+        to: '/kids',
+        permission: [Permissions.kidsCheckIn, Permissions.kidsManage],
+        tabs: [
+          { to: '/kids', label: 'Today', permission: Permissions.kidsCheckIn },
+          { to: '/kids/desk', label: 'Check in at the desk', permission: Permissions.kidsCheckIn },
+          { to: '/kids/classes', label: 'Classes', permission: Permissions.kidsManage },
+        ],
+      },
     ],
   },
   {

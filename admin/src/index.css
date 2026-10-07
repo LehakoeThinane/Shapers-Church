@@ -1800,3 +1800,92 @@ a.cal-entry:hover {
     min-width: 0;
   }
 }
+
+/* ---------- Kids ---------- */
+
+.kids-classes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+.kids-child {
+  align-items: flex-start;
+}
+
+.kids-collected {
+  opacity: 0.55;
+}
+
+.kids-code-input {
+  max-width: 280px;
+  font-size: 18px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.kids-code-input::placeholder {
+  font-size: 14px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.kids-big-code {
+  margin: 0;
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.kids-print {
+  display: none;
+}
+
+/* Labels: one per page, sized for common 62 mm label rolls; the printer's own settings decide the rest. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .kids-print,
+  .kids-print * {
+    visibility: visible;
+  }
+
+  .kids-print {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+
+  .kids-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2mm;
+    width: 62mm;
+    padding: 3mm;
+    page-break-after: always;
+    break-after: page;
+    font-size: 11pt;
+  }
+
+  .kids-label-name {
+    font-size: 18pt;
+  }
+
+  .kids-label-alert {
+    font-weight: 700;
+  }
+
+  .kids-label-code {
+    font-size: 22pt;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+  }
+
+  .kids-label-date {
+    font-size: 9pt;
+  }
+}

@@ -25,6 +25,9 @@ public enum PersonSource
     EventRegistration,
     Giving,
     Import,
+
+    /// <summary>A child added by their parent or guardian (kids check-in).</summary>
+    Guardian,
 }
 
 public enum Gender
