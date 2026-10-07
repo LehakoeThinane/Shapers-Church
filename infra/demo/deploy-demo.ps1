@@ -140,6 +140,8 @@ $settings = [ordered]@{
     Events__PublicSiteUrl           = $WebsiteOrigin
     Media__SiteUrl                  = $WebsiteOrigin
     Church__Website                 = $WebsiteOrigin
+    # Demo only: sensitive screens without two-step sign-in, so the pastors can look around. Production keeps it on.
+    Auth__Security__RequireMfaForSensitivePermissions = 'false'
 }
 $envFile = Join-Path $work '.env'
 ($settings.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }) -join "`n" | Set-Content -Path $envFile -NoNewline -Encoding ascii
