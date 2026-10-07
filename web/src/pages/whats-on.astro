@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { get, PUBLIC_API_URL, type Schemas } from '../lib/api';
+import { time } from '../lib/format';
+
+type Entry = Schemas['CalendarEntry'];
+
+// The next eight weeks, as of the last time the site was published. Signed out, so public entries only.
+const from = new Date();
+const to = new Date(from.getTime() + 8 * 7 * 86_400_000);
+const entries = await get<Entry[]>(`/api/calendar?from=${encodeURIComponent(from.toISOString())}&to=${encodeURIComponent(to.toISOString())}`, []);
+
+const zone = 'Africa/Johannesburg';
+const dayKey = (iso: string) => new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso));
+const heading = (iso: string) => new Intl.DateTimeFormat('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: zone }).format(new Date(iso));
+
+const days = new Map<string, Entry[]>();
+for (const e of entries) days.set(dayKey(e.startsAt), [...(days.get(dayKey(e.startsAt)) ?? []), e]);
+
+const feed = `${PUBLIC_API_URL}/calendar.ics`;
+const subscribe = feed.replace(/^https?:/, 'webcal:');
+const hrefFor = (e: Entry) => (e.kind === 'Event' && e.slug ? `/events/${e.slug}` : e.kind === 'Livestream' ? '/live' : null);
+---
+
+<Base title="What's on" description="Everything coming up at Shapers Church: events, gatherings and services online.">
+  <PageHeader eyebrow="Calendar" title="What's" accent="on." intro="Events, gatherings and services online over the next eight weeks. Add the church calendar to your phone and it stays up to date." />
+
+  <section class="section">
+    <div class="glass calendar-subscribe">
+      <div>
+        <h2 style="font-size: 1.3rem">Add it to your calendar</h2>
+        <p class="muted" style="margin: 0">Works with your phone's calendar, Google Calendar and Outlook. New events appear on their own.</p>
+      </div>
+      <div class="calendar-actions">
+        <a class="button" href={subscribe}>Add to my calendar</a>
+        <a class="button ghost" href={feed} download="shapers-church.ics">Download the calendar</a>
+      </div>
+    </div>
+
+    {
+      days.size === 0 && (
+        <div class="glass">
+          <h2 style="font-size: 1.4rem">Nothing on the calendar just yet</h2>
+          <p class="muted" style="margin: 0">
+            Join us on Sunday, and keep an eye on <a href="/events">events</a> for what's coming next.
+          </p>
+        </div>
+      )
+    }
+
+    <div class="calendar-days">
+      {
+        [...days.entries()].map(([, list]) => (
+          <section class="calendar-day">
+            <h2 class="label">{heading(list[0]!.startsAt)}</h2>
+            <ul class="calendar-list">
+              {list.map((e) => {
+                const href = hrefFor(e);
+                const body = (
+                  <>
+                    <span class="calendar-time">{time(e.startsAt)}</span>
+                    <span>
+                      <strong>{e.title}</strong>
+                      <span class="small muted">
+                        {' '}
+                        · {e.kind === 'Livestream' ? 'Online' : (e.place ?? 'Event')}
+                      </span>
+                    </span>
+                  </>
+                );
+                return <li>{href ? <a class="calendar-entry" href={href}>{body}</a> : <span class="calendar-entry">{body}</span>}</li>;
+              })}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</Base>

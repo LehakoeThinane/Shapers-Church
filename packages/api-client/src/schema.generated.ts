@@ -20,6 +20,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/client-errors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportClientError"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetCalendar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/church": {
         parameters: {
             query?: never;
@@ -4131,6 +4163,23 @@ export interface components {
         };
         /** @enum {unknown} */
         BreachStatus: "Open" | "Closed";
+        CalendarEntry: {
+            kind: components["schemas"]["CalendarEntryKind"];
+            /** Format: uuid */
+            refId: string;
+            title: string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: null | string;
+            place: null | string;
+            slug: null | string;
+            draft: boolean;
+            mine: boolean;
+            public: boolean;
+        };
+        /** @enum {unknown} */
+        CalendarEntryKind: "Event" | "Livestream" | "Service" | "Cell" | "Serving";
         CampusDto: {
             /** Format: uuid */
             id: string;
@@ -4290,6 +4339,14 @@ export interface components {
         ChurchOverviewDto: {
             organisation: components["schemas"]["OrganisationDto"];
             campuses: components["schemas"]["CampusDto"][];
+        };
+        ClientErrorReport: {
+            app: string;
+            version: null | string;
+            route: null | string;
+            errorType: null | string;
+            message: null | string;
+            stack: null | string;
         };
         CompleteUploadRequest: {
             /** Format: int32 */
@@ -4670,6 +4727,17 @@ export interface components {
         };
         /** @enum {unknown} */
         HouseholdRole: "Adult" | "Child";
+        HttpValidationProblemDetails: {
+            type?: null | string;
+            title?: null | string;
+            /** Format: int32 */
+            status?: null | number;
+            detail?: null | string;
+            instance?: null | string;
+            errors?: {
+                [key: string]: string[];
+            };
+        };
         ImportResult: {
             /** Format: int32 */
             postsImported: number;
@@ -6347,6 +6415,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BackgroundHealthDto"];
+                };
+            };
+        };
+    };
+    ReportClientError: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClientErrorReport"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+        };
+    };
+    GetCalendar: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+                allCells?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalendarEntry"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
                 };
             };
         };

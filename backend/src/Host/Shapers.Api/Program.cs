@@ -70,6 +70,10 @@ builder.Services.AddRateLimiter(o =>
     o.AddPolicy(RateLimitPolicies.Auth, context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = perMinute, Window = TimeSpan.FromMinutes(1) }));
+    var clientErrorsPerMinute = builder.Configuration.GetValue("RateLimits:ClientErrorsPerMinute", 10);
+    o.AddPolicy(ClientErrors.RateLimitPolicy, context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = clientErrorsPerMinute, Window = TimeSpan.FromMinutes(1) }));
 });
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
@@ -135,6 +139,8 @@ app.MapHealthChecks("/health/ready", new() { Predicate = c => c.Tags.Contains("r
 
 app.MapPlatformEndpoints();
 app.MapBackgroundHealth();
+app.MapClientErrors();
+app.MapCalendar();
 foreach (var module in modules)
 {
     module.MapEndpoints(app);

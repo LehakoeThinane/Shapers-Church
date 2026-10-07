@@ -253,6 +253,14 @@ nav {
   margin: 0;
 }
 
+.crash-card {
+  max-width: 560px;
+}
+
+.crash-card p {
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   .app {
     grid-template-columns: 1fr;
@@ -1610,4 +1618,185 @@ dd {
 
 .permission-line {
   margin: 0;
+}
+/* ---------- Calendar ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-glass-edge);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: var(--color-glass-fill);
+}
+
+.chip-on {
+  background: var(--color-glass-fill-active);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--kind-colour);
+}
+
+.kind-event {
+  --kind-colour: var(--color-accent);
+}
+
+.kind-livestream {
+  --kind-colour: var(--color-success);
+}
+
+.kind-service {
+  --kind-colour: var(--color-interactive);
+}
+
+.kind-cell {
+  --kind-colour: var(--color-text-tertiary);
+}
+
+.kind-serving {
+  --kind-colour: var(--color-accent);
+}
+
+.cal-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.cal-title {
+  min-width: 170px;
+  margin: 0;
+  text-align: center;
+  font-size: 18px;
+}
+
+.cal-card {
+  padding: var(--space-sm);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.cal-weekday {
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 112px;
+  min-width: 0;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-track);
+}
+
+.cal-day-outside {
+  opacity: 0.45;
+}
+
+.cal-day-today {
+  border-color: var(--color-accent);
+  background: var(--color-glass-fill);
+}
+
+.cal-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.cal-day-today .cal-date {
+  color: var(--color-accent);
+}
+
+.cal-entry {
+  display: block;
+  min-width: 0;
+  padding: 2px 6px;
+  border-left: 3px solid var(--kind-colour);
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  font-size: 12.5px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.cal-entry:hover {
+  background: var(--color-glass-fill);
+  text-decoration: none;
+}
+
+.cal-entry-mine {
+  background: var(--color-glass-fill-active);
+}
+
+.cal-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+.cal-list {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-xs);
+}
+
+.cal-list .cal-entry {
+  padding: 8px 10px;
+  font-size: 14px;
+  white-space: normal;
+}
+
+.cal-list-day {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.cal-list-today {
+  color: var(--color-accent);
+}
+
+/* Phones: the month as a list of the days that have something on. */
+@media (max-width: 720px) {
+  .cal-grid {
+    display: none;
+  }
+
+  .cal-list {
+    display: flex;
+  }
+
+  .cal-title {
+    min-width: 0;
+  }
 }

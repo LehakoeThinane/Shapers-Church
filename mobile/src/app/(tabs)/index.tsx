@@ -27,6 +27,7 @@ const quickActions = [
   { label: 'Prayer', icon: { ios: 'hands.sparkles', android: 'self_improvement' }, href: '/prayer' },
   { label: 'Groups', icon: { ios: 'person.3', android: 'groups' }, href: '/community' },
   { label: 'Serve', icon: { ios: 'hand.raised', android: 'front_hand' }, href: '/community' },
+  { label: 'Calendar', icon: { ios: 'calendar', android: 'calendar_month' }, href: '/calendar' },
 ] as const;
 
 export default function HomeScreen() {

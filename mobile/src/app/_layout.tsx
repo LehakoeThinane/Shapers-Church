@@ -9,12 +9,24 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 
+import { CrashScreen } from '@/components/crash-screen';
 import { api, ApiError, restoreSession, unwrap, useSession } from '@/lib/api';
+import { reportUncaughtErrors, useTrackRoute } from '@/lib/errors';
 import { usePushLifecycle } from '@/lib/notifications';
 import { usePrivacyReview } from '@/lib/privacy';
 import { ThemeProvider, usePaletteStore, useTheme } from '@/theme/theme';
 
 void SplashScreen.preventAutoHideAsync();
+reportUncaughtErrors();
+
+/** Expo Router shows this in place of any screen that crashes, and reports the crash. */
+export function ErrorBoundary({ error, retry }: { error: Error; retry: () => Promise<void> }) {
+  useEffect(() => {
+    // A crash before the app was ready would otherwise leave the splash screen up.
+    void SplashScreen.hideAsync();
+  }, []);
+  return <CrashScreen error={error} retry={retry} />;
+}
 
 // Pause polling (e.g. the Live tab) while the app is in the background, to save data and battery.
 focusManager.setEventListener((setFocused) => {
@@ -68,6 +80,7 @@ function Navigator() {
   const { palette } = useTheme();
   usePushLifecycle();
   usePrivacyReview();
+  useTrackRoute();
   return (
     <>
       <StatusBar style={palette.appearance === 'dark' ? 'light' : 'dark'} />
@@ -81,6 +94,7 @@ function Navigator() {
         <Stack.Screen name="prayer" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="tickets" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="serving" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
+        <Stack.Screen name="calendar" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="rehearse/[id]" options={{ headerShown: true, headerTransparent: true, headerBackButtonDisplayMode: 'minimal', headerTintColor: palette.color.interactive }} />
         <Stack.Screen name="privacy-notice" options={{ presentation: 'modal' }} />
         <Stack.Screen name="profile" options={{ presentation: 'modal' }} />

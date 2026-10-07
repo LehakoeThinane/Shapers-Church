@@ -72,7 +72,7 @@ export function HomePage() {
             );
           })}
         </div>
-        <p className="small muted">Coming next: giving, kids check-in, the church calendar and a staff app.</p>
+        <p className="small muted">Coming next: giving, kids check-in and a staff app.</p>
       </section>
     </>
   );
@@ -217,6 +217,7 @@ function describe(key: string) {
   const own: Record<string, string> = {
     sermons: 'Sermons, series, speakers and the Sunday livestream',
     website: 'Website pages, news, blog and translations',
+    calendar: 'Events, services, livestreams and cell meetings by month',
   };
   if (own[key]) return own[key];
   const aliases: Record<string, string> = { events: 'registrations' };
