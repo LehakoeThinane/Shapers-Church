@@ -11,6 +11,8 @@ const events = await get<Schemas['EventDto'][]>('/api/events', []);
 <Base title="Events" description="What's coming up at Shapers Church, and how to book.">
   <PageHeader eyebrow="Events" title="What's" accent="coming up." intro="Conferences, gatherings and special services at Shapers Church. Book your seat online." />
 
+  <p class="wrap small muted"><a href="/whats-on">See everything on the church calendar</a>, and add it to your phone.</p>
+
   <section class="section">
     {
       events.length === 0 && (

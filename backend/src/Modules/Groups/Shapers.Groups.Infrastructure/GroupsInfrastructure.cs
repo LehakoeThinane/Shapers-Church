@@ -29,6 +29,7 @@ public static class GroupsInfrastructure
         services.AddScoped<MyCellsService>();
         services.AddScoped<CellReportRetentionJob>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, GroupsPersonalData>();
+        services.AddScoped<Shapers.Platform.Calendar.ICalendarSource, CellCalendar>();
         services.AddScoped<IIntegrationEventHandler<PeopleMergedIntegrationEvent>, ReplaceMergedPerson>();
 
         services.AddSingleton(new RecurringJobDefinition("groups-report-retention", "30 2 * * *", (sp, ct) =>

@@ -216,6 +216,7 @@ public static class ServicesInfrastructure
         services.AddScoped<IIntegrationEventHandler<ServingReminderIntegrationEvent>, ServingEmails>();
         services.AddScoped<IIntegrationEventHandler<PeopleMergedIntegrationEvent>, ReplaceMergedServingPerson>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, ServicesPersonalData>();
+        services.AddScoped<Shapers.Platform.Calendar.ICalendarSource, ServicesCalendar>();
 
         // 07:30 in Johannesburg.
         services.AddSingleton(new RecurringJobDefinition("services-reminders", "30 5 * * *", (sp, ct) =>

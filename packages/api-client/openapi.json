@@ -58,6 +58,66 @@
         }
       }
     },
+    "/api/calendar": {
+      "get": {
+        "tags": [
+          "Calendar"
+        ],
+        "operationId": "GetCalendar",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "allCells",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CalendarEntry"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/church": {
       "get": {
         "tags": [
@@ -10304,6 +10364,74 @@
           "Closed"
         ]
       },
+      "CalendarEntry": {
+        "required": [
+          "kind",
+          "refId",
+          "title",
+          "startsAt",
+          "endsAt",
+          "place",
+          "slug",
+          "draft",
+          "mine",
+          "public"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/CalendarEntryKind"
+          },
+          "refId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "place": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "slug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "draft": {
+            "type": "boolean"
+          },
+          "mine": {
+            "type": "boolean"
+          },
+          "public": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CalendarEntryKind": {
+        "enum": [
+          "Event",
+          "Livestream",
+          "Service",
+          "Cell",
+          "Serving"
+        ]
+      },
       "CampusDto": {
         "required": [
           "id",
@@ -19106,6 +19234,9 @@
     },
     {
       "name": "Client errors"
+    },
+    {
+      "name": "Calendar"
     },
     {
       "name": "Church"

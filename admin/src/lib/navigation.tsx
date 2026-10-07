@@ -43,6 +43,12 @@ export const navIcons = {
   ),
   menu: icon(<path d="M4 7h16M4 12h16M4 17h16" />),
   pulse: icon(<path d="M3 12h4l2.5-6 5 12 2.5-6h4" />),
+  calendar: icon(
+    <>
+      <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+    </>,
+  ),
   collapse: icon(<path d="m14 6-6 6 6 6" />),
   expand: icon(<path d="m10 6 6 6-6 6" />),
 };
@@ -79,6 +85,7 @@ export const navSections: NavSection[] = [
       },
       { key: 'prayer', label: 'Prayer', icon: icons.prayer, to: '/prayer', permission: [Permissions.prayerView, Permissions.prayerModerate] },
       { key: 'events', label: 'Events', icon: icons.registrations, to: '/events', permission: [Permissions.eventsEdit, Permissions.eventsCheckIn] },
+      { key: 'calendar', label: 'Calendar', icon: navIcons.calendar, to: '/calendar', permission: null },
     ],
   },
   {
