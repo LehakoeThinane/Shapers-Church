@@ -43,6 +43,13 @@
     <Project Path="src/Modules/Prayer/Shapers.Prayer.Domain/Shapers.Prayer.Domain.csproj" />
     <Project Path="src/Modules/Prayer/Shapers.Prayer.Infrastructure/Shapers.Prayer.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Kids/">
+    <Project Path="src/Modules/Kids/Shapers.Kids.Api/Shapers.Kids.Api.csproj" />
+    <Project Path="src/Modules/Kids/Shapers.Kids.Application/Shapers.Kids.Application.csproj" />
+    <Project Path="src/Modules/Kids/Shapers.Kids.Contracts/Shapers.Kids.Contracts.csproj" />
+    <Project Path="src/Modules/Kids/Shapers.Kids.Domain/Shapers.Kids.Domain.csproj" />
+    <Project Path="src/Modules/Kids/Shapers.Kids.Infrastructure/Shapers.Kids.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Assist/">
     <Project Path="src/Modules/Assist/Shapers.Assist.Api/Shapers.Assist.Api.csproj" />
     <Project Path="src/Modules/Assist/Shapers.Assist.Application/Shapers.Assist.Application.csproj" />
@@ -102,6 +109,7 @@
   <Folder Name="/tests/Modules/">
     <Project Path="tests/Modules/Shapers.Events.Tests/Shapers.Events.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Prayer.Tests/Shapers.Prayer.Tests.csproj" />
+    <Project Path="tests/Modules/Shapers.Kids.Tests/Shapers.Kids.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Groups.Tests/Shapers.Groups.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Content.Tests/Shapers.Content.Tests.csproj" />
     <Project Path="tests/Modules/Shapers.Privacy.Tests/Shapers.Privacy.Tests.csproj" />

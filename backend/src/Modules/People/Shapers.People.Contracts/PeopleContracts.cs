@@ -91,6 +91,9 @@ public enum GuestOrigin
 
     /// <summary>Added to a home cell by its leader, or a visitor at a cell meeting.</summary>
     CellGroup,
+
+    /// <summary>A visiting parent at the kids check-in desk.</summary>
+    KidsCheckIn,
 }
 
 /// <summary>Someone who isn't signed in, giving their details with consent (e.g. registering for an event).</summary>
@@ -112,6 +115,29 @@ public interface IGuestRecords
     /// details); a possible duplicate is flagged for staff to review instead.
     /// </summary>
     Task<Result<Guid>> CreateAsync(GuestDetails guest, CancellationToken cancellationToken = default);
+}
+
+/// <summary>A child as a parent or the kids desk gives their details.</summary>
+public sealed record ChildDetails(string FirstName, string LastName, DateOnly DateOfBirth);
+
+/// <summary>A child in a parent's household, for kids check-in. No contact details: children have none here.</summary>
+public sealed record ChildSummary(Guid PersonId, string FirstName, string DisplayName, DateOnly? DateOfBirth, string Scope);
+
+/// <summary>Children and the parents who look after them, for kids check-in.</summary>
+public interface IFamilyRecords
+{
+    /// <summary>
+    /// Adds children's church records to the parent's household (creating a household for the parent if they have none),
+    /// in the parent's campus, all at once. The parent's consent, as the children's guardian, is recorded on each child's
+    /// record: given in the app when <paramref name="recordedByUserId"/> is null, or taken at the kids desk by that user.
+    /// Returns the new records' IDs in the order given.
+    /// </summary>
+    Task<Result<IReadOnlyList<Guid>>> AddChildrenAsync(Guid parentId, IReadOnlyList<ChildDetails> children, Guid? recordedByUserId, CancellationToken cancellationToken = default);
+
+    /// <summary>The children in the parent's households: recorded as a child, or under 18 by date of birth.</summary>
+    Task<IReadOnlyList<ChildSummary>> ChildrenOfAsync(Guid parentId, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyDictionary<Guid, ChildSummary>> GetChildrenAsync(IReadOnlyCollection<Guid> childIds, CancellationToken cancellationToken = default);
 }
 
 public interface IPeopleRegistration

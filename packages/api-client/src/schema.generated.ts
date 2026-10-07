@@ -3924,10 +3924,228 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/kids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyKids"];
+        put?: never;
+        post: operations["AddMyChild"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/kids/{childId}/care-notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateMyChildCareNotes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/kids/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CheckInMyKids"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["KidsToday"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/pickup/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FindKidsByPickupCode"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/check-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CheckOutKids"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/desk-check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DeskCheckIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/check-ins/{id}/label": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["KidsLabel"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/children/{childId}/care-notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["KidsCareNotes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListKidsClasses"];
+        put?: never;
+        post: operations["CreateKidsClass"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/classes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateKidsClass"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/classes/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchiveKidsClass"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/kids/classes/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RestoreKidsClass"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddChildRequest: {
+            firstName: string;
+            lastName: string;
+            /** Format: date */
+            dateOfBirth: string;
+            allergies: null | string;
+            medical: null | string;
+            other: null | string;
+            guardianConsent: boolean;
+        };
         AddContactRequest: {
             type: components["schemas"]["ContactType"];
             value: string;
@@ -4201,6 +4419,16 @@ export interface components {
             /** Format: date */
             lastServed: null | string;
         };
+        CareNotesDto: {
+            allergies: null | string;
+            medical: null | string;
+            other: null | string;
+        };
+        CareNotesRequest: {
+            allergies: null | string;
+            medical: null | string;
+            other: null | string;
+        };
         CategoryDto: {
             /** Format: uuid */
             id: string;
@@ -4322,6 +4550,23 @@ export interface components {
         };
         /** @enum {unknown} */
         ChatSanctionKind: "Timeout" | "Ban";
+        CheckedInChildDto: {
+            /** Format: uuid */
+            checkInId: string;
+            /** Format: uuid */
+            childId: string;
+            name: string;
+            /** Format: int32 */
+            age: null | number;
+            hasCareNotes: boolean;
+            /** Format: date-time */
+            checkedInAt: string;
+            method: components["schemas"]["CheckInMethod"];
+            /** Format: date-time */
+            collectedAt: null | string;
+        };
+        /** @enum {unknown} */
+        CheckInMethod: "App" | "Desk";
         /** @enum {unknown} */
         CheckInOutcome: "CheckedIn" | "AlreadyCheckedIn" | "NotConfirmed";
         CheckInRequest: {
@@ -4336,9 +4581,23 @@ export interface components {
             checkedInAt: null | string;
             message: string;
         };
+        CheckOutRequest: {
+            code: string;
+            checkInIds: string[];
+        };
         ChurchOverviewDto: {
             organisation: components["schemas"]["OrganisationDto"];
             campuses: components["schemas"]["CampusDto"][];
+        };
+        ClassTodayDto: {
+            /** Format: uuid */
+            classId: string;
+            name: string;
+            /** Format: int32 */
+            fromAge: number;
+            /** Format: int32 */
+            toAge: number;
+            children: components["schemas"]["CheckedInChildDto"][];
         };
         ClientErrorReport: {
             app: string;
@@ -4561,6 +4820,26 @@ export interface components {
         };
         /** @enum {unknown} */
         DeliveryStatus: "Pending" | "Sent" | "Failed" | "Skipped";
+        DeskCheckInRequest: {
+            parentFirstName: string;
+            parentLastName: string;
+            parentMobile: string;
+            consent: boolean;
+            children: components["schemas"]["DeskChildRequest"][];
+        };
+        DeskCheckInResultDto: {
+            pickupCode: string;
+            labels: components["schemas"]["KidsLabelDto"][];
+        };
+        DeskChildRequest: {
+            firstName: string;
+            lastName: string;
+            /** Format: date */
+            dateOfBirth: string;
+            allergies: null | string;
+            medical: null | string;
+            other: null | string;
+        };
         DraftDto: {
             /** Format: uuid */
             id: string;
@@ -4775,6 +5054,31 @@ export interface components {
         };
         /** @enum {unknown} */
         JourneyStage: "Visitor" | "Regular" | "GrowthTrack" | "Member" | "Inactive";
+        KidsClassDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: int32 */
+            fromAge: number;
+            /** Format: int32 */
+            toAge: number;
+            isArchived: boolean;
+        };
+        KidsLabelDto: {
+            /** Format: uuid */
+            checkInId: string;
+            childName: string;
+            className: string;
+            /** Format: date */
+            date: string;
+            pickupCode: string;
+            hasCareNotes: boolean;
+        };
+        KidsTodayDto: {
+            /** Format: date */
+            date: string;
+            classes: components["schemas"]["ClassTodayDto"][];
+        };
         LanguageDto: {
             code: string;
             name: string;
@@ -5013,6 +5317,29 @@ export interface components {
             leaders: string[];
             sharedMaterials: components["schemas"]["MaterialDto"][];
         };
+        MyChildCheckInDto: {
+            /** Format: uuid */
+            id: string;
+            className: string;
+            pickupCode: string;
+            /** Format: date-time */
+            checkedInAt: string;
+            /** Format: date-time */
+            collectedAt: null | string;
+        };
+        MyChildDto: {
+            /** Format: uuid */
+            personId: string;
+            firstName: string;
+            name: string;
+            /** Format: date */
+            dateOfBirth: null | string;
+            /** Format: int32 */
+            age: null | number;
+            className: null | string;
+            careNotes: null | components["schemas"]["CareNotesDto"];
+            today: null | components["schemas"]["MyChildCheckInDto"];
+        };
         MyDataRequestDto: {
             /** Format: uuid */
             id: string;
@@ -5176,6 +5503,9 @@ export interface components {
             language: string;
             languages: components["schemas"]["LanguageDto"][];
         };
+        ParentCheckInRequest: {
+            childIds: string[];
+        };
         PermissionDto: {
             key: string;
             module: string;
@@ -5246,9 +5576,21 @@ export interface components {
             name: string;
         };
         /** @enum {unknown} */
-        PersonSource: "Admin" | "SelfRegistration" | "VisitorCard" | "EventRegistration" | "Giving" | "Import";
+        PersonSource: "Admin" | "SelfRegistration" | "VisitorCard" | "EventRegistration" | "Giving" | "Import" | "Guardian";
         /** @enum {unknown} */
         PersonStatus: "Active" | "Inactive" | "Deceased" | "Merged" | "Erased";
+        PickupChildDto: {
+            /** Format: uuid */
+            checkInId: string;
+            name: string;
+            className: string;
+            /** Format: date-time */
+            checkedInAt: string;
+        };
+        PickupDto: {
+            code: string;
+            children: components["schemas"]["PickupChildDto"][];
+        };
         PlanDto: {
             /** Format: uuid */
             id: string;
@@ -5774,6 +6116,13 @@ export interface components {
             maxPerRegistration: number;
             questions: components["schemas"]["QuestionInput"][];
             scope: null | string;
+        };
+        SaveKidsClassRequest: {
+            name: string;
+            /** Format: int32 */
+            fromAge: number;
+            /** Format: int32 */
+            toAge: number;
         };
         SaveLessonRequest: {
             title: string;
@@ -13172,6 +13521,348 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    MyKids: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyChildDto"][];
+                };
+            };
+        };
+    };
+    AddMyChild: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddChildRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyChildDto"][];
+                };
+            };
+        };
+    };
+    UpdateMyChildCareNotes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                childId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CareNotesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyChildDto"][];
+                };
+            };
+        };
+    };
+    CheckInMyKids: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParentCheckInRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyChildDto"][];
+                };
+            };
+        };
+    };
+    KidsToday: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KidsTodayDto"];
+                };
+            };
+        };
+    };
+    FindKidsByPickupCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PickupDto"];
+                };
+            };
+        };
+    };
+    CheckOutKids: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckOutRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PickupDto"];
+                };
+            };
+        };
+    };
+    DeskCheckIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeskCheckInRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeskCheckInResultDto"];
+                };
+            };
+        };
+    };
+    KidsLabel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KidsLabelDto"];
+                };
+            };
+        };
+    };
+    KidsCareNotes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                childId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CareNotesDto"];
+                };
+            };
+        };
+    };
+    ListKidsClasses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KidsClassDto"][];
+                };
+            };
+        };
+    };
+    CreateKidsClass: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveKidsClassRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KidsClassDto"];
+                };
+            };
+        };
+    };
+    UpdateKidsClass: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveKidsClassRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KidsClassDto"];
+                };
+            };
+        };
+    };
+    ArchiveKidsClass: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KidsClassDto"];
+                };
+            };
+        };
+    };
+    RestoreKidsClass: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KidsClassDto"];
+                };
             };
         };
     };
