@@ -30,6 +30,9 @@ param(
     [string] $ResourceGroup = 'rg-shapers-prod',
     [string] $Location = 'southafricanorth',
     [string] $YouTubeApiKey = '',
+    # Online card giving through Yoco (docs/deployment.md, Giving). Left empty, the keys already in Key Vault are kept.
+    [string] $YocoSecretKey = '',
+    [string] $YocoWebhookSecret = '',
     [string] $SiteRebuildToken = '',
     [switch] $UseCustomEmailDomain,
     # YouTube captions as sermon transcripts: the church's Google OAuth client (docs/deployment.md).
@@ -105,6 +108,12 @@ foreach ($name in 'postgres-admin-password', 'auth-jwt-signing-key', 'auth-otp-h
     $existing[$name] = if ($vaultExists) { Get-ExistingSecret $name } else { $null }
 }
 
+# Card giving stays on once set up: a run without the Yoco keys reuses the ones in Key Vault.
+if ($vaultExists) {
+    $YocoSecretKey = Use-Existing $YocoSecretKey { Get-ExistingSecret 'yoco-secret-key' }
+    $YocoWebhookSecret = Use-Existing $YocoWebhookSecret { Get-ExistingSecret 'yoco-webhook-secret' }
+}
+
 $newAdminPassword = -not $existing['bootstrap-admin-password']
 $secrets = @{
     postgresAdminPassword  = Use-Existing $existing['postgres-admin-password'] { New-Password 32 }
@@ -137,6 +146,8 @@ function Deploy([bool] $withApi, [string] $image) {
             securityHashKey        = @{ value = $secrets.securityHashKey }
             bootstrapAdminPassword = @{ value = $secrets.bootstrapAdminPassword }
             youTubeApiKey          = @{ value = $YouTubeApiKey }
+            yocoSecretKey          = @{ value = [string] $YocoSecretKey }
+            yocoWebhookSecret      = @{ value = [string] $YocoWebhookSecret }
             siteRebuildToken       = @{ value = $SiteRebuildToken }
             youTubeOAuthClientId     = @{ value = $YouTubeOAuthClientId }
             youTubeOAuthClientSecret = @{ value = $YouTubeOAuthClientSecret }

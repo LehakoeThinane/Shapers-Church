@@ -86,6 +86,18 @@ export const navSections: NavSection[] = [
       { key: 'prayer', label: 'Prayer', icon: icons.prayer, to: '/prayer', permission: [Permissions.prayerView, Permissions.prayerModerate] },
       { key: 'events', label: 'Events', icon: icons.registrations, to: '/events', permission: [Permissions.eventsEdit, Permissions.eventsCheckIn] },
       { key: 'calendar', label: 'Calendar', icon: navIcons.calendar, to: '/calendar', permission: null },
+      {
+        key: 'giving',
+        label: 'Giving',
+        icon: icons.giving,
+        to: '/giving',
+        permission: [Permissions.givingView, Permissions.givingManage],
+        tabs: [
+          { to: '/giving', label: 'Overview', permission: Permissions.givingView },
+          { to: '/giving/gifts', label: 'Gifts', permission: Permissions.givingView },
+          { to: '/giving/funds', label: 'Funds', permission: Permissions.givingManage },
+        ],
+      },
     ],
   },
   {

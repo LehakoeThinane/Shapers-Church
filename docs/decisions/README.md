@@ -24,3 +24,4 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0018](0018-translations.md) | Translations as linked copies, checked by a speaker before publishing | Accepted |
 | [0019](0019-services.md) | Services: plans, teams, scheduling with safeguarding, songs, live run sheet | Accepted |
 | [0020](0020-kids-check-in.md) | Kids check-in: parents check in, a pickup code hands children back | Proposed |
+| [0021](0021-giving.md) | Giving: card gifts through a provider's page, EFT and cash recorded by the finance team | Proposed |
