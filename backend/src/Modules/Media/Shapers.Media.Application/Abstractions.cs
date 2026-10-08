@@ -49,6 +49,9 @@ public interface IFileStorage
     /// <summary>Reads a stored file, e.g. sermon audio for transcription.</summary>
     Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken);
 
+    /// <summary>Stores a file the server itself has, e.g. an image copied from the old website. Replaces any file with the same key.</summary>
+    Task SaveAsync(string key, Stream content, string contentType, CancellationToken cancellationToken);
+
     Task DeleteAsync(string key, CancellationToken cancellationToken);
 }
 
