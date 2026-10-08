@@ -72,7 +72,7 @@ export function HomePage() {
             );
           })}
         </div>
-        <p className="small muted">Coming next: giving, kids check-in and a staff app.</p>
+        <p className="small muted">Coming next: giving and a staff app.</p>
       </section>
     </>
   );
