@@ -27,6 +27,7 @@ public static class PeopleInfrastructure
         services.AddScoped<ConnectCardService>();
         services.AddScoped<Shapers.Platform.Messaging.IIntegrationEventHandler<Shapers.Groups.Contracts.CellVisitorsRecordedIntegrationEvent>, FileCellVisitors>();
         services.AddScoped<IGuestRecords, GuestRecords>();
+        services.AddScoped<IFamilyRecords, FamilyRecords>();
         services.AddScoped<IPeopleDirectory, PeopleDirectory>();
         services.AddScoped<IPeopleRegistration, PeopleRegistration>();
         services.AddScoped<ConnectCardRetentionJob>();

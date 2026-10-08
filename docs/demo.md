@@ -32,6 +32,7 @@ Then rebuild the website against the demo API: build `web` with `API_URL` and `P
 
 ## Limits (it's a demo)
 - **Not for real member data:** the database is outside South Africa, and the free tier has no backups.
+- **No two-step sign-in on the demo:** `Auth__Security__RequireMfaForSensitivePermissions` is `false`, so staff see People, Home cells and prayer with a password alone. This is for showing the platform only; production requires two-step sign-in for those screens.
 - Supabase may pause a free project after a week without activity; resume it from the Supabase dashboard.
 - Google's free tier covers one e2-micro VM in a US region. The public IP address may carry a small charge.
 - Logs: `gcloud compute ssh shapers-demo --zone us-east1-b --command "sudo docker logs shapers-demo-api-1 --tail 100"`.

@@ -9457,10 +9457,512 @@
           }
         }
       }
+    },
+    "/api/me/kids": {
+      "get": {
+        "tags": [
+          "Kids"
+        ],
+        "operationId": "MyKids",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyChildDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Kids"
+        ],
+        "operationId": "AddMyChild",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddChildRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyChildDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/kids/{childId}/care-notes": {
+      "put": {
+        "tags": [
+          "Kids"
+        ],
+        "operationId": "UpdateMyChildCareNotes",
+        "parameters": [
+          {
+            "name": "childId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CareNotesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyChildDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/kids/check-in": {
+      "post": {
+        "tags": [
+          "Kids"
+        ],
+        "operationId": "CheckInMyKids",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentCheckInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyChildDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/today": {
+      "get": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "KidsToday",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KidsTodayDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/pickup/{code}": {
+      "get": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "FindKidsByPickupCode",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PickupDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/check-out": {
+      "post": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "CheckOutKids",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckOutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PickupDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/desk-check-in": {
+      "post": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "DeskCheckIn",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeskCheckInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeskCheckInResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/check-ins/{id}/label": {
+      "get": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "KidsLabel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KidsLabelDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/children/{childId}/care-notes": {
+      "get": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "KidsCareNotes",
+        "parameters": [
+          {
+            "name": "childId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNotesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/classes": {
+      "get": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "ListKidsClasses",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KidsClassDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "CreateKidsClass",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveKidsClassRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KidsClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/classes/{id}": {
+      "put": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "UpdateKidsClass",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveKidsClassRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KidsClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/classes/{id}/archive": {
+      "post": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "ArchiveKidsClass",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KidsClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/kids/classes/{id}/restore": {
+      "post": {
+        "tags": [
+          "Kids admin"
+        ],
+        "operationId": "RestoreKidsClass",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KidsClassDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AddChildRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "dateOfBirth",
+          "allergies",
+          "medical",
+          "other",
+          "guardianConsent"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "allergies": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "medical": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "other": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "guardianConsent": {
+            "type": "boolean"
+          }
+        }
+      },
       "AddContactRequest": {
         "required": [
           "type",
@@ -10517,6 +11019,62 @@
           }
         }
       },
+      "CareNotesDto": {
+        "required": [
+          "allergies",
+          "medical",
+          "other"
+        ],
+        "type": "object",
+        "properties": {
+          "allergies": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "medical": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "other": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CareNotesRequest": {
+        "required": [
+          "allergies",
+          "medical",
+          "other"
+        ],
+        "type": "object",
+        "properties": {
+          "allergies": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "medical": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "other": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "CategoryDto": {
         "required": [
           "id",
@@ -10961,6 +11519,62 @@
           "Ban"
         ]
       },
+      "CheckedInChildDto": {
+        "required": [
+          "checkInId",
+          "childId",
+          "name",
+          "age",
+          "hasCareNotes",
+          "checkedInAt",
+          "method",
+          "collectedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "checkInId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "childId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "hasCareNotes": {
+            "type": "boolean"
+          },
+          "checkedInAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "method": {
+            "$ref": "#/components/schemas/CheckInMethod"
+          },
+          "collectedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "CheckInMethod": {
+        "enum": [
+          "App",
+          "Desk"
+        ]
+      },
       "CheckInOutcome": {
         "enum": [
           "CheckedIn",
@@ -11017,6 +11631,25 @@
           }
         }
       },
+      "CheckOutRequest": {
+        "required": [
+          "code",
+          "checkInIds"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "checkInIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
       "ChurchOverviewDto": {
         "required": [
           "organisation",
@@ -11031,6 +11664,39 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CampusDto"
+            }
+          }
+        }
+      },
+      "ClassTodayDto": {
+        "required": [
+          "classId",
+          "name",
+          "fromAge",
+          "toAge",
+          "children"
+        ],
+        "type": "object",
+        "properties": {
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fromAge": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "toAge": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CheckedInChildDto"
             }
           }
         }
@@ -11921,6 +12587,95 @@
           "Skipped"
         ]
       },
+      "DeskCheckInRequest": {
+        "required": [
+          "parentFirstName",
+          "parentLastName",
+          "parentMobile",
+          "consent",
+          "children"
+        ],
+        "type": "object",
+        "properties": {
+          "parentFirstName": {
+            "type": "string"
+          },
+          "parentLastName": {
+            "type": "string"
+          },
+          "parentMobile": {
+            "type": "string"
+          },
+          "consent": {
+            "type": "boolean"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeskChildRequest"
+            }
+          }
+        }
+      },
+      "DeskCheckInResultDto": {
+        "required": [
+          "pickupCode",
+          "labels"
+        ],
+        "type": "object",
+        "properties": {
+          "pickupCode": {
+            "type": "string"
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KidsLabelDto"
+            }
+          }
+        }
+      },
+      "DeskChildRequest": {
+        "required": [
+          "firstName",
+          "lastName",
+          "dateOfBirth",
+          "allergies",
+          "medical",
+          "other"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "allergies": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "medical": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "other": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "DraftDto": {
         "required": [
           "id",
@@ -12740,6 +13495,88 @@
           "Member",
           "Inactive"
         ]
+      },
+      "KidsClassDto": {
+        "required": [
+          "id",
+          "name",
+          "fromAge",
+          "toAge",
+          "isArchived"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fromAge": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "toAge": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isArchived": {
+            "type": "boolean"
+          }
+        }
+      },
+      "KidsLabelDto": {
+        "required": [
+          "checkInId",
+          "childName",
+          "className",
+          "date",
+          "pickupCode",
+          "hasCareNotes"
+        ],
+        "type": "object",
+        "properties": {
+          "checkInId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "childName": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "pickupCode": {
+            "type": "string"
+          },
+          "hasCareNotes": {
+            "type": "boolean"
+          }
+        }
+      },
+      "KidsTodayDto": {
+        "required": [
+          "date",
+          "classes"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "classes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassTodayDto"
+            }
+          }
+        }
       },
       "LanguageDto": {
         "required": [
@@ -13651,6 +14488,104 @@
           }
         }
       },
+      "MyChildCheckInDto": {
+        "required": [
+          "id",
+          "className",
+          "pickupCode",
+          "checkedInAt",
+          "collectedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "className": {
+            "type": "string"
+          },
+          "pickupCode": {
+            "type": "string"
+          },
+          "checkedInAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "collectedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "MyChildDto": {
+        "required": [
+          "personId",
+          "firstName",
+          "name",
+          "dateOfBirth",
+          "age",
+          "className",
+          "careNotes",
+          "today"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "age": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "className": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "careNotes": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CareNotesDto"
+              }
+            ]
+          },
+          "today": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/MyChildCheckInDto"
+              }
+            ]
+          }
+        }
+      },
       "MyDataRequestDto": {
         "required": [
           "id",
@@ -14264,6 +15199,21 @@
           }
         }
       },
+      "ParentCheckInRequest": {
+        "required": [
+          "childIds"
+        ],
+        "type": "object",
+        "properties": {
+          "childIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
       "PermissionDto": {
         "required": [
           "key",
@@ -14569,7 +15519,8 @@
           "VisitorCard",
           "EventRegistration",
           "Giving",
-          "Import"
+          "Import",
+          "Guardian"
         ]
       },
       "PersonStatus": {
@@ -14580,6 +15531,49 @@
           "Merged",
           "Erased"
         ]
+      },
+      "PickupChildDto": {
+        "required": [
+          "checkInId",
+          "name",
+          "className",
+          "checkedInAt"
+        ],
+        "type": "object",
+        "properties": {
+          "checkInId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string"
+          },
+          "checkedInAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PickupDto": {
+        "required": [
+          "code",
+          "children"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PickupChildDto"
+            }
+          }
+        }
       },
       "PlanDto": {
         "required": [
@@ -16655,6 +17649,27 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "SaveKidsClassRequest": {
+        "required": [
+          "name",
+          "fromAge",
+          "toAge"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "fromAge": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "toAge": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -19324,6 +20339,12 @@
     },
     {
       "name": "Serving"
+    },
+    {
+      "name": "Kids"
+    },
+    {
+      "name": "Kids admin"
     }
   ]
 }

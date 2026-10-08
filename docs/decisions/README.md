@@ -23,3 +23,4 @@ One short record per decision that would be expensive to reverse. Add a new reco
 | [0017](0017-ai-drafting.md) | AI drafts for staff only, from public church content, within a monthly budget | Accepted |
 | [0018](0018-translations.md) | Translations as linked copies, checked by a speaker before publishing | Accepted |
 | [0019](0019-services.md) | Services: plans, teams, scheduling with safeguarding, songs, live run sheet | Accepted |
+| [0020](0020-kids-check-in.md) | Kids check-in: parents check in, a pickup code hands children back | Proposed |

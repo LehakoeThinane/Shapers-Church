@@ -28,6 +28,7 @@ const quickActions = [
   { label: 'Groups', icon: { ios: 'person.3', android: 'groups' }, href: '/community' },
   { label: 'Serve', icon: { ios: 'hand.raised', android: 'front_hand' }, href: '/community' },
   { label: 'Calendar', icon: { ios: 'calendar', android: 'calendar_month' }, href: '/calendar' },
+  { label: 'Kids', icon: { ios: 'figure.and.child.holdinghands', android: 'child_care' }, href: '/kids' },
 ] as const;
 
 export default function HomeScreen() {
@@ -260,8 +261,8 @@ const styles = StyleSheet.create({
   videoTitle: { fontSize: 24 },
   liveMeta: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.xs, paddingTop: 12, paddingBottom: 4 },
   flex: { flex: 1, gap: 2 },
-  quick: { flexDirection: 'row', justifyContent: 'space-between' },
-  quickItem: { alignItems: 'center', gap: 7, width: '24%' },
+  quick: { flexDirection: 'row', flexWrap: 'wrap', rowGap: space.md },
+  quickItem: { alignItems: 'center', gap: 7, width: '25%' },
   quickIcon: { width: 58, height: 58, alignItems: 'center', justifyContent: 'center' },
   section: { gap: space.sm },
   card: { padding: space.lg, gap: space.xxs },
