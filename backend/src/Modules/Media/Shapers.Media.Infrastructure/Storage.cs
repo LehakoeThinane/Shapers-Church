@@ -83,6 +83,12 @@ internal sealed class AzureBlobFileStorage : IFileStorage
         }
     }
 
+    public Task SaveAsync(string key, Stream content, string contentType, CancellationToken cancellationToken) =>
+        _container.GetBlobClient(key).UploadAsync(
+            content,
+            new Azure.Storage.Blobs.Models.BlobUploadOptions { HttpHeaders = new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = contentType } },
+            cancellationToken);
+
     public Task DeleteAsync(string key, CancellationToken cancellationToken) =>
         _container.GetBlobClient(key).DeleteIfExistsAsync(cancellationToken: cancellationToken);
 }
@@ -122,6 +128,14 @@ public sealed class LocalFileStorage(IOptions<StorageOptions> options, IHostEnvi
 
     public Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken) =>
         Task.FromResult<Stream>(File.OpenRead(PathFor(key)));
+
+    public async Task SaveAsync(string key, Stream content, string contentType, CancellationToken cancellationToken)
+    {
+        var path = PathFor(key);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        await using var file = File.Create(path);
+        await content.CopyToAsync(file, cancellationToken);
+    }
 
     public Task DeleteAsync(string key, CancellationToken cancellationToken)
     {
