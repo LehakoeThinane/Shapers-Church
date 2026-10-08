@@ -42,6 +42,8 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+# Windows PowerShell 5.1 stops on any warning az writes (e.g. 'a new Bicep release is available'); show errors only.
+$env:AZURE_CORE_ONLY_SHOW_ERRORS = 'true'
 $root = Resolve-Path (Join-Path $PSScriptRoot '../..')
 $template = Join-Path $PSScriptRoot 'main.bicep'
 $vaultName = 'kv-shapers-prod'
