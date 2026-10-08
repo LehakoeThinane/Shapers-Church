@@ -99,7 +99,7 @@ var tags = { app: 'shapers', environment: 'production' }
 var roles = {
   keyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
   keyVaultSecretsOfficer: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
-  acrPull: '7f951dda-4ed3-4ff4-a3b3-0b2a7dc2a1c8'
+  acrPull: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
   cognitiveServicesOpenAiUser: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
   cognitiveServicesUser: 'a97b65f3-24c7-4388-baec-2e87135dc908'
 }
