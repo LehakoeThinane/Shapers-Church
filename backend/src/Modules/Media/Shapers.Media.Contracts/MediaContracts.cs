@@ -40,6 +40,16 @@ public sealed record SermonForDrafting(
     string? Summary,
     string? Transcript);
 
+/// <summary>
+/// Keeps a copy of a public image another module brings in (e.g. the old website's images during the WordPress import),
+/// so it no longer depends on where it came from. Returns the image's public address.
+/// </summary>
+public interface IPublicImageStore
+{
+    /// <summary>Only images are accepted; anything else throws <see cref="DomainRuleException"/>.</summary>
+    Task<string> SaveAsync(string fileName, Stream content, string contentType, CancellationToken cancellationToken);
+}
+
 /// <summary>Reads sermons for other modules. The caller checks its own permissions against <see cref="SermonForDrafting.Scope"/>.</summary>
 public interface ISermonSource
 {

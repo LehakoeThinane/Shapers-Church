@@ -72,6 +72,7 @@ public static class MediaInfrastructure
             sp.GetRequiredService<YouTubeCaptionService>().RunAsync(ct)));
         services.AddScoped<TranscriptionJob>();
         services.AddScoped<ISermonSource, SermonSource>();
+        services.AddScoped<IPublicImageStore, PublicImageStore>();
         services.AddSingleton(new RecurringJobDefinition("media-transcription", "*/5 * * * *", (sp, ct) =>
             sp.GetRequiredService<TranscriptionJob>().RunAsync(ct)));
 
