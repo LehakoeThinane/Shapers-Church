@@ -18,8 +18,9 @@ import { church } from '../lib/church';
         <div class="way">
           <span class="label">Online</span>
           <h3>Give by card</h3>
-          <p class="muted">Pay securely with your bank card through Yoco. Add a note to say whether it is your tithe or an offering.</p>
-          <a class="button" href={church.giving.cardUrl} rel="noopener" target="_blank">Give by card</a>
+          <p class="muted" id="card-intro">Pay securely with your bank card through Yoco. Add a note to say whether it is your tithe or an offering.</p>
+          <a class="button" id="card-link" href={church.giving.cardUrl} rel="noopener" target="_blank">Give by card</a>
+          <a class="button" id="card-start" href="#give-online" hidden>Give by card</a>
         </div>
         <div class="way">
           <span class="label">Bank transfer</span>
@@ -37,6 +38,21 @@ import { church } from '../lib/church';
     </div>
   </section>
 
+  <section class="section" id="give-online" hidden style="max-width: 760px">
+    <p class="note" id="give-result" role="status" hidden></p>
+    <form class="glass stack" id="give-form">
+      <h2 style="font-size: 1.4rem">Give by card</h2>
+      <label>What is your gift for?<select name="fundId" id="fund" required></select></label>
+      <label>Amount (R)<input name="amount" type="text" inputmode="decimal" required placeholder="e.g. 250" autocomplete="off" /></label>
+      <div class="row">
+        <label>Your name<input name="name" required maxlength="120" autocomplete="name" /></label>
+        <label>Email for your receipt<input name="email" type="email" required autocomplete="email" /></label>
+      </div>
+      <p class="small muted">You'll pay on Yoco's secure page; Shapers Church never sees your card details. We keep your name, email and gift for the church's financial records. <a href="/privacy">How we look after your information</a>.</p>
+      <button class="button" type="submit">Continue to payment</button>
+      <p class="error" id="give-error" role="alert"></p>
+    </form>
+  </section>
   <section class="band band-dark band-glow" id="eft">
     <div class="wrap split">
       <div>
@@ -70,6 +86,59 @@ import { church } from '../lib/church';
 </Base>
 
 <script>
+  import { getJson, post } from '../scripts/live';
+  import type { Schemas } from '@shapers/api-client';
+
+  // Card giving through the platform, when the church has set it up; otherwise the Yoco link stays.
+  const section = document.getElementById('give-online')!;
+  const form = document.getElementById('give-form') as HTMLFormElement;
+  const error = document.getElementById('give-error')!;
+  const result = document.getElementById('give-result')!;
+  getJson<Schemas['GivingPageDto']>('/api/giving')
+    .then((page) => {
+      if (!page.cardGivingEnabled || page.funds.length === 0) return;
+      const select = document.getElementById('fund') as HTMLSelectElement;
+      select.replaceChildren(...page.funds.map((f) => new Option(f.name, f.id)));
+      document.getElementById('card-link')!.hidden = true;
+      document.getElementById('card-start')!.hidden = false;
+      document.getElementById('card-intro')!.textContent = 'Give to the tithe, offering or another fund, securely by card.';
+      section.hidden = false;
+      const query = new URLSearchParams(location.search);
+      if (query.has('cancelled') || query.has('failed')) {
+        result.textContent = query.has('failed') ? 'The payment didn’t go through, and nothing was taken. You can try again.' : 'You cancelled the payment. Nothing was taken.';
+        result.hidden = false;
+        section.scrollIntoView();
+      }
+    })
+    .catch(() => {
+      // Offline or the API is down: the Yoco link still works.
+    });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    error.textContent = '';
+    const data = new FormData(form);
+    const amount = Number(String(data.get('amount') ?? '').trim().replace(/\s/g, '').replace(',', '.'));
+    if (!Number.isFinite(amount) || amount < 5 || Math.round(amount * 100) !== amount * 100) {
+      error.textContent = 'Enter an amount from R5, e.g. 250 or 250.50.';
+      return;
+    }
+    const button = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    button.disabled = true;
+    try {
+      const started = await post<Schemas['StartGiftResponse']>('/api/giving/checkout', {
+        fundId: String(data.get('fundId')),
+        amount,
+        name: String(data.get('name') ?? '').trim(),
+        email: String(data.get('email') ?? '').trim(),
+      });
+      location.href = started.redirectUrl;
+    } catch (e) {
+      error.textContent = (e as Error).message;
+      button.disabled = false;
+    }
+  });
+
   const button = document.getElementById('copy') as HTMLButtonElement | null;
   button?.addEventListener('click', async () => {
     try {

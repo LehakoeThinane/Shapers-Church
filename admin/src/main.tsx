@@ -31,6 +31,7 @@ import { AssistUsagePage } from './pages/AssistPage';
 import { BackgroundWorkPage } from './pages/BackgroundWorkPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { KidsClassesPage, KidsDeskPage, KidsTodayPage } from './pages/KidsPages';
+import { FundsPage, GiftsPage, GivingOverviewPage, GivingStatementPage } from './pages/GivingPages';
 import { LiveRunSheetPage, MusicStandPage, ServicePlanPage, ServicePlansPage, ServingMatrixPage } from './pages/ServicesPages';
 import { ServiceTypesPage, ServingTeamsPage, SongPage, SongsPage } from './pages/ServicesSetupPages';
 import './index.css';
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
           { path: 'kids', element: <KidsTodayPage /> },
           { path: 'kids/desk', element: <KidsDeskPage /> },
           { path: 'kids/classes', element: <KidsClassesPage /> },
+          { path: 'giving', element: <GivingOverviewPage /> },
+          { path: 'giving/gifts', element: <GiftsPage /> },
+          { path: 'giving/funds', element: <FundsPage /> },
+          { path: 'giving/statement/:personId', element: <GivingStatementPage /> },
           { path: 'services', element: <ServicePlansPage /> },
           { path: 'services/plans/:id', element: <ServicePlanPage /> },
           { path: 'services/plans/:id/live', element: <LiveRunSheetPage /> },

@@ -59,6 +59,14 @@ param bootstrapAdminPassword string
 @secure()
 param youTubeApiKey string = ''
 
+@description('Online card giving through Yoco: the secret key from the church\'s Yoco portal. Empty keeps card giving on the Yoco payment link.')
+@secure()
+param yocoSecretKey string = ''
+
+@description('The signing secret Yoco returns when the giving webhook is registered (docs/deployment.md, Giving).')
+@secure()
+param yocoWebhookSecret string = ''
+
 @description('Optional: GitHub token allowed to trigger the website rebuild (repository dispatch).')
 @secure()
 param siteRebuildToken string = ''
@@ -436,7 +444,8 @@ var secretNames = concat(
   ],
   empty(youTubeApiKey) ? [] : ['youtube-api-key'],
   empty(siteRebuildToken) ? [] : ['site-rebuild-token'],
-  empty(youTubeOAuthClientSecret) ? [] : ['youtube-oauth-client-secret']
+  empty(youTubeOAuthClientSecret) ? [] : ['youtube-oauth-client-secret'],
+  empty(yocoSecretKey) || empty(yocoWebhookSecret) ? [] : ['yoco-secret-key', 'yoco-webhook-secret']
 )
 var secretValues = {
   'postgres-admin-password': postgresAdminPassword
@@ -450,6 +459,8 @@ var secretValues = {
   'youtube-api-key': youTubeApiKey
   'site-rebuild-token': siteRebuildToken
   'youtube-oauth-client-secret': youTubeOAuthClientSecret
+  'yoco-secret-key': yocoSecretKey
+  'yoco-webhook-secret': yocoWebhookSecret
 }
 
 resource secrets 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = [
@@ -528,6 +539,13 @@ var optionalEnv = concat(
         { name: 'Media__YouTube__OAuthClientSecret', secretRef: 'youtube-oauth-client-secret' }
       ],
   empty(youTubeOAuthRedirectUri) ? [] : [{ name: 'Media__YouTube__OAuthRedirectUri', value: youTubeOAuthRedirectUri }],
+  empty(yocoSecretKey) || empty(yocoWebhookSecret)
+    ? []
+    : [
+        { name: 'Giving__Provider', value: 'Yoco' }
+        { name: 'Giving__Yoco__SecretKey', secretRef: 'yoco-secret-key' }
+        { name: 'Giving__Yoco__WebhookSecret', secretRef: 'yoco-webhook-secret' }
+      ],
   enableAi
     ? [
         { name: 'Assist__Provider', value: 'Azure' }
