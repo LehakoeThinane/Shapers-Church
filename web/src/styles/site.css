@@ -1005,6 +1005,85 @@ main > .page-header + article {
   font-size: 1.1rem;
 }
 
+/* Events list: one row per event, the poster shown whole beside the details. */
+.event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 24px;
+}
+
+.event-row {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) 1fr;
+  align-items: center;
+  gap: clamp(24px, 4vw, 48px);
+  padding: clamp(16px, 2vw, 24px);
+  border-radius: var(--radius-card);
+  background: var(--night);
+  border: 1px solid var(--night-line);
+}
+
+.event-row-image {
+  display: block;
+}
+
+.event-row-image img.cover {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 16px;
+}
+
+.event-row-image .cover-fallback {
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+}
+
+.event-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.event-row-body h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  margin: 0;
+}
+
+.event-row-body h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.event-row-body h2 a:hover {
+  color: var(--color-accent);
+}
+
+.event-row-body p {
+  margin: 0;
+}
+
+.event-row-body .row {
+  margin-top: 8px;
+  align-items: center;
+}
+
+.page-header .arrow-link {
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.poster-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
 /* ---------- Give ---------- */
 
 .give-panel {
@@ -1924,6 +2003,7 @@ fieldset legend {
 @media (max-width: 960px) {
   .detail-layout,
   .event-head.has-image,
+  .event-row,
   .split,
   .split.reverse,
   .feature,
