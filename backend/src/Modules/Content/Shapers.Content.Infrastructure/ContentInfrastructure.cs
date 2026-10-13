@@ -97,6 +97,8 @@ public static class ContentInfrastructure
         services.AddScoped<ContentPublisherJob>();
         services.AddScoped<IIntegrationEventHandler<ContentPublishedIntegrationEvent>, RebuildSiteOnPublish>();
         services.AddScoped<IIntegrationEventHandler<SermonPublishedIntegrationEvent>, RebuildSiteOnPublish>();
+        services.AddScoped<IIntegrationEventHandler<Shapers.Events.Contracts.EventListingChangedIntegrationEvent>, RebuildSiteOnPublish>();
+        services.AddScoped<IIntegrationEventHandler<Shapers.Events.Contracts.EventCancelledIntegrationEvent>, RebuildSiteOnPublish>();
         services.AddSingleton(new RecurringJobDefinition("content-publish-scheduled", "* * * * *", (sp, ct) =>
             sp.GetRequiredService<ContentPublisherJob>().RunAsync(ct)));
         return services;
