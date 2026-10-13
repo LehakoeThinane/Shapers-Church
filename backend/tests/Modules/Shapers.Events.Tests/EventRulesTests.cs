@@ -244,6 +244,21 @@ public sealed class EventTests
     }
 
     [Fact]
+    public void The_website_hears_when_a_live_listing_changes_but_not_about_drafts()
+    {
+        var e = Event.Create("Water baptism", Build.Church, Build.Now.AddDays(10), Build.Now.AddDays(10).AddHours(2), Build.Now);
+        e.UpdateDetails("Water baptism", "Draft edit", null, e.StartsAt, e.EndsAt, null, null, EventVisibility.Public, Build.Now);
+        Assert.Empty(e.DomainEvents);
+
+        e.Publish(Build.Now);
+        e.UpdateDetails("Water baptism", "Live edit", null, e.StartsAt, e.EndsAt, null, null, EventVisibility.Public, Build.Now);
+        e.Unpublish(Build.Now);
+        e.Unpublish(Build.Now);
+
+        Assert.Equal(3, e.DomainEvents.OfType<EventListingChanged>().Count(c => c.Slug == e.Slug));
+    }
+
+    [Fact]
     public void A_waiting_list_needs_a_capacity()
     {
         var e = Build.Open(capacity: null, waitlist: true);

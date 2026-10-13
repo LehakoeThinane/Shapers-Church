@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shapers.Content.Contracts;
+using Shapers.Events.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Platform.Messaging;
 
@@ -22,15 +23,24 @@ public sealed class SiteRebuildOptions
     public string? Token { get; set; }
 }
 
-/// <summary>Asks the website to rebuild after a page, post or sermon goes live. Best effort: the site also rebuilds hourly.</summary>
+/// <summary>Asks the website to rebuild after a page, post, sermon or event changes. Best effort: the site also rebuilds hourly.</summary>
 public sealed partial class RebuildSiteOnPublish(IHttpClientFactory httpClients, IOptions<SiteRebuildOptions> options, ILogger<RebuildSiteOnPublish> logger)
-    : IIntegrationEventHandler<ContentPublishedIntegrationEvent>, IIntegrationEventHandler<SermonPublishedIntegrationEvent>
+    : IIntegrationEventHandler<ContentPublishedIntegrationEvent>,
+        IIntegrationEventHandler<SermonPublishedIntegrationEvent>,
+        IIntegrationEventHandler<EventListingChangedIntegrationEvent>,
+        IIntegrationEventHandler<EventCancelledIntegrationEvent>
 {
     public Task HandleAsync(ContentPublishedIntegrationEvent integrationEvent, CancellationToken cancellationToken) =>
         TriggerAsync($"{integrationEvent.Kind} {integrationEvent.Slug}", cancellationToken);
 
     public Task HandleAsync(SermonPublishedIntegrationEvent integrationEvent, CancellationToken cancellationToken) =>
         TriggerAsync($"sermon {integrationEvent.Slug}", cancellationToken);
+
+    public Task HandleAsync(EventListingChangedIntegrationEvent integrationEvent, CancellationToken cancellationToken) =>
+        TriggerAsync($"event {integrationEvent.Slug}", cancellationToken);
+
+    public Task HandleAsync(EventCancelledIntegrationEvent integrationEvent, CancellationToken cancellationToken) =>
+        TriggerAsync($"event cancelled {integrationEvent.ChurchEventId}", cancellationToken);
 
     private async Task TriggerAsync(string reason, CancellationToken cancellationToken)
     {
