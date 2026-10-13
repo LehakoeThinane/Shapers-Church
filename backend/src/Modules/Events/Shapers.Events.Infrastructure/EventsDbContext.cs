@@ -112,6 +112,7 @@ public sealed class EventsDbContext(DbContextOptions<EventsDbContext> options) :
         RegistrationCreated e => [new EventRegisteredIntegrationEvent(e.RegistrationId, e.EventId, e.PersonId, e.Status.ToString())],
         WaitlistPromoted e => [new WaitlistPromotedIntegrationEvent(e.RegistrationId, e.EventId, e.PersonId)],
         EventCancelled e => [new EventCancelledIntegrationEvent(e.EventId, e.Title)],
+        EventListingChanged e => [new EventListingChangedIntegrationEvent(e.EventId, e.Slug)],
         _ => [],
     };
 }

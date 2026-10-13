@@ -18,3 +18,6 @@ public sealed record EventRegisteredIntegrationEvent(Guid RegistrationId, Guid C
 public sealed record WaitlistPromotedIntegrationEvent(Guid RegistrationId, Guid ChurchEventId, Guid PersonId) : IntegrationEvent;
 
 public sealed record EventCancelledIntegrationEvent(Guid ChurchEventId, string Title) : IntegrationEvent;
+
+/// <summary>A live event was published, edited or taken down: the public website needs rebuilding.</summary>
+public sealed record EventListingChangedIntegrationEvent(Guid ChurchEventId, string Slug) : IntegrationEvent;

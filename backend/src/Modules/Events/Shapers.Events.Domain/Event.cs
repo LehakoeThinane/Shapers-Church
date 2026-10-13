@@ -20,6 +20,9 @@ public sealed record EventLocation(string Name, string? Address);
 
 public sealed record EventCancelled(Guid EventId, string Title) : IDomainEvent;
 
+/// <summary>Something the public sees changed: the event went live, came down or was edited while live.</summary>
+public sealed record EventListingChanged(Guid EventId, string Slug) : IDomainEvent;
+
 /// <summary>A simple extra question on the registration form, e.g. "Dietary requirements".</summary>
 public sealed class RegistrationQuestion
 {
@@ -165,6 +168,10 @@ public sealed partial class Event : AggregateRoot<Guid>
         ImageUrl = imageUrl;
         Visibility = visibility;
         UpdatedAt = now;
+        if (Status == EventStatus.Published)
+        {
+            Raise(new EventListingChanged(Id, Slug));
+        }
     }
 
     public void ConfigureRegistration(
@@ -251,13 +258,19 @@ public sealed partial class Event : AggregateRoot<Guid>
         Status = EventStatus.Published;
         PublishedAt ??= now;
         UpdatedAt = now;
+        Raise(new EventListingChanged(Id, Slug));
     }
 
     public void Unpublish(DateTimeOffset now)
     {
         EnsureNotCancelled();
+        var wasLive = Status == EventStatus.Published;
         Status = EventStatus.Draft;
         UpdatedAt = now;
+        if (wasLive)
+        {
+            Raise(new EventListingChanged(Id, Slug));
+        }
     }
 
     public void Cancel(DateTimeOffset now)

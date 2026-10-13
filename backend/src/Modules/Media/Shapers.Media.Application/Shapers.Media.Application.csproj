@@ -7,6 +7,7 @@
     <ProjectReference Include="../../People/Shapers.People.Contracts/Shapers.People.Contracts.csproj" />
     <ProjectReference Include="../../Assist/Shapers.Assist.Contracts/Shapers.Assist.Contracts.csproj" />
     <ProjectReference Include="../../Services/Shapers.Services.Contracts/Shapers.Services.Contracts.csproj" />
+    <ProjectReference Include="../../Events/Shapers.Events.Contracts/Shapers.Events.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Shapers.Media.Tests" />
