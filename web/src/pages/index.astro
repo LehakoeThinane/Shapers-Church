@@ -11,6 +11,8 @@ const [sermons, events, posts] = await Promise.all([
   get<Schemas['PostPageDto']>('/api/content/posts?pageSize=3', { items: [], total: 0, page: 1, pageSize: 3 }),
 ]);
 const [latest, ...recent] = sermons.items;
+// The baptism poster links to its event's booking form once the event is published.
+const baptism = events.find((e) => /baptism/i.test(e.title) && e.registrationRequired);
 ---
 
 <Base>
@@ -182,7 +184,10 @@ const [latest, ...recent] = sermons.items;
           <figcaption>
             <span class="label">Coming up · Sunday 25 October 2026</span>
             <strong>Water Baptism</strong>
-            <span class="muted">Ready to be baptised? <a href="/connect">Let us know</a> and we&apos;ll help you register.</span>
+            <span class="muted">Ready to be baptised? Book your place.</span>
+            <div class="poster-actions">
+              <a class="button dark" href={baptism ? `/events/${baptism.slug}#booking` : '/connect'}>Register</a>
+            </div>
           </figcaption>
         </figure>
         <figure class="poster">
