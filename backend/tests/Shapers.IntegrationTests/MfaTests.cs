@@ -20,7 +20,8 @@ public sealed class MfaTests(MfaApiFactory api) : IClassFixture<MfaApiFactory>
         var secret = setup.SharedKey.Replace(" ", string.Empty, StringComparison.Ordinal).ToUpperInvariant();
         await (await admin.PostJsonAsync("/api/auth/2fa/enable", new { code = Totp.Now(secret) })).ReadAsync<RecoveryCodes>();
 
-        // Enabling 2FA upgrades the current session.
+        // Enabling 2FA upgrades the current session, and it stays upgraded when the cookie is rebuilt.
+        Assert.Equal(HttpStatusCode.OK, (await admin.GetAsync("/api/admin/people")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await admin.GetAsync("/api/admin/people")).StatusCode);
 
         // A fresh sign-in now needs the code.

@@ -103,6 +103,14 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 public sealed class MfaApiFactory : ApiFactory
 {
     protected override bool RequireMfa => true;
+
+    // Rebuild the sign-in cookie on every request (normally every 30 minutes), so tests show a two-step sign-in survives it.
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        base.ConfigureWebHost(builder);
+        builder.ConfigureServices(services =>
+            services.Configure<Microsoft.AspNetCore.Identity.SecurityStampValidatorOptions>(o => o.ValidationInterval = TimeSpan.Zero));
+    }
 }
 
 public sealed class CapturingSmsSender : ISmsSender

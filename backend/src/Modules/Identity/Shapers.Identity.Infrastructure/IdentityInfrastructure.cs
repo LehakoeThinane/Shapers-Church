@@ -144,6 +144,24 @@ public static class IdentityInfrastructure
             o.Events.OnRedirectToLogin = c => { c.Response.StatusCode = StatusCodes.Status401Unauthorized; return Task.CompletedTask; };
             o.Events.OnRedirectToAccessDenied = c => { c.Response.StatusCode = StatusCodes.Status403Forbidden; return Task.CompletedTask; };
         });
+        // Every 30 minutes the cookie is rebuilt from the database to pick up role changes. How the person signed in
+        // ("pwd", "mfa") isn't in the database, so carry it over; otherwise a two-step sign-in silently becomes a
+        // password-only one and screens with personal details close mid-session.
+        services.Configure<SecurityStampValidatorOptions>(o => o.OnRefreshingPrincipal = context =>
+        {
+            if (context.NewPrincipal?.Identity is System.Security.Claims.ClaimsIdentity identity && context.CurrentPrincipal is { } current)
+            {
+                foreach (var claim in current.Claims.Where(c => c.Type is ShapersClaims.AuthenticationMethod or System.Security.Claims.ClaimTypes.AuthenticationMethod))
+                {
+                    if (!identity.HasClaim(claim.Type, claim.Value))
+                    {
+                        identity.AddClaim(new System.Security.Claims.Claim(claim.Type, claim.Value));
+                    }
+                }
+            }
+
+            return Task.CompletedTask;
+        });
         services.Configure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(IdentityConstants.TwoFactorUserIdScheme, o =>
         {
             o.Cookie.HttpOnly = true;
