@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import QrScanner from 'qr-scanner';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
+import { ImagePicker } from '../components/ImagePicker';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
 import { api, apiBaseUrl, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -276,8 +277,19 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
               <Field label="Address">
                 <TextInput maxLength={300} value={form.locationAddress} onChange={(e) => set({ locationAddress: e.target.value })} />
               </Field>
-              <Field label="Image link" hint="Optional. A wide image (16:9) looks best.">
-                <TextInput type="url" maxLength={500} value={form.imageUrl} onChange={(e) => set({ imageUrl: e.target.value })} />
+              <Field label="Image" hint="Optional. Paste a link, or upload a picture. A wide image (16:9) looks best.">
+                <div className="stack">
+                  <TextInput type="url" maxLength={500} placeholder="https://…" value={form.imageUrl} onChange={(e) => set({ imageUrl: e.target.value })} />
+                  {form.imageUrl && <img className="event-image-preview" src={form.imageUrl} alt="" />}
+                  <div className="row">
+                    <ImagePicker label={form.imageUrl ? 'Upload a different picture' : 'Upload a picture'} onUploaded={(asset) => set({ imageUrl: asset.url })} />
+                    {form.imageUrl && (
+                      <Button variant="ghost" type="button" onClick={() => set({ imageUrl: '' })}>
+                        Remove image
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </Field>
               <Field label="Who can see it">
                 <Select value={form.visibility} onChange={(e) => set({ visibility: e.target.value as Form['visibility'] })}>

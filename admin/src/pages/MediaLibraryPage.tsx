@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { Button, Card, Empty, ErrorNote, Field, PageHeader, TextInput } from '../components/ui';
 import { api, formatDate, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
-import { uploadFile } from '../lib/upload';
+import { ImagePicker } from '../components/ImagePicker';
 
 /** Series and speakers: the building blocks the sermon editor picks from. */
 export function MediaLibraryPage() {
@@ -17,41 +17,6 @@ export function MediaLibraryPage() {
         {can(access, Permissions.speakersManage) ? <SpeakersCard /> : <Card title="Speakers"><Empty>You can't manage speakers.</Empty></Card>}
       </div>
     </>
-  );
-}
-
-function ImagePicker({ label, onUploaded }: { label: string; onUploaded: (asset: Schemas['AssetDto']) => void }) {
-  const [progress, setProgress] = useState<number | null>(null);
-  const [error, setError] = useState<unknown>(null);
-  return (
-    <div className="stack">
-      {progress !== null ? (
-        <progress max={1} value={progress} />
-      ) : (
-        <label className="btn btn-secondary">
-          {label}
-          <input
-            type="file"
-            hidden
-            accept="image/jpeg,image/png,image/webp"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              setError(null);
-              setProgress(0);
-              try {
-                onUploaded(await uploadFile('Image', file, setProgress));
-              } catch (err) {
-                setError(err);
-              } finally {
-                setProgress(null);
-              }
-            }}
-          />
-        </label>
-      )}
-      <ErrorNote error={error} />
-    </div>
   );
 }
 
