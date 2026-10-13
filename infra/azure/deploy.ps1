@@ -112,6 +112,8 @@ foreach ($name in 'postgres-admin-password', 'auth-jwt-signing-key', 'auth-otp-h
 if ($vaultExists) {
     $YocoSecretKey = Use-Existing $YocoSecretKey { Get-ExistingSecret 'yoco-secret-key' }
     $YocoWebhookSecret = Use-Existing $YocoWebhookSecret { Get-ExistingSecret 'yoco-webhook-secret' }
+    # Likewise the token that lets the API trigger a website rebuild.
+    $SiteRebuildToken = [string] (Use-Existing $SiteRebuildToken { Get-ExistingSecret 'site-rebuild-token' })
 }
 
 $newAdminPassword = -not $existing['bootstrap-admin-password']
