@@ -1338,6 +1338,11 @@ label {
   flex: 1 1 220px;
 }
 
+/* The flex basis above is for fields side by side in a row; stacked, it would make each field 220px tall. */
+.stack > label {
+  flex: none;
+}
+
 label.check {
   flex-direction: row;
   align-items: flex-start;
@@ -1567,6 +1572,11 @@ fieldset legend {
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.detail-side h2 {
+  font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+  margin: 0;
 }
 
 .detail-side.glass {
