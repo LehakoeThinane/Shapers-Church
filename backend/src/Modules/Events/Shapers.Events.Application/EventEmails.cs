@@ -56,6 +56,32 @@ public sealed partial class EventEmails(IEmailSender sender, IOptions<EventsOpti
         return SendAsync(new EmailMessage(email, $"Tomorrow: {e.Title}", string.Join("\n", lines), EmailLayout.Html($"Tomorrow: {e.Title}", lines)), cancellationToken);
     }
 
+    /// <summary>Tells the organiser someone registered. Only a short name and the count: the details stay behind the admin sign-in.</summary>
+    public Task SendOrganiserNoticeAsync(string email, Event e, string shortName, int seats, bool waitlisted, int confirmed, CancellationToken cancellationToken)
+    {
+        var link = $"{options.Value.AdminSiteUrl.TrimEnd('/')}/events/{e.Id}/attendees";
+        var who = seats > 1 ? $"{shortName} (+{seats - 1})" : shortName;
+        var subject = waitlisted ? $"Waiting list: {who} for {e.Title}" : $"New registration: {who} for {e.Title}";
+        var lines = new[]
+        {
+            waitlisted ? $"{who} joined the waiting list for {e.Title}." : $"{who} registered for {e.Title}.",
+            $"{confirmed} {(confirmed == 1 ? "person is" : "people are")} booked so far.",
+        };
+        return SendAsync(new EmailMessage(email, subject, string.Join("\n", lines.Append(link)), EmailLayout.Html(subject, lines, "View registrations", link)), cancellationToken);
+    }
+
+    /// <summary>"Thabo Mokoena" becomes "Thabo M.".</summary>
+    public static string ShortName(string displayName)
+    {
+        var parts = displayName.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return parts.Length switch
+        {
+            0 => "Someone",
+            1 => parts[0],
+            _ => $"{parts[0]} {char.ToUpperInvariant(parts[^1][0])}.",
+        };
+    }
+
     private async Task SendAsync(EmailMessage message, CancellationToken cancellationToken)
     {
         try
@@ -92,6 +118,26 @@ public sealed class ConfirmMemberRegistration(IEventsDb db, EventReader reader, 
 
         var e = await db.Events.AsNoTracking().SingleAsync(x => x.Id == r.EventId, cancellationToken);
         await emails.SendConfirmationAsync(email, await reader.ToDtoAsync(r, e, cancellationToken), e, null, cancellationToken);
+    }
+}
+
+/// <summary>Members and guests alike: the event's notice address hears about each new booking.</summary>
+public sealed class NotifyOrganiserOfRegistration(IEventsDb db, EventEmails emails, IPeopleDirectory people) :IIntegrationEventHandler<EventRegisteredIntegrationEvent>
+{
+    public async Task HandleAsync(EventRegisteredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    {
+        var e = await db.Events.AsNoTracking().SingleOrDefaultAsync(x => x.Id == integrationEvent.ChurchEventId, cancellationToken);
+        var r = await db.Registrations.AsNoTracking().SingleOrDefaultAsync(x => x.Id == integrationEvent.RegistrationId, cancellationToken);
+        if (e?.NotifyEmail is not { } notify || r is null || r.Status == RegistrationStatus.Cancelled)
+        {
+            return;
+        }
+
+        var confirmed = await db.Registrations.AsNoTracking()
+            .Where(x => x.EventId == e.Id && x.Status == RegistrationStatus.Confirmed)
+            .SumAsync(x => x.Attendees.Count, cancellationToken);
+        var name = (await people.GetAsync(r.RegistrantPersonId, cancellationToken))?.DisplayName ?? (r.Attendees.Count > 0 ? r.Attendees[0].Name : string.Empty);
+        await emails.SendOrganiserNoticeAsync(notify, e, EventEmails.ShortName(name), r.Seats, r.Status == RegistrationStatus.Waitlisted, confirmed, cancellationToken);
     }
 }
 

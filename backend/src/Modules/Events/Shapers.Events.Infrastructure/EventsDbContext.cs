@@ -39,6 +39,7 @@ public sealed class EventsDbContext(DbContextOptions<EventsDbContext> options) :
             b.Property(e => e.Summary).HasMaxLength(300);
             b.Property(e => e.Scope).HasMaxLength(512);
             b.Property(e => e.ImageUrl).HasMaxLength(500);
+            b.Property(e => e.NotifyEmail).HasMaxLength(254);
             b.Property(e => e.Visibility).HasConversion<string>().HasMaxLength(20);
             b.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
             b.HasIndex(e => e.Slug).IsUnique();

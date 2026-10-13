@@ -97,6 +97,11 @@ namespace Shapers.Events.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("max_per_registration");
 
+                    b.Property<string>("NotifyEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("notify_email");
+
                     b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("published_at");

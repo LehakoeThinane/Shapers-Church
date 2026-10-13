@@ -116,6 +116,7 @@ type Form = {
   waitlistEnabled: boolean;
   maxPerRegistration: string;
   questions: { id: string | null; label: string; required: boolean }[];
+  notifyEmail: string;
 };
 
 function initialForm(e?: AdminEvent): Form {
@@ -141,6 +142,7 @@ function initialForm(e?: AdminEvent): Form {
       waitlistEnabled: false,
       maxPerRegistration: '4',
       questions: [],
+      notifyEmail: 'shaperschurch@gmail.com',
     };
   }
   return {
@@ -160,6 +162,7 @@ function initialForm(e?: AdminEvent): Form {
     waitlistEnabled: e.waitlistEnabled,
     maxPerRegistration: e.event.maxPerRegistration.toString(),
     questions: e.event.questions.map((q) => ({ id: q.id, label: q.label, required: q.required })),
+    notifyEmail: e.notifyEmail ?? '',
   };
 }
 
@@ -182,6 +185,7 @@ function toRequest(f: Form, scope: string | null): SaveEvent {
     maxPerRegistration: Number(f.maxPerRegistration) || 1,
     questions: f.questions.filter((q) => q.label.trim()),
     scope,
+    notifyEmail: f.registrationRequired ? f.notifyEmail.trim() || null : null,
   };
 }
 
@@ -343,6 +347,9 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
                         </Button>
                       )}
                     </div>
+                  </Field>
+                  <Field label="Email me about new registrations" hint="Gets the person's name and a link to the list. Their details stay here, behind the sign-in. Leave empty for no emails.">
+                    <TextInput type="email" maxLength={254} value={form.notifyEmail} onChange={(e) => set({ notifyEmail: e.target.value })} />
                   </Field>
                 </>
               )}

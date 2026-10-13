@@ -94,6 +94,9 @@ public sealed partial class Event : AggregateRoot<Guid>
     /// <summary>How many people one registration may include (the registrant plus family or friends).</summary>
     public int MaxPerRegistration { get; private set; }
 
+    /// <summary>Who hears about each new registration, e.g. the church inbox. The email carries a short name and a link, not the details.</summary>
+    public string? NotifyEmail { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public DateTimeOffset UpdatedAt { get; private set; }
@@ -195,6 +198,26 @@ public sealed partial class Event : AggregateRoot<Guid>
         Capacity = capacity;
         WaitlistEnabled = waitlistEnabled && capacity is not null;
         MaxPerRegistration = maxPerRegistration;
+        UpdatedAt = now;
+    }
+
+    public void SetNotifyEmail(string? email, DateTimeOffset now)
+    {
+        EnsureNotCancelled();
+        var trimmed = email?.Trim();
+        if (string.IsNullOrEmpty(trimmed))
+        {
+            NotifyEmail = null;
+        }
+        else if (trimmed.Length > 254 || trimmed.Any(char.IsWhiteSpace) || trimmed.IndexOf('@', StringComparison.Ordinal) is < 1 || trimmed.EndsWith('@'))
+        {
+            throw new DomainRuleException("events.notify_email", "Enter one email address for registration notices.");
+        }
+        else
+        {
+            NotifyEmail = trimmed;
+        }
+
         UpdatedAt = now;
     }
 

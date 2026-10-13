@@ -219,6 +219,31 @@ public sealed class EventTests
     }
 
     [Fact]
+    public void The_notice_address_is_trimmed_cleared_when_empty_and_must_look_like_an_email()
+    {
+        var e = Build.Open();
+
+        e.SetNotifyEmail("  shaperschurch@gmail.com ", Build.Now);
+        Assert.Equal("shaperschurch@gmail.com", e.NotifyEmail);
+
+        e.SetNotifyEmail(" ", Build.Now);
+        Assert.Null(e.NotifyEmail);
+
+        Assert.Throws<DomainRuleException>(() => e.SetNotifyEmail("not an email", Build.Now));
+        Assert.Throws<DomainRuleException>(() => e.SetNotifyEmail("@gmail.com", Build.Now));
+    }
+
+    [Theory]
+    [InlineData("Thabo Mokoena", "Thabo M.")]
+    [InlineData("Lerato van der Merwe", "Lerato M.")]
+    [InlineData("Sipho", "Sipho")]
+    [InlineData("  ", "Someone")]
+    public void Organiser_notices_name_people_briefly(string displayName, string expected)
+    {
+        Assert.Equal(expected, Shapers.Events.Application.EventEmails.ShortName(displayName));
+    }
+
+    [Fact]
     public void A_waiting_list_needs_a_capacity()
     {
         var e = Build.Open(capacity: null, waitlist: true);
