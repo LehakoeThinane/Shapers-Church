@@ -15,6 +15,7 @@ const reasonLabels: Record<Reason, string> = {
   MoreInfo: 'Wants to know more',
   JoinGroup: 'Join a group',
   Serve: 'Wants to serve',
+  EventRegistration: 'Registered for an event',
 };
 
 /** People who raised a hand during a service or online. Someone from the campus team follows each one up. */
@@ -67,7 +68,11 @@ export function ConnectCardsPage() {
                 <Badge key={r}>{reasonLabels[r]}</Badge>
               ))}
             </p>
-            {c.message && <p className="quote">{c.message}</p>}
+            {c.message && (
+              <p className="quote" style={{ whiteSpace: 'pre-line' }}>
+                {c.message}
+              </p>
+            )}
             <p className="small">
               {c.mobile && <a href={`tel:${c.mobile}`}>{c.mobile}</a>}
               {c.mobile && c.email && ' · '}

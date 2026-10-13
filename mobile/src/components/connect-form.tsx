@@ -10,7 +10,8 @@ import { api, errorMessage, unwrap, useSession, type Schemas } from '@/lib/api';
 import { useTheme } from '@/theme/theme';
 import { text } from '@/theme/type';
 
-type Reason = Schemas['ConnectReason'];
+// Event registrations reach the follow-up list on their own; nobody picks that reason on a card.
+type Reason = Exclude<Schemas['ConnectReason'], 'EventRegistration'>;
 
 const labels: Record<Reason, string> = {
   FirstTime: "I'm new here",

@@ -100,6 +100,12 @@ public sealed partial class Event : AggregateRoot<Guid>
     /// <summary>Who hears about each new registration, e.g. the church inbox. The email carries a short name and a link, not the details.</summary>
     public string? NotifyEmail { get; private set; }
 
+    /// <summary>Guests registering on the website must give a mobile number (staff and members aren't asked).</summary>
+    public bool MobileRequired { get; private set; }
+
+    /// <summary>Each registrant goes on the follow-up list (connect cards) for the team to contact.</summary>
+    public bool FollowUpRegistrants { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public DateTimeOffset UpdatedAt { get; private set; }
@@ -225,6 +231,14 @@ public sealed partial class Event : AggregateRoot<Guid>
             NotifyEmail = trimmed;
         }
 
+        UpdatedAt = now;
+    }
+
+    public void SetFollowUp(bool mobileRequired, bool followUpRegistrants, DateTimeOffset now)
+    {
+        EnsureNotCancelled();
+        MobileRequired = mobileRequired;
+        FollowUpRegistrants = followUpRegistrants;
         UpdatedAt = now;
     }
 

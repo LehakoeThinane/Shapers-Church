@@ -118,6 +118,8 @@ type Form = {
   maxPerRegistration: string;
   questions: { id: string | null; label: string; required: boolean }[];
   notifyEmail: string;
+  mobileRequired: boolean;
+  followUpRegistrants: boolean;
 };
 
 function initialForm(e?: AdminEvent): Form {
@@ -144,6 +146,8 @@ function initialForm(e?: AdminEvent): Form {
       maxPerRegistration: '4',
       questions: [],
       notifyEmail: 'shaperschurch@gmail.com',
+      mobileRequired: false,
+      followUpRegistrants: false,
     };
   }
   return {
@@ -164,6 +168,8 @@ function initialForm(e?: AdminEvent): Form {
     maxPerRegistration: e.event.maxPerRegistration.toString(),
     questions: e.event.questions.map((q) => ({ id: q.id, label: q.label, required: q.required })),
     notifyEmail: e.notifyEmail ?? '',
+    mobileRequired: e.event.mobileRequired ?? false,
+    followUpRegistrants: e.followUpRegistrants,
   };
 }
 
@@ -187,6 +193,8 @@ function toRequest(f: Form, scope: string | null): SaveEvent {
     questions: f.questions.filter((q) => q.label.trim()),
     scope,
     notifyEmail: f.registrationRequired ? f.notifyEmail.trim() || null : null,
+    mobileRequired: f.registrationRequired && f.mobileRequired,
+    followUpRegistrants: f.registrationRequired && f.followUpRegistrants,
   };
 }
 
@@ -363,6 +371,14 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
                   <Field label="Email me about new registrations" hint="Gets the person's name and a link to the list. Their details stay here, behind the sign-in. Leave empty for no emails.">
                     <TextInput type="email" maxLength={254} value={form.notifyEmail} onChange={(e) => set({ notifyEmail: e.target.value })} />
                   </Field>
+                  <label className="checkbox">
+                    <input type="checkbox" checked={form.mobileRequired} onChange={(e) => set({ mobileRequired: e.target.checked })} />
+                    Ask for a mobile number (required on the website form)
+                  </label>
+                  <label className="checkbox">
+                    <input type="checkbox" checked={form.followUpRegistrants} onChange={(e) => set({ followUpRegistrants: e.target.checked })} />
+                    Follow up everyone who registers (they appear under People → Connect cards)
+                  </label>
                 </>
               )}
             </fieldset>

@@ -88,6 +88,10 @@ namespace Shapers.Events.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ends_at");
 
+                    b.Property<bool>("FollowUpRegistrants")
+                        .HasColumnType("boolean")
+                        .HasColumnName("follow_up_registrants");
+
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -96,6 +100,10 @@ namespace Shapers.Events.Infrastructure.Migrations
                     b.Property<int>("MaxPerRegistration")
                         .HasColumnType("integer")
                         .HasColumnName("max_per_registration");
+
+                    b.Property<bool>("MobileRequired")
+                        .HasColumnType("boolean")
+                        .HasColumnName("mobile_required");
 
                     b.Property<string>("NotifyEmail")
                         .HasMaxLength(254)
