@@ -117,6 +117,16 @@ public interface IGuestRecords
     Task<Result<Guid>> CreateAsync(GuestDetails guest, CancellationToken cancellationToken = default);
 }
 
+/// <summary>Someone to follow up, e.g. after registering for an event. Source and SourceId say where from ("event", the event's ID).</summary>
+public sealed record FollowUpRequest(Guid PersonId, string Source, Guid SourceId, string Note);
+
+/// <summary>Puts people on the follow-up list staff work through (connect cards).</summary>
+public interface IFollowUps
+{
+    /// <summary>Adds the person once per source: asking again for the same person and source changes nothing.</summary>
+    Task AddAsync(FollowUpRequest request, CancellationToken cancellationToken = default);
+}
+
 /// <summary>A child as a parent or the kids desk gives their details.</summary>
 public sealed record ChildDetails(string FirstName, string LastName, DateOnly DateOfBirth);
 

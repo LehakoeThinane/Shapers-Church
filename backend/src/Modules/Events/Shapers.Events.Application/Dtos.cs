@@ -24,7 +24,8 @@ public sealed record EventDto(
     int? SeatsLeft,
     bool WaitlistOnly,
     int MaxPerRegistration,
-    IReadOnlyList<QuestionDto> Questions);
+    IReadOnlyList<QuestionDto> Questions,
+    bool MobileRequired = false);
 
 public sealed record EventAdminDto(
     EventDto Event,
@@ -37,7 +38,8 @@ public sealed record EventAdminDto(
     int Confirmed,
     int Waitlisted,
     int CheckedIn,
-    string? NotifyEmail);
+    string? NotifyEmail,
+    bool FollowUpRegistrants);
 
 public sealed record QuestionInput(Guid? Id, string Label, bool Required);
 
@@ -58,7 +60,9 @@ public sealed record SaveEventRequest(
     int MaxPerRegistration,
     IReadOnlyList<QuestionInput> Questions,
     string? Scope,
-    string? NotifyEmail = null);
+    string? NotifyEmail = null,
+    bool MobileRequired = false,
+    bool FollowUpRegistrants = false);
 
 public sealed record TicketDto(Guid AttendeeId, string Name, string Code, DateTimeOffset? CheckedInAt);
 

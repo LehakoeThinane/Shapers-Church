@@ -4810,7 +4810,7 @@ export interface components {
         /** @enum {unknown} */
         ConnectCardStatus: "New" | "Handled";
         /** @enum {unknown} */
-        ConnectReason: "FirstTime" | "Decision" | "Prayer" | "MoreInfo" | "JoinGroup" | "Serve";
+        ConnectReason: "FirstTime" | "Decision" | "Prayer" | "MoreInfo" | "JoinGroup" | "Serve" | "EventRegistration";
         ConsentDecision: {
             purpose: string;
             granted: boolean;
@@ -5061,6 +5061,7 @@ export interface components {
             /** Format: int32 */
             checkedIn: number;
             notifyEmail: null | string;
+            followUpRegistrants: boolean;
         };
         EventDto: {
             /** Format: uuid */
@@ -5085,6 +5086,8 @@ export interface components {
             /** Format: int32 */
             maxPerRegistration: number;
             questions: components["schemas"]["QuestionDto"][];
+            /** @default false */
+            mobileRequired: boolean;
         };
         /** @enum {unknown} */
         EventStatus: "Draft" | "Published" | "Cancelled";
@@ -6376,6 +6379,10 @@ export interface components {
             questions: components["schemas"]["QuestionInput"][];
             scope: null | string;
             notifyEmail?: null | string;
+            /** @default false */
+            mobileRequired: boolean;
+            /** @default false */
+            followUpRegistrants: boolean;
         };
         SaveFundRequest: {
             name: string;

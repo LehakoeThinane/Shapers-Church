@@ -147,6 +147,12 @@ public sealed class RegistrationService(
             return EventNotFound;
         }
 
+        // Before the code is used, so a missing number doesn't cost the guest their code.
+        if (e.MobileRequired && string.IsNullOrWhiteSpace(request.Mobile))
+        {
+            return new Error("events.mobile_required", "Please add your mobile number so the team can contact you.");
+        }
+
         var verification = await db.EmailVerifications.SingleOrDefaultAsync(v => v.Id == request.VerificationId, cancellationToken);
         var codeOk = verification is not null
             && ContactNormaliser.TryNormaliseEmail(request.Email, out var email)

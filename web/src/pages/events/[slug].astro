@@ -91,7 +91,19 @@ const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURICom
               <label>First name<input name="firstName" required maxlength="60" autocomplete="given-name" /></label>
               <label>Last name<input name="lastName" required maxlength="60" autocomplete="family-name" /></label>
             </div>
-            <label>Mobile (optional)<input name="mobile" type="tel" autocomplete="tel" /></label>
+            {
+              e.mobileRequired ? (
+                <label>
+                  Mobile
+                  <input name="mobile" type="tel" required autocomplete="tel" />
+                </label>
+              ) : (
+                <label>
+                  Mobile (optional)
+                  <input name="mobile" type="tel" autocomplete="tel" />
+                </label>
+              )
+            }
             {
               e.maxPerRegistration > 1 && (
                 <label>

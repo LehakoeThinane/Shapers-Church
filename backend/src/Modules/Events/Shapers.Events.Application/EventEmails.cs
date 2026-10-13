@@ -141,6 +141,31 @@ public sealed class NotifyOrganiserOfRegistration(IEventsDb db, EventEmails emai
     }
 }
 
+/// <summary>Events set to follow up their registrants put each one on the follow-up list, with their answers.</summary>
+public sealed class AddRegistrantToFollowUp(IEventsDb db, IFollowUps followUps) : IIntegrationEventHandler<EventRegisteredIntegrationEvent>
+{
+    public async Task HandleAsync(EventRegisteredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    {
+        var e = await db.Events.AsNoTracking().SingleOrDefaultAsync(x => x.Id == integrationEvent.ChurchEventId, cancellationToken);
+        var r = await db.Registrations.AsNoTracking().SingleOrDefaultAsync(x => x.Id == integrationEvent.RegistrationId, cancellationToken);
+        if (e is not { FollowUpRegistrants: true } || r is null || r.Status == RegistrationStatus.Cancelled)
+        {
+            return;
+        }
+
+        var lines = new List<string> { $"Registered for {e.Title}, {EventEmails.When(e.StartsAt)}." };
+        if (r.Seats > 1)
+        {
+            lines.Add($"Booking for {r.Seats}: {string.Join(", ", r.Attendees.Select(a => a.Name))}.");
+        }
+
+        lines.AddRange(e.Questions.OrderBy(q => q.Order)
+            .Where(q => r.Answers.ContainsKey(q.Id))
+            .Select(q => $"{q.Label}: {r.Answers[q.Id]}"));
+        await followUps.AddAsync(new FollowUpRequest(r.RegistrantPersonId, "event", e.Id, string.Join("\n", lines)), cancellationToken);
+    }
+}
+
 public sealed class NotifyWaitlistPromotion(IEventsDb db, EventEmails emails, IPeopleDirectory people) : IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>
 {
     public async Task HandleAsync(WaitlistPromotedIntegrationEvent integrationEvent, CancellationToken cancellationToken)

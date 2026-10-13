@@ -119,6 +119,7 @@ public sealed class EventAdminService(
         e.ConfigureRegistration(r.RegistrationRequired, r.RegistrationOpensAt, r.RegistrationClosesAt, r.Capacity, r.WaitlistEnabled, r.MaxPerRegistration, now);
         e.SetQuestions(r.Questions.Select(q => (q.Id, q.Label, q.Required)).ToList(), now);
         e.SetNotifyEmail(r.NotifyEmail, now);
+        e.SetFollowUp(r.MobileRequired, r.FollowUpRegistrants, now);
     }
 
     private async Task<EventAdminDto> ToAdminDtoAsync(Event e, CancellationToken cancellationToken)
@@ -140,7 +141,8 @@ public sealed class EventAdminService(
             confirmed,
             waitlisted,
             counts.Count(c => c.CheckedInAt is not null),
-            e.NotifyEmail);
+            e.NotifyEmail,
+            e.FollowUpRegistrants);
     }
 
     private Task<bool> CanAsync(string permission, Event e, CancellationToken cancellationToken) =>
