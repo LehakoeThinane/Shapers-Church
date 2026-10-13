@@ -318,6 +318,29 @@
         }
       }
     },
+    "/api/me/giving": {
+      "get": {
+        "tags": [
+          "Giving"
+        ],
+        "operationId": "MyGiving",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MyGiftDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/audit": {
       "get": {
         "tags": [
@@ -9914,6 +9937,375 @@
           }
         }
       }
+    },
+    "/api/giving": {
+      "get": {
+        "tags": [
+          "Giving"
+        ],
+        "operationId": "GivingPage",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GivingPageDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/giving/checkout": {
+      "post": {
+        "tags": [
+          "Giving"
+        ],
+        "operationId": "StartGift",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartGiftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartGiftResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/giving/overview": {
+      "get": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "GivingOverview",
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GivingOverviewDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/giving/gifts": {
+      "get": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "ListGifts",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "fundId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "method",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GiftMethod"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GiftPageDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "RecordGift",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordGiftRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GiftDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/giving/statements/{personId}": {
+      "get": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "GivingStatement",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GivingStatementDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/giving/funds": {
+      "get": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "ListFunds",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FundDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "CreateFund",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveFundRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/giving/funds/{id}": {
+      "put": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "UpdateFund",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveFundRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/giving/funds/{id}/archive": {
+      "post": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "ArchiveFund",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/giving/funds/{id}/restore": {
+      "post": {
+        "tags": [
+          "Giving admin"
+        ],
+        "operationId": "RestoreFund",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundDto"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12818,6 +13210,48 @@
           }
         }
       },
+      "EftDto": {
+        "required": [
+          "bank",
+          "accountName",
+          "accountNumber",
+          "branchCode",
+          "reference"
+        ],
+        "type": "object",
+        "properties": {
+          "bank": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "accountName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "accountNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "branchCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reference": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "EnableTwoFactorRequest": {
         "required": [
           "code"
@@ -13009,12 +13443,261 @@
           "Members"
         ]
       },
+      "FundDto": {
+        "required": [
+          "id",
+          "name",
+          "description",
+          "order",
+          "isArchived"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isArchived": {
+            "type": "boolean"
+          }
+        }
+      },
       "Gender": {
         "enum": [
           "Female",
           "Male",
           null
         ]
+      },
+      "GiftDto": {
+        "required": [
+          "id",
+          "fundName",
+          "amountCents",
+          "method",
+          "status",
+          "personId",
+          "giverName",
+          "note",
+          "givenOn",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fundName": {
+            "type": "string"
+          },
+          "amountCents": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "method": {
+            "$ref": "#/components/schemas/GiftMethod"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GiftStatus"
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "giverName": {
+            "type": "string"
+          },
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "givenOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "GiftMethod": {
+        "enum": [
+          "Card",
+          "Eft",
+          "Cash"
+        ]
+      },
+      "GiftPageDto": {
+        "required": [
+          "items",
+          "total",
+          "totalCents",
+          "page",
+          "pageSize"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GiftDto"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCents": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GiftStatus": {
+        "enum": [
+          "Pending",
+          "Received",
+          "Failed"
+        ]
+      },
+      "GivingOverviewDto": {
+        "required": [
+          "month",
+          "totalCents",
+          "count",
+          "byFund",
+          "byMethod",
+          "latest"
+        ],
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "totalCents": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "byFund": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TotalDto"
+            }
+          },
+          "byMethod": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TotalDto"
+            }
+          },
+          "latest": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GiftDto"
+            }
+          }
+        }
+      },
+      "GivingPageDto": {
+        "required": [
+          "funds",
+          "cardGivingEnabled",
+          "cardLinkUrl",
+          "eft"
+        ],
+        "type": "object",
+        "properties": {
+          "funds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FundDto"
+            }
+          },
+          "cardGivingEnabled": {
+            "type": "boolean"
+          },
+          "cardLinkUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "eft": {
+            "$ref": "#/components/schemas/EftDto"
+          }
+        }
+      },
+      "GivingStatementDto": {
+        "required": [
+          "personId",
+          "personName",
+          "year",
+          "gifts",
+          "totalCents",
+          "byFund"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personName": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gifts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MyGiftDto"
+            }
+          },
+          "totalCents": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "byFund": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TotalDto"
+            }
+          }
+        }
       },
       "GoLiveRequest": {
         "required": [
@@ -14630,6 +15313,36 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "MyGiftDto": {
+        "required": [
+          "id",
+          "fundName",
+          "amountCents",
+          "method",
+          "givenOn"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fundName": {
+            "type": "string"
+          },
+          "amountCents": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "method": {
+            "$ref": "#/components/schemas/GiftMethod"
+          },
+          "givenOn": {
+            "type": "string",
+            "format": "date"
           }
         }
       },
@@ -16479,6 +17192,54 @@
           }
         }
       },
+      "RecordGiftRequest": {
+        "required": [
+          "fundId",
+          "amount",
+          "method",
+          "personId",
+          "giverName",
+          "note",
+          "givenOn"
+        ],
+        "type": "object",
+        "properties": {
+          "fundId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "method": {
+            "$ref": "#/components/schemas/GiftMethod"
+          },
+          "personId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "giverName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "givenOn": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
       "RecoveryCodes": {
         "required": [
           "codes"
@@ -17649,6 +18410,29 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "SaveFundRequest": {
+        "required": [
+          "name",
+          "description",
+          "order"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -19354,6 +20138,53 @@
           }
         }
       },
+      "StartGiftRequest": {
+        "required": [
+          "fundId",
+          "amount",
+          "name",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "fundId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "StartGiftResponse": {
+        "required": [
+          "giftId",
+          "redirectUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "giftId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "redirectUrl": {
+            "type": "string"
+          }
+        }
+      },
       "StartUploadRequest": {
         "required": [
           "kind",
@@ -19610,6 +20441,27 @@
           "Announcements",
           "Serving"
         ]
+      },
+      "TotalDto": {
+        "required": [
+          "label",
+          "amountCents",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "amountCents": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       },
       "TranscriptDto": {
         "required": [
@@ -20278,6 +21130,9 @@
       "name": "Privacy"
     },
     {
+      "name": "Giving"
+    },
+    {
       "name": "Audit"
     },
     {
@@ -20345,6 +21200,9 @@
     },
     {
       "name": "Kids admin"
+    },
+    {
+      "name": "Giving admin"
     }
   ]
 }

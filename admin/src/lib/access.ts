@@ -64,6 +64,8 @@ export const Permissions = {
   kidsCheckIn: 'kids.checkin',
   kidsCareView: 'kids.care.view',
   kidsManage: 'kids.manage',
+  givingView: 'giving.view',
+  givingManage: 'giving.manage',
   servicesSongs: 'services.songs.edit',
   servicesCategories: 'services.categories.manage',
   assistDrafts: 'assist.drafts.create',

@@ -72,7 +72,7 @@ export function HomePage() {
             );
           })}
         </div>
-        <p className="small muted">Coming next: giving and a staff app.</p>
+        <p className="small muted">Coming next: a staff app.</p>
       </section>
     </>
   );
@@ -218,6 +218,7 @@ function describe(key: string) {
     sermons: 'Sermons, series, speakers and the Sunday livestream',
     website: 'Website pages, news, blog and translations',
     calendar: 'Events, services, livestreams and cell meetings by month',
+    giving: 'Gifts by card, EFT and cash, funds and givers’ statements',
   };
   if (own[key]) return own[key];
   const aliases: Record<string, string> = { events: 'registrations' };

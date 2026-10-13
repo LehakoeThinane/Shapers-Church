@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/giving": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MyGiving"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/audit": {
         parameters: {
             query?: never;
@@ -4132,6 +4148,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/giving": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GivingPage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/giving/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StartGift"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/giving/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GivingOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/giving/gifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListGifts"];
+        put?: never;
+        post: operations["RecordGift"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/giving/statements/{personId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GivingStatement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/giving/funds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListFunds"];
+        put?: never;
+        post: operations["CreateFund"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/giving/funds/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["UpdateFund"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/giving/funds/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ArchiveFund"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/giving/funds/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RestoreFund"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4873,6 +5033,13 @@ export interface components {
             /** Format: date-time */
             detectedAt: string;
         };
+        EftDto: {
+            bank: null | string;
+            accountName: null | string;
+            accountNumber: null | string;
+            branchCode: null | string;
+            reference: null | string;
+        };
         EnableTwoFactorRequest: {
             code: string;
         };
@@ -4922,8 +5089,76 @@ export interface components {
         EventStatus: "Draft" | "Published" | "Cancelled";
         /** @enum {unknown} */
         EventVisibility: "Public" | "Members";
+        FundDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description: null | string;
+            /** Format: int32 */
+            order: number;
+            isArchived: boolean;
+        };
         /** @enum {unknown} */
         Gender: "Female" | "Male" | null;
+        GiftDto: {
+            /** Format: uuid */
+            id: string;
+            fundName: string;
+            /** Format: int64 */
+            amountCents: number;
+            method: components["schemas"]["GiftMethod"];
+            status: components["schemas"]["GiftStatus"];
+            /** Format: uuid */
+            personId: null | string;
+            giverName: string;
+            note: null | string;
+            /** Format: date */
+            givenOn: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        /** @enum {unknown} */
+        GiftMethod: "Card" | "Eft" | "Cash";
+        GiftPageDto: {
+            items: components["schemas"]["GiftDto"][];
+            /** Format: int32 */
+            total: number;
+            /** Format: int64 */
+            totalCents: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+        };
+        /** @enum {unknown} */
+        GiftStatus: "Pending" | "Received" | "Failed";
+        GivingOverviewDto: {
+            month: string;
+            /** Format: int64 */
+            totalCents: number;
+            /** Format: int32 */
+            count: number;
+            byFund: components["schemas"]["TotalDto"][];
+            byMethod: components["schemas"]["TotalDto"][];
+            latest: components["schemas"]["GiftDto"][];
+        };
+        GivingPageDto: {
+            funds: components["schemas"]["FundDto"][];
+            cardGivingEnabled: boolean;
+            cardLinkUrl: null | string;
+            eft: components["schemas"]["EftDto"];
+        };
+        GivingStatementDto: {
+            /** Format: uuid */
+            personId: string;
+            personName: string;
+            /** Format: int32 */
+            year: number;
+            gifts: components["schemas"]["MyGiftDto"][];
+            /** Format: int64 */
+            totalCents: number;
+            byFund: components["schemas"]["TotalDto"][];
+        };
         GoLiveRequest: {
             /** Format: uuid */
             itemId: null | string;
@@ -5351,6 +5586,16 @@ export interface components {
             /** Format: date-time */
             decidedAt: null | string;
             response: null | string;
+        };
+        MyGiftDto: {
+            /** Format: uuid */
+            id: string;
+            fundName: string;
+            /** Format: int64 */
+            amountCents: number;
+            method: components["schemas"]["GiftMethod"];
+            /** Format: date */
+            givenOn: string;
         };
         MyPrayerRequestDto: {
             /** Format: uuid */
@@ -5827,6 +6072,19 @@ export interface components {
             source: components["schemas"]["ConsentSource"];
             lawfulBasis?: components["schemas"]["LawfulBasis"];
         };
+        RecordGiftRequest: {
+            /** Format: uuid */
+            fundId: string;
+            /** Format: double */
+            amount: number;
+            method: components["schemas"]["GiftMethod"];
+            /** Format: uuid */
+            personId: null | string;
+            giverName: null | string;
+            note: null | string;
+            /** Format: date */
+            givenOn: string;
+        };
         RecoveryCodes: {
             codes: string[];
         };
@@ -6116,6 +6374,12 @@ export interface components {
             maxPerRegistration: number;
             questions: components["schemas"]["QuestionInput"][];
             scope: null | string;
+        };
+        SaveFundRequest: {
+            name: string;
+            description: null | string;
+            /** Format: int32 */
+            order: number;
         };
         SaveKidsClassRequest: {
             name: string;
@@ -6505,6 +6769,19 @@ export interface components {
             twoFactorCode: null | string;
             recoveryCode: null | string;
         };
+        StartGiftRequest: {
+            /** Format: uuid */
+            fundId: string;
+            /** Format: double */
+            amount: number;
+            name: null | string;
+            email: null | string;
+        };
+        StartGiftResponse: {
+            /** Format: uuid */
+            giftId: string;
+            redirectUrl: string;
+        };
         StartUploadRequest: {
             kind: components["schemas"]["MediaKind"];
             fileName: string;
@@ -6573,6 +6850,13 @@ export interface components {
         };
         /** @enum {unknown} */
         Topic: "Live" | "Sermons" | "Events" | "Prayer" | "Announcements" | "Serving";
+        TotalDto: {
+            label: string;
+            /** Format: int64 */
+            amountCents: number;
+            /** Format: int32 */
+            count: number;
+        };
         TranscriptDto: {
             text: null | string;
             info: components["schemas"]["TranscriptInfoDto"];
@@ -6998,6 +7282,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PrivacyNoticeDto"];
+                };
+            };
+        };
+    };
+    MyGiving: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyGiftDto"][];
                 };
             };
         };
@@ -13862,6 +14166,261 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["KidsClassDto"];
+                };
+            };
+        };
+    };
+    GivingPage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GivingPageDto"];
+                };
+            };
+        };
+    };
+    StartGift: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartGiftRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StartGiftResponse"];
+                };
+            };
+        };
+    };
+    GivingOverview: {
+        parameters: {
+            query?: {
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GivingOverviewDto"];
+                };
+            };
+        };
+    };
+    ListGifts: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+                fundId?: string;
+                method?: components["schemas"]["GiftMethod"];
+                search?: string;
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GiftPageDto"];
+                };
+            };
+        };
+    };
+    RecordGift: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecordGiftRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GiftDto"];
+                };
+            };
+        };
+    };
+    GivingStatement: {
+        parameters: {
+            query: {
+                year: number;
+            };
+            header?: never;
+            path: {
+                personId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GivingStatementDto"];
+                };
+            };
+        };
+    };
+    ListFunds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundDto"][];
+                };
+            };
+        };
+    };
+    CreateFund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveFundRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundDto"];
+                };
+            };
+        };
+    };
+    UpdateFund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveFundRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundDto"];
+                };
+            };
+        };
+    };
+    ArchiveFund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundDto"];
+                };
+            };
+        };
+    };
+    RestoreFund: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundDto"];
                 };
             };
         };
