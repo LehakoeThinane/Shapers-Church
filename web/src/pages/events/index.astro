@@ -3,38 +3,64 @@ import Base from '../../layouts/Base.astro';
 import Cover from '../../components/Cover.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import { get, type Schemas } from '../../lib/api';
-import { dayAndTime } from '../../lib/format';
+import { dayAndTime, time } from '../../lib/format';
 
 const events = await get<Schemas['EventDto'][]>('/api/events', []);
 ---
 
 <Base title="Events" description="What's coming up at Shapers Church, and how to book.">
-  <PageHeader eyebrow="Events" title="What's" accent="coming up." intro="Conferences, gatherings and special services at Shapers Church. Book your seat online." />
+  <PageHeader eyebrow="Events" title="What's" accent="coming up." intro="Conferences, gatherings and special services at Shapers Church. Book your seat online.">
+    <a class="arrow-link" href="/whats-on">See everything on the church calendar</a>
+  </PageHeader>
 
-  <p class="wrap small muted"><a href="/whats-on">See everything on the church calendar</a>, and add it to your phone.</p>
-
-  <section class="section">
-    {
-      events.length === 0 && (
-        <div class="glass">
-          <h2 style="font-size: 1.4rem">Nothing booked just yet</h2>
-          <p class="muted" style="margin: 0">
-            New events are announced on Sundays and in the Shapers Church app. In the meantime, <a href="/sermons">catch up on recent messages</a>.
-          </p>
-        </div>
-      )
-    }
-    <div class="grid">
+  <section class="band band-raised">
+    <div class="wrap">
       {
-        events.map((e) => (
-          <a class="card" href={`/events/${e.slug}`}>
-            <Cover src={e.imageUrl} title={e.title} kicker="Event" />
-            <span class="label">{dayAndTime(e.startsAt)}</span>
-            <strong>{e.title}</strong>
-            {e.summary && <span class="muted">{e.summary}</span>}
-            {e.location && <span class="small muted">{e.location.name}</span>}
-          </a>
-        ))
+        events.length === 0 ? (
+          <div class="glass">
+            <h2 style="font-size: 1.4rem">Nothing booked just yet</h2>
+            <p class="muted" style="margin: 0">
+              New events are announced on Sundays and in the Shapers Church app. In the meantime, <a href="/sermons">catch up on recent messages</a>.
+            </p>
+          </div>
+        ) : (
+          <ul class="event-list">
+            {events.map((e) => (
+              <li class="event-row">
+                <a class="event-row-image" href={`/events/${e.slug}`} tabindex="-1" aria-hidden="true">
+                  <Cover src={e.imageUrl} title={e.title} kicker="Event" />
+                </a>
+                <div class="event-row-body">
+                  <span class="label">
+                    {dayAndTime(e.startsAt)} – {time(e.endsAt)}
+                  </span>
+                  <h2>
+                    <a href={`/events/${e.slug}`}>{e.title}</a>
+                  </h2>
+                  {e.summary && <p class="muted">{e.summary}</p>}
+                  {e.location && (
+                    <p class="small muted">
+                      {e.location.name}
+                      {e.location.address && `, ${e.location.address}`}
+                    </p>
+                  )}
+                  <div class="row">
+                    {e.registrationRequired && e.registrationOpen ? (
+                      <a class="button" href={`/events/${e.slug}#booking`}>
+                        {e.waitlistOnly ? 'Join the waiting list' : 'Register'}
+                      </a>
+                    ) : (
+                      e.registrationRequired && e.registrationClosedReason && <span class="small muted">{e.registrationClosedReason}</span>
+                    )}
+                    <a class="button ghost" href={`/events/${e.slug}`}>
+                      Details
+                    </a>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )
       }
     </div>
   </section>
