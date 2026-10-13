@@ -132,6 +132,35 @@ public sealed class EventTests(ApiFactory api) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task The_notice_address_hears_of_each_registration_by_short_name_without_the_details()
+    {
+        var admin = await api.SignInAdminAsync();
+        const string office = "office.notices@example.com";
+        var draft = await (await admin.PostJsonAsync("/api/admin/events", Save("Water baptism", null, false) with { NotifyEmail = office })).ReadAsync<EventAdminDto>();
+        Assert.Equal(office, draft.NotifyEmail);
+        var e = await (await admin.PostAsync($"/api/admin/events/{draft.Event.Id}/publish", null)).ReadAsync<EventAdminDto>();
+
+        (await admin.PostJsonAsync($"/api/admin/events/{e.Event.Id}/registrations", new AdminRegisterRequest(null, "Lindiwe", "Dube", "082 555 1099", "lindiwe.dube@example.com", true, null, null)))
+            .EnsureSuccessStatusCode();
+
+        Shapers.Platform.Email.EmailMessage? notice = null;
+        for (var attempt = 0; attempt < 40 && notice is null; attempt++)
+        {
+            notice = api.Email.Sent.FirstOrDefault(m => m.To == office);
+            if (notice is null)
+            {
+                await Task.Delay(250, TestContext.Current.CancellationToken);
+            }
+        }
+
+        Assert.NotNull(notice);
+        Assert.Equal("New registration: Lindiwe D. for Water baptism", notice.Subject);
+        Assert.Contains($"/events/{e.Event.Id}/attendees", notice.PlainText, StringComparison.Ordinal);
+        Assert.DoesNotContain("lindiwe.dube@example.com", notice.PlainText, StringComparison.Ordinal);
+        Assert.DoesNotContain("Dube", notice.PlainText, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Members_only_and_draft_events_are_hidden_from_the_public()
     {
         var admin = await api.SignInAdminAsync();
