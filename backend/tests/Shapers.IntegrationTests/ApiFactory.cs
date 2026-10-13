@@ -104,12 +104,14 @@ public sealed class MfaApiFactory : ApiFactory
 {
     protected override bool RequireMfa => true;
 
-    // Rebuild the sign-in cookie on every request (normally every 30 minutes), so tests show a two-step sign-in survives it.
+    /// <summary>The clock the sign-in cookie's 30-minute recheck reads. Advance it to make the next request rebuild the cookie.</summary>
+    public Microsoft.Extensions.Time.Testing.FakeTimeProvider CookieRecheckClock { get; } = new(DateTimeOffset.UtcNow.AddMinutes(-1));
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
         builder.ConfigureServices(services =>
-            services.Configure<Microsoft.AspNetCore.Identity.SecurityStampValidatorOptions>(o => o.ValidationInterval = TimeSpan.Zero));
+            services.Configure<Microsoft.AspNetCore.Identity.SecurityStampValidatorOptions>(o => o.TimeProvider = CookieRecheckClock));
     }
 }
 
