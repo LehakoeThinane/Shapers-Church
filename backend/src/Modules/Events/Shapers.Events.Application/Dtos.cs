@@ -36,7 +36,8 @@ public sealed record EventAdminDto(
     bool WaitlistEnabled,
     int Confirmed,
     int Waitlisted,
-    int CheckedIn);
+    int CheckedIn,
+    string? NotifyEmail);
 
 public sealed record QuestionInput(Guid? Id, string Label, bool Required);
 
@@ -56,7 +57,8 @@ public sealed record SaveEventRequest(
     bool WaitlistEnabled,
     int MaxPerRegistration,
     IReadOnlyList<QuestionInput> Questions,
-    string? Scope);
+    string? Scope,
+    string? NotifyEmail = null);
 
 public sealed record TicketDto(Guid AttendeeId, string Name, string Code, DateTimeOffset? CheckedInAt);
 

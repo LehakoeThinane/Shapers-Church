@@ -12840,7 +12840,8 @@
           "waitlistEnabled",
           "confirmed",
           "waitlisted",
-          "checkedIn"
+          "checkedIn",
+          "notifyEmail"
         ],
         "type": "object",
         "properties": {
@@ -12888,6 +12889,12 @@
           "checkedIn": {
             "type": "integer",
             "format": "int32"
+          },
+          "notifyEmail": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -17645,6 +17652,12 @@
             }
           },
           "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notifyEmail": {
             "type": [
               "null",
               "string"

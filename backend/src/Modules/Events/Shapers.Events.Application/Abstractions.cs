@@ -31,6 +31,9 @@ public sealed class EventsOptions
 
     /// <summary>The public website, used for links in emails, e.g. https://shaperschurch.com.</summary>
     public string PublicSiteUrl { get; set; } = "https://shaperschurch.com";
+
+    /// <summary>The admin portal, used for the link in registration notices.</summary>
+    public string AdminSiteUrl { get; set; } = "https://admin.shaperschurch.com";
 }
 
 public sealed class EventsPermissionProvider : IPermissionProvider

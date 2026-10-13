@@ -4893,6 +4893,7 @@ export interface components {
             waitlisted: number;
             /** Format: int32 */
             checkedIn: number;
+            notifyEmail: null | string;
         };
         EventDto: {
             /** Format: uuid */
@@ -6116,6 +6117,7 @@ export interface components {
             maxPerRegistration: number;
             questions: components["schemas"]["QuestionInput"][];
             scope: null | string;
+            notifyEmail?: null | string;
         };
         SaveKidsClassRequest: {
             name: string;
