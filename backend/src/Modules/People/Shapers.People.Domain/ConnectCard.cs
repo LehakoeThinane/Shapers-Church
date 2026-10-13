@@ -9,6 +9,9 @@ public enum ConnectReason
     MoreInfo,
     JoinGroup,
     Serve,
+
+    /// <summary>Registered for an event set to follow up its registrants (e.g. water baptism).</summary>
+    EventRegistration,
 }
 
 public enum ConnectCardStatus

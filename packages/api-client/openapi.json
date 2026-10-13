@@ -12332,7 +12332,8 @@
           "Prayer",
           "MoreInfo",
           "JoinGroup",
-          "Serve"
+          "Serve",
+          "EventRegistration"
         ]
       },
       "ConsentDecision": {
@@ -13275,7 +13276,8 @@
           "confirmed",
           "waitlisted",
           "checkedIn",
-          "notifyEmail"
+          "notifyEmail",
+          "followUpRegistrants"
         ],
         "type": "object",
         "properties": {
@@ -13329,6 +13331,9 @@
               "null",
               "string"
             ]
+          },
+          "followUpRegistrants": {
+            "type": "boolean"
           }
         }
       },
@@ -13434,6 +13439,10 @@
             "items": {
               "$ref": "#/components/schemas/QuestionDto"
             }
+          },
+          "mobileRequired": {
+            "type": "boolean",
+            "default": false
           }
         }
       },
@@ -18423,6 +18432,14 @@
               "null",
               "string"
             ]
+          },
+          "mobileRequired": {
+            "type": "boolean",
+            "default": false
+          },
+          "followUpRegistrants": {
+            "type": "boolean",
+            "default": false
           }
         }
       },

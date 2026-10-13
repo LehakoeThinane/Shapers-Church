@@ -161,6 +161,43 @@ public sealed class EventTests(ApiFactory api) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Registrants_of_a_follow_up_event_give_a_mobile_and_land_on_the_follow_up_list()
+    {
+        var admin = await api.SignInAdminAsync();
+        var draft = await (await admin.PostJsonAsync("/api/admin/events", Save("Baptism class", null, false) with { MobileRequired = true, FollowUpRegistrants = true }))
+            .ReadAsync<EventAdminDto>();
+        Assert.True(draft.FollowUpRegistrants);
+        var e = await (await admin.PostAsync($"/api/admin/events/{draft.Event.Id}/publish", null)).ReadAsync<EventAdminDto>();
+        Assert.True(e.Event.MobileRequired);
+
+        var guest = api.Browser();
+        const string email = "follow.up@example.com";
+        var code = await (await guest.PostJsonAsync($"/api/events/{e.Event.Slug}/guest-code", new GuestCodeRequest(email))).ReadAsync<GuestCodeResponse>();
+        var noMobile = await guest.PostJsonAsync($"/api/events/{e.Event.Slug}/register-guest", Guest(code.VerificationId, api.Email.LastCodeFor(email), email));
+        Assert.Equal(HttpStatusCode.BadRequest, noMobile.StatusCode);
+
+        // The missing number didn't use up the code.
+        var booked = await guest.PostJsonAsync($"/api/events/{e.Event.Slug}/register-guest", Guest(code.VerificationId, api.Email.LastCodeFor(email), email) with { Mobile = "082 555 1077" });
+        booked.EnsureSuccessStatusCode();
+
+        Shapers.People.Application.ConnectCardDto? card = null;
+        for (var attempt = 0; attempt < 40 && card is null; attempt++)
+        {
+            var cards = await (await admin.GetAsync("/api/admin/connect-cards")).ReadAsync<List<Shapers.People.Application.ConnectCardDto>>();
+            card = cards.FirstOrDefault(c => c.Email == email);
+            if (card is null)
+            {
+                await Task.Delay(250, TestContext.Current.CancellationToken);
+            }
+        }
+
+        Assert.NotNull(card);
+        Assert.Equal([Shapers.People.Domain.ConnectReason.EventRegistration], card.Reasons);
+        Assert.Contains("Baptism class", card.Message, StringComparison.Ordinal);
+        Assert.NotNull(card.Mobile);
+    }
+
+    [Fact]
     public async Task Members_only_and_draft_events_are_hidden_from_the_public()
     {
         var admin = await api.SignInAdminAsync();

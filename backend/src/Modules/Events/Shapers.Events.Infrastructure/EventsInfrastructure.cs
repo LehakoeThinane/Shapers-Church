@@ -29,6 +29,7 @@ public static class EventsInfrastructure
         services.AddScoped<Shapers.Platform.Calendar.ICalendarSource, EventCalendar>();
         services.AddScoped<IIntegrationEventHandler<EventRegisteredIntegrationEvent>, ConfirmMemberRegistration>();
         services.AddScoped<IIntegrationEventHandler<EventRegisteredIntegrationEvent>, NotifyOrganiserOfRegistration>();
+        services.AddScoped<IIntegrationEventHandler<EventRegisteredIntegrationEvent>, AddRegistrantToFollowUp>();
         services.AddScoped<IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>, NotifyWaitlistPromotion>();
         services.AddScoped<IIntegrationEventHandler<EventCancelledIntegrationEvent>, NotifyEventCancelled>();
 

@@ -46,7 +46,8 @@ public sealed class EventReader(IEventsDb db, TimeProvider clock)
             seatsLeft,
             closed is null && full && e.WaitlistEnabled,
             e.MaxPerRegistration,
-            e.Questions.OrderBy(q => q.Order).Select(q => new QuestionDto(q.Id, q.Label, q.Required)).ToList());
+            e.Questions.OrderBy(q => q.Order).Select(q => new QuestionDto(q.Id, q.Label, q.Required)).ToList(),
+            e.MobileRequired);
     }
 
     public async Task<RegistrationDto> ToDtoAsync(Registration r, Event e, CancellationToken cancellationToken)
