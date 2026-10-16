@@ -39,6 +39,13 @@ public sealed class BackgroundHealthTests(ApiFactory api) : IClassFixture<ApiFac
         Assert.Equal("InvalidOperationException", problem.ErrorType);
         Assert.Contains(prayer.Oldest, p => p.Id == waiting && !p.GaveUp);
 
+        // A failing message waits between tries rather than using up every attempt at once.
+        await Task.Delay(TimeSpan.FromSeconds(2), TestContext.Current.CancellationToken);
+        var later = await (await admin.GetAsync("/api/admin/background-health")).ReadAsync<BackgroundHealthDto>();
+        var stillWaiting = Assert.Single(later.Outbox.Single(o => o.Module == "prayer").Oldest, p => p.Id == waiting);
+        Assert.False(stillWaiting.GaveUp);
+        Assert.InRange(stillWaiting.Attempts, 0, 3);
+
         // The error message, which could hold someone's details, never leaves the database.
         var raw = await (await admin.GetAsync("/api/admin/background-health")).Content.ReadAsStringAsync();
         Assert.DoesNotContain("jane@example.org", raw, StringComparison.Ordinal);
