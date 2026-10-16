@@ -6,6 +6,7 @@ import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Sele
 import { api, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { RewriteHelp } from '../components/Assist';
+import { ImagePicker, MarkdownImageArea } from '../components/ImagePicker';
 import { useAssistStatus, useCanDraft, useReviewDraft } from '../lib/assist';
 
 type Status = Schemas['ContentStatus'];
@@ -247,7 +248,7 @@ function PageEditor({ existing }: { existing?: PageAdmin }) {
                 <textarea className="input" rows={2} maxLength={300} value={form.summary} onChange={(e) => set({ summary: e.target.value })} />
               </Field>
               <Field label="Content" hint="Markdown: ## for headings, - for lists, **bold**, [link](https://…).">
-                <textarea className="input" rows={14} required maxLength={50000} value={form.body} onChange={(e) => set({ body: e.target.value })} />
+                <MarkdownImageArea rows={14} required maxLength={50000} value={form.body} onChange={(body) => set({ body })} />
               </Field>
               {!translation && <RewriteHelp text={form.body} onApply={(body) => set({ body })} />}
               <Field label="Position in the website menu" hint="Empty keeps it out of the menu.">
@@ -371,7 +372,7 @@ function PostEditor({ existing }: { existing?: PostAdmin }) {
                 <textarea className="input" rows={2} maxLength={300} value={form.summary} onChange={(e) => set({ summary: e.target.value })} />
               </Field>
               <Field label="Content" hint="Markdown.">
-                <textarea className="input" rows={14} required maxLength={50000} value={form.body} onChange={(e) => set({ body: e.target.value })} />
+                <MarkdownImageArea rows={14} required maxLength={50000} value={form.body} onChange={(body) => set({ body })} />
               </Field>
               {!translation && <RewriteHelp text={form.body} onApply={(body) => set({ body })} />}
               <div className="form-grid">
@@ -384,8 +385,19 @@ function PostEditor({ existing }: { existing?: PostAdmin }) {
                   </Field>
                 )}
               </div>
-              <Field label="Cover image link (optional)" hint="A wide image, starting with https://.">
-                <TextInput type="url" maxLength={500} value={form.coverImageUrl} onChange={(e) => set({ coverImageUrl: e.target.value })} />
+              <Field label="Cover image (optional)" hint="Paste a link, or upload or drag in a picture. A wide image looks best.">
+                <div className="stack">
+                  <TextInput type="url" maxLength={500} placeholder="https://…" value={form.coverImageUrl} onChange={(e) => set({ coverImageUrl: e.target.value })} />
+                  {form.coverImageUrl && <img className="event-image-preview" src={form.coverImageUrl} alt="" />}
+                  <div className="row">
+                    <ImagePicker label={form.coverImageUrl ? 'Upload a different picture' : 'Upload a picture'} onUploaded={(asset) => set({ coverImageUrl: asset.url })} />
+                    {form.coverImageUrl && (
+                      <Button variant="ghost" type="button" onClick={() => set({ coverImageUrl: '' })}>
+                        Remove image
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </Field>
             </fieldset>
             <ErrorNote error={save.error} />
