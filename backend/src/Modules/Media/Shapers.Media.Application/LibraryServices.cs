@@ -132,11 +132,12 @@ public sealed class UploadService(IMediaDb db, IFileStorage storage, IAuthorizer
 
     public async Task<Result<StartUploadResponse>> StartAsync(StartUploadRequest request, CancellationToken cancellationToken)
     {
-        // Song editors upload chord charts and rehearsal recordings to the same storage; event editors upload posters.
+        // Song editors upload chord charts and rehearsal recordings to the same storage; event and website editors upload pictures.
         if (!await authorizer.HasAnywhereAsync(MediaPermissions.SermonsEdit, cancellationToken)
             && !await authorizer.HasAnywhereAsync(MediaPermissions.SpeakersManage, cancellationToken)
             && !await authorizer.HasAnywhereAsync(Shapers.Services.Contracts.ServicesPermissions.SongsEdit, cancellationToken)
-            && !(request.Kind == MediaKind.Image && await authorizer.HasAnywhereAsync(Shapers.Events.Contracts.EventsPermissions.Edit, cancellationToken)))
+            && !(request.Kind == MediaKind.Image && await authorizer.HasAnywhereAsync(Shapers.Events.Contracts.EventsPermissions.Edit, cancellationToken))
+            && !(request.Kind == MediaKind.Image && await authorizer.HasAnywhereAsync(Shapers.Content.Contracts.ContentPermissions.Edit, cancellationToken)))
         {
             return Error.Forbidden("media.forbidden", "You can't upload media.");
         }
