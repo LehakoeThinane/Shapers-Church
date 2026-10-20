@@ -112,6 +112,9 @@ public sealed partial class Event : AggregateRoot<Guid>
 
     public DateTimeOffset? PublishedAt { get; private set; }
 
+    /// <summary>When a draft goes live by itself. Null when it isn't scheduled.</summary>
+    public DateTimeOffset? PublishAt { get; private set; }
+
     public IReadOnlyList<RegistrationQuestion> Questions => _questions;
 
     public static Event Create(string title, ScopePath scope, DateTimeOffset startsAt, DateTimeOffset endsAt, DateTimeOffset now)
@@ -271,15 +274,53 @@ public sealed partial class Event : AggregateRoot<Guid>
         EnsureNotCancelled();
         Status = EventStatus.Published;
         PublishedAt ??= now;
+        PublishAt = null;
         UpdatedAt = now;
         Raise(new EventListingChanged(Id, Slug));
     }
 
+    /// <summary>A draft that goes live by itself at the given time (the minute job publishes it).</summary>
+    public void Schedule(DateTimeOffset at, DateTimeOffset now)
+    {
+        EnsureNotCancelled();
+        if (Status == EventStatus.Published)
+        {
+            throw new DomainRuleException("events.already_published", "This event is already live.");
+        }
+
+        if (at <= now)
+        {
+            throw new DomainRuleException("events.schedule_past", "Choose a time in the future, or publish now.");
+        }
+
+        if (at >= EndsAt)
+        {
+            throw new DomainRuleException("events.schedule_after_end", "Choose a time before the event ends.");
+        }
+
+        PublishAt = at;
+        UpdatedAt = now;
+    }
+
+    /// <summary>Called by the minute job: a scheduled draft whose time has come goes live.</summary>
+    public bool PublishIfDue(DateTimeOffset now)
+    {
+        if (Status != EventStatus.Draft || PublishAt is not { } at || at > now)
+        {
+            return false;
+        }
+
+        Publish(now);
+        return true;
+    }
+
+    /// <summary>Takes a live event down, or stops a scheduled one from going live.</summary>
     public void Unpublish(DateTimeOffset now)
     {
         EnsureNotCancelled();
         var wasLive = Status == EventStatus.Published;
         Status = EventStatus.Draft;
+        PublishAt = null;
         UpdatedAt = now;
         if (wasLive)
         {
@@ -295,6 +336,7 @@ public sealed partial class Event : AggregateRoot<Guid>
         }
 
         Status = EventStatus.Cancelled;
+        PublishAt = null;
         UpdatedAt = now;
         Raise(new EventCancelled(Id, Title));
     }

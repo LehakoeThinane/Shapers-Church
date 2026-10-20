@@ -1908,6 +1908,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/events/{id}/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ScheduleEvent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/events/{id}/unpublish": {
         parameters: {
             query?: never;
@@ -5062,6 +5078,8 @@ export interface components {
             checkedIn: number;
             notifyEmail: null | string;
             followUpRegistrants: boolean;
+            /** Format: date-time */
+            publishAt: null | string;
         };
         EventDto: {
             /** Format: uuid */
@@ -6550,6 +6568,10 @@ export interface components {
             scope: null | string;
             /** Format: uuid */
             categoryId?: null | string;
+        };
+        ScheduleEventRequest: {
+            /** Format: date-time */
+            publishAt: string;
         };
         ScheduleRequest: {
             /** Format: date-time */
@@ -10226,6 +10248,32 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventAdminDto"];
+                };
+            };
+        };
+    };
+    ScheduleEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleEventRequest"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
