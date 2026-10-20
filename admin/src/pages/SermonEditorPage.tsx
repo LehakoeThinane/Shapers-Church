@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { AiBadge } from '../components/Assist';
@@ -128,7 +129,7 @@ function Editor({ existing }: { existing: Admin | null }) {
             </Field>
             <div className="form-grid">
               <Field label="Preached on">
-                <TextInput type="date" required value={form.preachedOn} onChange={(e) => set({ preachedOn: e.target.value })} />
+                <DateInput required value={form.preachedOn} onChange={(v) => set({ preachedOn: v })} />
               </Field>
               <Field label="Series">
                 <Select value={form.seriesId} onChange={(e) => set({ seriesId: e.target.value })}>

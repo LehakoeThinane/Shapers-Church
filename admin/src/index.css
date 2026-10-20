@@ -1942,3 +1942,180 @@ a.cal-entry:hover {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+/* ---------- Date picker ---------- */
+
+.date-input {
+  position: relative;
+}
+
+.date-input-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.date-input-button:disabled {
+  cursor: default;
+}
+
+.date-input-placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.date-input-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--color-text-secondary);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+/* Invisible, under the button, so the browser's "fill in this field" bubble points at the picker. */
+.date-input-required {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.date-popover {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 300px;
+  max-width: calc(100vw - 32px);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+}
+
+.date-popover-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--space-sm);
+}
+
+.date-select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--color-glass-edge);
+  border-radius: 10px;
+  background: var(--color-glass-fill);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.date-select option {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.date-nav {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--color-text-primary);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.date-nav:hover,
+.date-day:hover:not(:disabled):not(.date-day-selected),
+.date-link:hover:not(:disabled) {
+  background: var(--color-glass-fill);
+}
+
+.date-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.date-weekday {
+  padding: 4px 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+}
+
+.date-day {
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.date-day-outside {
+  color: var(--color-text-tertiary);
+}
+
+.date-day-today {
+  border-color: var(--color-accent);
+}
+
+.date-day-selected {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  font-weight: 700;
+}
+
+.date-day:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.date-day:focus-visible,
+.date-nav:focus-visible,
+.date-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.date-popover-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-sm);
+}
+
+.date-link {
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.date-link:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+/* An open calendar stays above the cards after its own (each glass card is its own layer). */
+.glass:has(.date-popover) {
+  position: relative;
+  z-index: 30;
+}

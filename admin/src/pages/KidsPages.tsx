@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, formatDate, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 
@@ -361,7 +362,7 @@ export function KidsDeskPage() {
                 <TextInput value={c.lastName} onChange={(e) => update(i, { lastName: e.target.value })} autoComplete="off" />
               </Field>
               <Field label="Date of birth" hint="Decides their class.">
-                <TextInput required type="date" value={c.dateOfBirth} onChange={(e) => update(i, { dateOfBirth: e.target.value })} />
+                <DateInput required value={c.dateOfBirth} onChange={(v) => update(i, { dateOfBirth: v })} />
               </Field>
               <Field label="Allergies">
                 <TextInput value={c.allergies} onChange={(e) => update(i, { allergies: e.target.value })} maxLength={500} placeholder="None" />

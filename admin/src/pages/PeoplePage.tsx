@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { useCampuses, useMembershipStatuses } from '../lib/queries';
@@ -187,7 +188,7 @@ export function NewPersonPage() {
             <TextInput value={form.preferredName ?? ''} onChange={(e) => set({ preferredName: e.target.value || null })} />
           </Field>
           <Field label="Date of birth">
-            <TextInput type="date" value={form.dateOfBirth ?? ''} onChange={(e) => set({ dateOfBirth: e.target.value || null })} />
+            <DateInput value={form.dateOfBirth ?? ''} onChange={(v) => set({ dateOfBirth: v || null })} />
           </Field>
           <Field label="Mobile">
             <TextInput type="tel" placeholder="082 123 4567" value={form.mobile ?? ''} onChange={(e) => set({ mobile: e.target.value || null })} />

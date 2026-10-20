@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { AiBadge } from '../components/Assist';
 import { useCanDraft, useReviewDraft } from '../lib/assist';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, ApiError, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { days, meetingLabel, multiplicationLabel, nextStepLabel, roleLabel, today, type CellRole, type DayOfWeek } from '../lib/cells';
@@ -726,7 +727,7 @@ function LeaderMaterials({ cellId }: { cellId: string }) {
               <TextInput type="url" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="https://" />
             </Field>
             <Field label="For the meeting on">
-              <TextInput type="date" value={form.forDate} onChange={(e) => setForm({ ...form, forDate: e.target.value })} />
+              <DateInput value={form.forDate} onChange={(v) => setForm({ ...form, forDate: v })} />
             </Field>
           </div>
           <label className="checkbox">
@@ -871,7 +872,7 @@ function ReportForm({ cell, report, materials }: { cell: Cell; report?: Report; 
           <Card title="The meeting">
             <div className="stack">
               <Field label="Date">
-                <TextInput type="date" value={form.meetingDate} max={today()} onChange={set('meetingDate')} required />
+                <DateInput value={form.meetingDate} max={today()} onChange={(v) => setForm({ ...form, meetingDate: v })} required />
               </Field>
               <Field label="Lesson">
                 <Select value={form.materialId} onChange={set('materialId')}>
@@ -1200,7 +1201,7 @@ function LessonEditor({ lessonId, initial, onDone }: { lessonId: string | null; 
             <TextInput type="url" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="https://" />
           </Field>
           <Field label="For the week of">
-            <TextInput type="date" value={form.forDate} onChange={(e) => setForm({ ...form, forDate: e.target.value })} />
+            <DateInput value={form.forDate} onChange={(v) => setForm({ ...form, forDate: v })} />
           </Field>
         </div>
         <label className="checkbox">
