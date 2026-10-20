@@ -259,6 +259,37 @@ public sealed class EventTests
     }
 
     [Fact]
+    public void A_scheduled_draft_goes_live_at_its_time_and_not_before()
+    {
+        var e = Event.Create("Water baptism", Build.Church, Build.Now.AddDays(10), Build.Now.AddDays(10).AddHours(2), Build.Now);
+        e.Schedule(Build.Now.AddDays(1), Build.Now);
+
+        Assert.Equal(EventStatus.Draft, e.Status);
+        Assert.False(e.PublishIfDue(Build.Now.AddHours(23)));
+        Assert.True(e.PublishIfDue(Build.Now.AddDays(1)));
+        Assert.Equal(EventStatus.Published, e.Status);
+        Assert.Null(e.PublishAt);
+        Assert.False(e.PublishIfDue(Build.Now.AddDays(2)));
+    }
+
+    [Fact]
+    public void Scheduling_needs_a_future_time_before_the_event_ends_and_can_be_called_off()
+    {
+        var e = Event.Create("Water baptism", Build.Church, Build.Now.AddDays(10), Build.Now.AddDays(10).AddHours(2), Build.Now);
+
+        Assert.Throws<DomainRuleException>(() => e.Schedule(Build.Now.AddMinutes(-1), Build.Now));
+        Assert.Throws<DomainRuleException>(() => e.Schedule(Build.Now.AddDays(11), Build.Now));
+
+        e.Schedule(Build.Now.AddDays(1), Build.Now);
+        e.Unpublish(Build.Now);
+        Assert.Null(e.PublishAt);
+        Assert.False(e.PublishIfDue(Build.Now.AddDays(1)));
+
+        e.Publish(Build.Now);
+        Assert.Throws<DomainRuleException>(() => e.Schedule(Build.Now.AddDays(1), Build.Now));
+    }
+
+    [Fact]
     public void A_waiting_list_needs_a_capacity()
     {
         var e = Build.Open(capacity: null, waitlist: true);
