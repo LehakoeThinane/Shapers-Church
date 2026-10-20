@@ -78,6 +78,10 @@ public sealed class EventsModule : IModule
         admin.MapPost("/{id:guid}/publish", async (Guid id, EventAdminService service, CancellationToken ct) => (await service.PublishAsync(id, ct)).ToHttp())
             .WithName("PublishEvent")
             .RequirePermission(EventsPermissions.Publish);
+        admin.MapPost("/{id:guid}/schedule", async (Guid id, ScheduleEventRequest request, EventAdminService service, CancellationToken ct) =>
+                (await service.ScheduleAsync(id, request, ct)).ToHttp())
+            .WithName("ScheduleEvent")
+            .RequirePermission(EventsPermissions.Publish);
         admin.MapPost("/{id:guid}/unpublish", async (Guid id, EventAdminService service, CancellationToken ct) => (await service.UnpublishAsync(id, ct)).ToHttp())
             .WithName("UnpublishEvent")
             .RequirePermission(EventsPermissions.Publish);

@@ -25,6 +25,7 @@ public static class EventsInfrastructure
         services.AddScoped<PublicEventService>();
         services.AddScoped<RegistrationService>();
         services.AddScoped<ReminderJob>();
+        services.AddScoped<EventPublisherJob>();
         services.AddScoped<Shapers.Platform.Privacy.IPersonalDataSource, EventsPersonalData>();
         services.AddScoped<Shapers.Platform.Calendar.ICalendarSource, EventCalendar>();
         services.AddScoped<IIntegrationEventHandler<EventRegisteredIntegrationEvent>, ConfirmMemberRegistration>();
@@ -33,6 +34,8 @@ public static class EventsInfrastructure
         services.AddScoped<IIntegrationEventHandler<WaitlistPromotedIntegrationEvent>, NotifyWaitlistPromotion>();
         services.AddScoped<IIntegrationEventHandler<EventCancelledIntegrationEvent>, NotifyEventCancelled>();
 
+        services.AddSingleton(new RecurringJobDefinition("events-publish-scheduled", "* * * * *", (sp, ct) =>
+            sp.GetRequiredService<EventPublisherJob>().RunAsync(ct)));
         services.AddSingleton(new RecurringJobDefinition("events-reminders", "5 * * * *", (sp, ct) =>
             sp.GetRequiredService<ReminderJob>().RunAsync(ct)));
         services.AddSingleton(new RecurringJobDefinition("events-verification-cleanup", "50 3 * * *", (sp, ct) =>

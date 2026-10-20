@@ -70,7 +70,7 @@ export function EventsPage() {
                   <td>{formatDateTime(e.event.startsAt)}</td>
                   <td>{seatsLabel(e)}</td>
                   <td>
-                    <Badge tone={statusTone[e.status]}>{e.status}</Badge>
+                    {e.status === 'Draft' && e.publishAt ? <Badge tone="accent">Scheduled</Badge> : <Badge tone={statusTone[e.status]}>{e.status}</Badge>}
                   </td>
                   <td className="row">
                     {e.event.registrationRequired && can(access, Permissions.eventsRegistrationsView) && <Link to={`/events/${e.event.id}/attendees`}>Attendees</Link>}
@@ -221,10 +221,12 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
       if (!existing) navigate(`/events/${e.event.id}`, { replace: true });
     },
   });
+  const [when, setWhen] = useState(() => toLocalInput(existing?.publishAt));
   const status = useMutation({
-    mutationFn: async (action: 'publish' | 'unpublish' | 'cancel') => {
+    mutationFn: async (action: 'publish' | 'schedule' | 'unpublish' | 'cancel') => {
       const path = { params: { path: { id: existing!.event.id } } };
       if (action === 'publish') return unwrap(await api.POST('/api/admin/events/{id}/publish', path));
+      if (action === 'schedule') return unwrap(await api.POST('/api/admin/events/{id}/schedule', { ...path, body: { publishAt: fromLocalInput(when)! } }));
       if (action === 'unpublish') return unwrap(await api.POST('/api/admin/events/{id}/unpublish', path));
       return unwrap(await api.POST('/api/admin/events/{id}/cancel', path));
     },
@@ -250,7 +252,7 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
             )}
           </>
         }
-        actions={existing && <Badge tone={statusTone[existing.status]}>{existing.status}</Badge>}
+        actions={existing && (existing.status === 'Draft' && existing.publishAt ? <Badge tone="accent">Scheduled</Badge> : <Badge tone={statusTone[existing.status]}>{existing.status}</Badge>)}
       />
 
       <form
@@ -392,10 +394,31 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
                   {existing ? 'Save changes' : 'Create draft'}
                 </Button>
               )}
-              {existing && canPublish && existing.status === 'Draft' && (
-                <Button type="button" busy={status.isPending} onClick={() => status.mutate('publish')}>
-                  Publish
-                </Button>
+              {!existing && <p className="small muted">Create the draft first, then publish it now or schedule it for later.</p>}
+              {existing && canPublish && existing.status === 'Draft' && existing.publishAt && (
+                <>
+                  <p className="small">Goes live by itself {formatDateTime(existing.publishAt)}.</p>
+                  <Button type="button" busy={status.isPending} onClick={() => status.mutate('publish')}>
+                    Publish now instead
+                  </Button>
+                  <Button type="button" variant="ghost" busy={status.isPending} onClick={() => status.mutate('unpublish')}>
+                    Cancel schedule
+                  </Button>
+                </>
+              )}
+              {existing && canPublish && existing.status === 'Draft' && !existing.publishAt && (
+                <>
+                  <Button type="button" busy={status.isPending} onClick={() => status.mutate('publish')}>
+                    Publish now
+                  </Button>
+                  <div className="row">
+                    <TextInput type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} aria-label="Publish at" />
+                    <Button type="button" busy={status.isPending} disabled={!when} onClick={() => status.mutate('schedule')}>
+                      Schedule
+                    </Button>
+                  </div>
+                  <p className="small muted">Scheduled events go live on the website and app at that time, by themselves.</p>
+                </>
               )}
               {existing && canPublish && existing.status === 'Published' && (
                 <>

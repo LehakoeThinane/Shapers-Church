@@ -266,6 +266,11 @@ function PageEditor({ existing }: { existing?: PageAdmin }) {
         </Card>
         <div className="stack">
           {existing && translation && <TranslationCheckCard kind="pages" id={existing.page.id} info={translation} original={original.data} />}
+          {!existing && (
+            <Card title="Publishing">
+              <p className="small muted">Create the draft first. Then you can publish it now, or pick a date and time to schedule it.</p>
+            </Card>
+          )}
           {existing && (
             <PublishCard
               kind="pages"
@@ -411,6 +416,11 @@ function PostEditor({ existing }: { existing?: PostAdmin }) {
         </Card>
         <div className="stack">
           {existing && translation && <TranslationCheckCard kind="posts" id={existing.id} info={translation} original={original.data} />}
+          {!existing && (
+            <Card title="Publishing">
+              <p className="small muted">Create the draft first. Then you can publish it now, or pick a date and time to schedule it.</p>
+            </Card>
+          )}
           {existing && (
             <PublishCard
               kind="posts"

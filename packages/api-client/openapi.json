@@ -4391,6 +4391,47 @@
         }
       }
     },
+    "/api/admin/events/{id}/schedule": {
+      "post": {
+        "tags": [
+          "Events admin"
+        ],
+        "operationId": "ScheduleEvent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAdminDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/events/{id}/unpublish": {
       "post": {
         "tags": [
@@ -13277,7 +13318,8 @@
           "waitlisted",
           "checkedIn",
           "notifyEmail",
-          "followUpRegistrants"
+          "followUpRegistrants",
+          "publishAt"
         ],
         "type": "object",
         "properties": {
@@ -13334,6 +13376,13 @@
           },
           "followUpRegistrants": {
             "type": "boolean"
+          },
+          "publishAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },
@@ -19207,6 +19256,18 @@
               "string"
             ],
             "format": "uuid"
+          }
+        }
+      },
+      "ScheduleEventRequest": {
+        "required": [
+          "publishAt"
+        ],
+        "type": "object",
+        "properties": {
+          "publishAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
