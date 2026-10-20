@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
 import { Button, Card, Empty, ErrorNote, Field, PageHeader, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, formatDate, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { ImagePicker } from '../components/ImagePicker';
@@ -80,7 +81,7 @@ function SeriesCard() {
           <textarea className="input" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </Field>
         <Field label="Starts on">
-          <TextInput type="date" value={form.startsOn} onChange={(e) => setForm({ ...form, startsOn: e.target.value })} />
+          <DateInput value={form.startsOn} onChange={(v) => setForm({ ...form, startsOn: v })} />
         </Field>
         {form.artwork ? (
           <img className="thumb" src={form.artwork.url} alt="Series artwork" width={160} height={160} />

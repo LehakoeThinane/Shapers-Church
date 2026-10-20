@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { hhmm, positionsOf, shortDay, useSongs, useTeams, type PlanItem } from '../lib/services';
@@ -582,10 +583,10 @@ function CcliReport() {
     <Card title="CCLI report">
       <div className="form-grid">
         <Field label="From">
-          <TextInput type="date" value={range.from} onChange={(e) => setRange({ ...range, from: e.target.value })} />
+          <DateInput value={range.from} onChange={(v) => setRange({ ...range, from: v })} />
         </Field>
         <Field label="To">
-          <TextInput type="date" value={range.to} onChange={(e) => setRange({ ...range, to: e.target.value })} />
+          <DateInput value={range.to} onChange={(v) => setRange({ ...range, to: v })} />
         </Field>
       </div>
       <p className="small muted">

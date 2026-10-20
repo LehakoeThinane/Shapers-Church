@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { RewriteHelp } from '../components/Assist';
@@ -381,7 +382,7 @@ function PostEditor({ existing }: { existing?: PostAdmin }) {
                 </Field>
                 {form.kind === 'News' && (
                   <Field label="Show until" hint="Drops off Home after this day.">
-                    <TextInput type="date" value={form.showUntil} onChange={(e) => set({ showUntil: e.target.value })} />
+                    <DateInput value={form.showUntil} onChange={(v) => set({ showUntil: v })} />
                   </Field>
                 )}
               </div>

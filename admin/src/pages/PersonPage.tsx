@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, covers, Permissions, scopesFor, useAccess } from '../lib/access';
 import { useCampuses, useMembershipStatuses, useScopes } from '../lib/queries';
@@ -120,7 +121,7 @@ function DetailsCard({ person, editable }: { person: Person; editable: boolean }
           <TextInput disabled={!editable} value={form.preferredName} onChange={(e) => setForm({ ...form, preferredName: e.target.value })} />
         </Field>
         <Field label="Date of birth">
-          <TextInput type="date" disabled={!editable} value={form.dateOfBirth} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })} />
+          <DateInput disabled={!editable} value={form.dateOfBirth} onChange={(v) => setForm({ ...form, dateOfBirth: v })} />
         </Field>
         <Field label="Gender">
           <Select disabled={!editable} value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>

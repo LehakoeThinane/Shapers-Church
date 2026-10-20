@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { duration, emptyItem, hhmm, longDay, positionsOf, shortDay, statusLabel, statusTone, useSongs, useTeams, type PlanItem, type PlanItemKind } from '../lib/services';
@@ -51,7 +52,7 @@ export function ServicePlansPage() {
               </Select>
             </Field>
             <Field label="Date">
-              <TextInput type="date" required min={today()} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+              <DateInput required min={today()} value={form.date} onChange={(v) => setForm({ ...form, date: v })} />
             </Field>
             <Field label="Title (optional)">
               <TextInput value={form.title} maxLength={120} placeholder="e.g. Easter Sunday" onChange={(e) => setForm({ ...form, title: e.target.value })} />
@@ -184,7 +185,7 @@ function PlanEditor({ plan }: { plan: Plan }) {
                     <TextInput required maxLength={120} value={details.title} onChange={(e) => setDetails({ ...details, title: e.target.value })} />
                   </Field>
                   <Field label="Date">
-                    <TextInput type="date" required value={details.date} onChange={(e) => setDetails({ ...details, date: e.target.value })} />
+                    <DateInput required value={details.date} onChange={(v) => setDetails({ ...details, date: v })} />
                   </Field>
                   <Field label="Starts at">
                     <TextInput type="time" required value={details.startTime} onChange={(e) => setDetails({ ...details, startTime: e.target.value })} />
