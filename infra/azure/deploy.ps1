@@ -28,6 +28,14 @@ param(
     # How often the "background work needs attention" alert checks, in minutes (5, 10, 15, 30 or 60).
     [ValidateSet(5, 10, 15, 30, 60)] [int] $BackgroundAlertMinutes = 15,
     [string] $ResourceGroup = 'rg-shapers-prod',
+    # Base of the resource names (kv-<name>-prod, st<name>prod, …). Some must be unique across all of Azure, so a
+    # new subscription needs a different one while the old resources still exist.
+    # At most 12 characters, as main.bicep allows.
+    [ValidatePattern('^[a-z0-9]{3,12}$')] [string] $Name = 'shapers',
+    # Skip the "deploy to this subscription?" question, e.g. when run from another script.
+    [switch] $Yes,
+    # Build the API image with Docker on this computer instead of in the registry (needed on free trials).
+    [switch] $LocalBuild,
     [string] $Location = 'southafricanorth',
     [string] $YouTubeApiKey = '',
     # Online card giving through Yoco (docs/deployment.md, Giving). Left empty, the keys already in Key Vault are kept.
@@ -49,7 +57,7 @@ $ErrorActionPreference = 'Stop'
 $env:AZURE_CORE_ONLY_SHOW_ERRORS = 'true'
 $root = Resolve-Path (Join-Path $PSScriptRoot '../..')
 $template = Join-Path $PSScriptRoot 'main.bicep'
-$vaultName = 'kv-shapers-prod'
+$vaultName = "kv-$Name-prod"
 
 function Invoke-Az {
     $output = & az @args
@@ -83,9 +91,9 @@ function Use-Existing($value, [scriptblock] $create) {
 
 # A missing secret is expected on the first run. Windows PowerShell 5.1 stops on a native command's error output
 # under 'Stop', even when it's discarded, so these lookups run under 'Continue' and check the exit code instead.
-function Get-ExistingSecret([string] $name) {
+function Get-ExistingSecret([string] $secretName) {
     $ErrorActionPreference = 'Continue'
-    $value = az keyvault secret show --vault-name $vaultName --name $name --query value -o tsv 2>$null
+    $value = az keyvault secret show --vault-name $vaultName --name $secretName --query value -o tsv 2>$null
     if ($LASTEXITCODE -eq 0 -and $value) { return $value }
     return $null
 }
@@ -95,7 +103,7 @@ function Get-ExistingSecret([string] $name) {
 $account = Invoke-Az account show -o json | ConvertFrom-Json
 Write-Host "Subscription: $($account.name) ($($account.id))"
 Write-Host "Signed in as: $($account.user.name)"
-if ((Read-Host 'Deploy the Shapers Church platform to this subscription? (yes/no)') -ne 'yes') { return }
+if (-not $Yes -and (Read-Host 'Deploy the Shapers Church platform to this subscription? (yes/no)') -ne 'yes') { return }
 
 $deployer = Invoke-Az ad signed-in-user show --query id -o tsv
 Invoke-Az group create --name $ResourceGroup --location $Location --tags app=shapers environment=production -o none
@@ -104,8 +112,8 @@ Invoke-Az group create --name $ResourceGroup --location $Location --tags app=sha
 
 $vaultExists = (& { $ErrorActionPreference = 'Continue'; az keyvault show --name $vaultName --query name -o tsv 2>$null }) -eq $vaultName
 $existing = @{}
-foreach ($name in 'postgres-admin-password', 'auth-jwt-signing-key', 'auth-otp-hash-key', 'security-hash-key', 'bootstrap-admin-password') {
-    $existing[$name] = if ($vaultExists) { Get-ExistingSecret $name } else { $null }
+foreach ($secretName in 'postgres-admin-password', 'auth-jwt-signing-key', 'auth-otp-hash-key', 'security-hash-key', 'bootstrap-admin-password') {
+    $existing[$secretName] = if ($vaultExists) { Get-ExistingSecret $secretName } else { $null }
 }
 
 # Card giving stays on once set up: a run without the Yoco keys reuses the ones in Key Vault.
@@ -124,7 +132,7 @@ $secrets = @{
 }
 
 # The cost budget keeps the month it was created in, so running this again doesn't move its start date.
-$budgetId = "/subscriptions/$($account.id)/resourceGroups/$ResourceGroup/providers/Microsoft.Consumption/budgets/budget-shapers-prod"
+$budgetId = "/subscriptions/$($account.id)/resourceGroups/$ResourceGroup/providers/Microsoft.Consumption/budgets/budget-$Name-prod"
 # Not finding it is expected on the first run; Windows PowerShell 5.1 would otherwise stop on az's error output.
 $budgetStart = & { $ErrorActionPreference = 'Continue'; az resource show --ids $budgetId --api-version 2023-11-01 --query properties.timePeriod.startDate -o tsv 2>$null }
 $budgetStartMonth = if ($LASTEXITCODE -eq 0 -and $budgetStart) { $budgetStart.Substring(0, 7) } else { (Get-Date).ToUniversalTime().ToString('yyyy-MM') }
@@ -135,6 +143,7 @@ function Deploy([bool] $withApi, [string] $image) {
         '$schema'      = 'https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#'
         contentVersion = '1.0.0.0'
         parameters     = @{
+            name                   = @{ value = $Name }
             deployApi              = @{ value = $withApi }
             apiImage               = @{ value = $image }
             deployerObjectId       = @{ value = $deployer }
@@ -181,8 +190,17 @@ $outputs = Deploy $false ''
 
 $tag = Use-Existing (git -C $root rev-parse --short HEAD 2>$null) { Get-Date -Format yyyyMMddHHmm }
 $image = "$($outputs.registryLoginServer.value)/shapers-api:$tag"
-Write-Host "`n[2/3] Building the API image $image in Azure..."
-Invoke-Az acr build --registry $outputs.registryName.value --image "shapers-api:$tag" (Join-Path $root 'backend') -o none
+if ($LocalBuild) {
+    # Free-trial subscriptions can't run registry builds (ACR Tasks): build with Docker here and push.
+    Write-Host "`n[2/3] Building the API image $image with Docker on this computer..."
+    Invoke-Az acr login --name $outputs.registryName.value -o none
+    & { $ErrorActionPreference = 'Continue'; docker build -t $image (Join-Path $root 'backend'); if ($LASTEXITCODE -ne 0) { throw 'docker build failed.' } }
+    & { $ErrorActionPreference = 'Continue'; docker push $image; if ($LASTEXITCODE -ne 0) { throw 'docker push failed.' } }
+}
+else {
+    Write-Host "`n[2/3] Building the API image $image in Azure..."
+    Invoke-Az acr build --registry $outputs.registryName.value --image "shapers-api:$tag" (Join-Path $root 'backend') -o none
+}
 
 # ---------- 3. The API ----------
 
