@@ -48,6 +48,9 @@ public sealed record FolderViewDto(
     IReadOnlyList<FolderDto> Folders,
     IReadOnlyList<DocumentDto> Documents);
 
+/// <summary>One document with where it lives and what the person may do with it (for the editor).</summary>
+public sealed record DocumentDetailDto(DocumentDto Document, Guid LibraryId, string LibraryName, LibraryAccess Access);
+
 public sealed record VersionDto(int Number, string ContentType, long SizeBytes, DateTimeOffset UploadedAt, string UploadedBy, bool IsCurrent);
 
 /// <summary>A document found by search or listed as recent, with where it lives.</summary>

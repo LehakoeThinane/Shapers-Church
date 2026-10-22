@@ -16,5 +16,5 @@ Staff and leaders share run sheets, rotas, policies, budgets and minutes by emai
 
 ## Consequences
 - No new Azure resource: a container in the existing storage account. Storage costs cents a month.
-- Not yet: editing Word documents in the browser. The plan is our own editor from open-source parts (TipTap/ProseMirror for editing, mammoth.js to read .docx, the docx library to write it back, later Yjs for co-editing), saving each edit as a new version.
+- **Word documents are edited in the browser** with our own editor built from open-source parts: mammoth.js opens the .docx, TipTap/ProseMirror edits it, and the docx library writes a real .docx back as the document's next version (nothing is overwritten). Headings, emphasis, lists, tables, pictures, links and alignment survive; Word-only layout (text boxes, columns, headers and footers) isn't shown, and the editor says so. The editor's code loads only when it's opened. Not yet: several people editing at once (Yjs).
 - Not yet: sharing with members in the app, moving files between libraries.

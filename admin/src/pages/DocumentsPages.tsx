@@ -2,21 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type DragEvent, type FormEvent } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
-import { api, apiBaseUrl, formatDateTime, unwrap, type Schemas } from '../lib/api';
+import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
+import { fileUrl, isWordFile, sendDocument } from '../lib/documents';
 import { can, Permissions, useAccess } from '../lib/access';
 import { formatBytes } from '../lib/upload';
 
 type Library = Schemas['LibraryDto'];
 type Doc = Schemas['DocumentDto'];
 type FolderView = Schemas['FolderViewDto'];
-
-const fileUrl = (id: string, options: { version?: number; download?: boolean } = {}) => {
-  const query = new URLSearchParams();
-  if (options.version) query.set('version', String(options.version));
-  if (options.download) query.set('download', 'true');
-  const qs = query.toString();
-  return `${apiBaseUrl}/api/admin/documents/files/${id}/content${qs ? `?${qs}` : ''}`;
-};
 
 /** A small picture of the kind of file, from its type. */
 function kindOf(contentType: string, name: string) {
@@ -29,36 +22,6 @@ function kindOf(contentType: string, name: string) {
   if (contentType.startsWith('audio/')) return '🎵';
   if (contentType.startsWith('video/')) return '🎬';
   return '📄';
-}
-
-/** Uploads one file to a library folder with progress. The API checks access; the file never gets a public link. */
-function uploadDocument(libraryId: string, folderId: string | null, file: File, onProgress: (fraction: number) => void): Promise<Doc> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    const folder = folderId ? `?folderId=${folderId}` : '';
-    xhr.open('POST', `${apiBaseUrl}/api/admin/documents/libraries/${libraryId}/files${folder}`);
-    xhr.withCredentials = true;
-    xhr.setRequestHeader('X-Shapers-CSRF', '1');
-    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(JSON.parse(xhr.responseText) as Doc);
-        return;
-      }
-      let message = `Upload failed (${xhr.status}).`;
-      try {
-        const problem = JSON.parse(xhr.responseText) as { detail?: string; title?: string };
-        message = problem.detail ?? problem.title ?? message;
-      } catch {
-        /* not JSON */
-      }
-      reject(new Error(xhr.status === 413 ? 'Files can be up to 100 MB.' : message));
-    };
-    xhr.onerror = () => reject(new Error('Upload failed. Check your connection and try again.'));
-    const form = new FormData();
-    form.append('file', file, file.name);
-    xhr.send(form);
-  });
 }
 
 /** Libraries on the left, the open folder on the right. */
@@ -149,7 +112,7 @@ function FolderPanel({ library, folderId, onOpenFolder }: { library: Library; fo
     setUploads((u) => [...u.filter((x) => !x.error && x.progress < 1), ...list.map((f) => ({ name: f.name, progress: 0 }))]);
     for (const file of list) {
       try {
-        await uploadDocument(library.id, folderId, file, (p) => setUploads((u) => u.map((x) => (x.name === file.name ? { ...x, progress: p } : x))));
+        await sendDocument({ libraryId: library.id, folderId }, file, file.name, (p) => setUploads((u) => u.map((x) => (x.name === file.name ? { ...x, progress: p } : x))));
         setUploads((u) => u.filter((x) => x.name !== file.name));
       } catch (err) {
         setUploads((u) => u.map((x) => (x.name === file.name ? { ...x, error: err instanceof Error ? err.message : 'Upload failed.' } : x)));
@@ -214,6 +177,9 @@ function FolderPanel({ library, folderId, onOpenFolder }: { library: Library; fo
               <Button variant="ghost" onClick={() => setNaming({ kind: 'new-folder', name: '' })}>
                 New folder
               </Button>
+              <Link className="btn btn-ghost" to={`/documents/new?library=${library.id}${folderId ? `&folder=${folderId}` : ''}`}>
+                New document
+              </Link>
               <label className="btn btn-primary">
                 Upload
                 <input type="file" hidden multiple onChange={(e) => e.target.files && void upload(e.target.files)} />
@@ -350,6 +316,11 @@ function DocumentRow({
         <td className="muted">{formatDateTime(doc.updatedAt)}</td>
         <td className="muted">{doc.updatedBy}</td>
         <td className="docs-actions">
+          {isWordFile(doc.name) && (
+            <Link className="btn btn-ghost" to={`/documents/edit/${doc.id}`}>
+              {canEdit ? 'Edit' : 'Read'}
+            </Link>
+          )}
           <a className="btn btn-ghost" href={fileUrl(doc.id, { download: true })}>
             Download
           </a>

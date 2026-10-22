@@ -66,30 +66,26 @@ public sealed class DocumentsModule : IModule
             .WithName("DeleteDocumentFolder");
 
         // Multipart upload through the API (files are private; there's no direct-to-storage link to hand out).
-        docs.MapPost("/libraries/{id:guid}/files", async (Guid id, Guid? folderId, HttpContext http, DocumentsService s, CancellationToken ct) =>
-            {
-                if (http.Features.Get<IHttpMaxRequestBodySizeFeature>() is { IsReadOnly: false } limit)
+        docs.MapPost("/libraries/{id:guid}/files", (Guid id, Guid? folderId, HttpContext http, DocumentsService s, CancellationToken ct) =>
+                WithUploadAsync(http, async file =>
                 {
-                    limit.MaxRequestBodySize = Document.MaxBytes + (1024 * 1024);
-                }
-
-                if (!http.Request.HasFormContentType)
-                {
-                    return Results.Problem("Send the file as a form upload.", statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                var form = await http.Request.ReadFormAsync(ct);
-                if (form.Files is not [var file])
-                {
-                    return Results.Problem("Send exactly one file.", statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                await using var content = file.OpenReadStream();
-                return (await s.UploadAsync(id, folderId, file.FileName, file.ContentType, file.Length, content, ct)).ToHttp();
-            })
+                    await using var content = file.OpenReadStream();
+                    return (await s.UploadAsync(id, folderId, file.FileName, file.ContentType, file.Length, content, ct)).ToHttp();
+                }, ct))
             .WithName("UploadDocument")
             .DisableAntiforgery()
             .Accepts<IFormFile>("multipart/form-data");
+        docs.MapPost("/files/{id:guid}/versions", (Guid id, HttpContext http, DocumentsService s, CancellationToken ct) =>
+                WithUploadAsync(http, async file =>
+                {
+                    await using var content = file.OpenReadStream();
+                    return (await s.UploadVersionAsync(id, file.ContentType, file.Length, content, ct)).ToHttp();
+                }, ct))
+            .WithName("UploadDocumentVersion")
+            .DisableAntiforgery()
+            .Accepts<IFormFile>("multipart/form-data");
+        docs.MapGet("/files/{id:guid}", async (Guid id, DocumentsService s, CancellationToken ct) => (await s.DetailAsync(id, ct)).ToHttp())
+            .WithName("GetDocument");
 
         docs.MapGet("/files/{id:guid}/content", async (Guid id, int? version, bool? download, HttpContext http, DocumentsService s, CancellationToken ct) =>
             {
@@ -126,6 +122,25 @@ public sealed class DocumentsModule : IModule
         docs.MapPost("/recycle-bin/{kind}/{id:guid}/restore", async (string kind, Guid id, DocumentsService s, CancellationToken ct) =>
                 (await s.RestoreAsync(kind, id, ct)).ToHttp())
             .WithName("RestoreFromRecycleBin");
+    }
+
+    /// <summary>Reads one uploaded file from a form (up to the document size limit) and hands it on.</summary>
+    private static async Task<IResult> WithUploadAsync(HttpContext http, Func<IFormFile, Task<IResult>> handle, CancellationToken cancellationToken)
+    {
+        if (http.Features.Get<IHttpMaxRequestBodySizeFeature>() is { IsReadOnly: false } limit)
+        {
+            limit.MaxRequestBodySize = Document.MaxBytes + (1024 * 1024);
+        }
+
+        if (!http.Request.HasFormContentType)
+        {
+            return Results.Problem("Send the file as a form upload.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        var form = await http.Request.ReadFormAsync(cancellationToken);
+        return form.Files is [var file]
+            ? await handle(file)
+            : Results.Problem("Send exactly one file.", statusCode: StatusCodes.Status400BadRequest);
     }
 
     /// <summary>A plain-ASCII fallback for browsers that ignore filename*.</summary>
