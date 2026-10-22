@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateInput } from '../components/DateInput';
 import { api, formatDate, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { rands } from '../lib/money';
@@ -164,10 +165,10 @@ export function GiftsPage() {
       <Card>
         <div className="filters">
           <Field label="From">
-            <TextInput type="date" value={filters.from} onChange={(e) => set({ from: e.target.value })} />
+            <DateInput value={filters.from} onChange={(v) => set({ from: v })} />
           </Field>
           <Field label="To">
-            <TextInput type="date" value={filters.to} onChange={(e) => set({ to: e.target.value })} />
+            <DateInput value={filters.to} onChange={(v) => set({ to: v })} />
           </Field>
           <Field label="Fund">
             <Select value={filters.fundId} onChange={(e) => set({ fundId: e.target.value })}>
@@ -288,7 +289,7 @@ function RecordGift({ onDone }: { onDone: () => void }) {
           </Select>
         </Field>
         <Field label="Date received">
-          <TextInput required type="date" max={today} value={form.givenOn} onChange={(e) => setForm({ ...form, givenOn: e.target.value })} />
+          <DateInput required max={today} value={form.givenOn} onChange={(v) => setForm({ ...form, givenOn: v })} />
         </Field>
         {person ? (
           <Field label="Giver">

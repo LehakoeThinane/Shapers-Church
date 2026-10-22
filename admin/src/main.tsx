@@ -32,6 +32,8 @@ import { BackgroundWorkPage } from './pages/BackgroundWorkPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { KidsClassesPage, KidsDeskPage, KidsTodayPage } from './pages/KidsPages';
 import { FundsPage, GiftsPage, GivingOverviewPage, GivingStatementPage } from './pages/GivingPages';
+import { DocumentsBinPage, DocumentsPage } from './pages/DocumentsPages';
+import { DocumentEditorRoute } from './pages/DocumentEditorRoute';
 import { LiveRunSheetPage, MusicStandPage, ServicePlanPage, ServicePlansPage, ServingMatrixPage } from './pages/ServicesPages';
 import { ServiceTypesPage, ServingTeamsPage, SongPage, SongsPage } from './pages/ServicesSetupPages';
 import './index.css';
@@ -104,6 +106,11 @@ const router = createBrowserRouter([
           { path: 'giving/gifts', element: <GiftsPage /> },
           { path: 'giving/funds', element: <FundsPage /> },
           { path: 'giving/statement/:personId', element: <GivingStatementPage /> },
+          { path: 'documents', element: <DocumentsPage /> },
+          { path: 'documents/bin', element: <DocumentsBinPage /> },
+          { path: 'documents/new', element: <DocumentEditorRoute /> },
+          { path: 'documents/edit/:id', element: <DocumentEditorRoute /> },
+          { path: 'documents/:libraryId', element: <DocumentsPage /> },
           { path: 'services', element: <ServicePlansPage /> },
           { path: 'services/plans/:id', element: <ServicePlanPage /> },
           { path: 'services/plans/:id/live', element: <LiveRunSheetPage /> },

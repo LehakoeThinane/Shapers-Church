@@ -39,7 +39,10 @@ public sealed record EventAdminDto(
     int Waitlisted,
     int CheckedIn,
     string? NotifyEmail,
-    bool FollowUpRegistrants);
+    bool FollowUpRegistrants,
+    DateTimeOffset? PublishAt);
+
+public sealed record ScheduleEventRequest(DateTimeOffset PublishAt);
 
 public sealed record QuestionInput(Guid? Id, string Label, bool Required);
 

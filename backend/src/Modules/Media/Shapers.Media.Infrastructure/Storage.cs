@@ -26,6 +26,12 @@ public sealed class StorageOptions
 
     public string Container { get; set; } = "media";
 
+    /// <summary>Azure: the container for private files (church documents). Created on first use, with no public access.</summary>
+    public string PrivateContainer { get; set; } = "documents";
+
+    /// <summary>Local: folder for private files, relative to the API's content root. Never served as static files.</summary>
+    public string LocalPrivatePath { get; set; } = "App_Data/private";
+
     /// <summary>Public base URL for files, e.g. the Cloudflare CDN hostname. Defaults to the storage or API address.</summary>
     public string? PublicBaseUrl { get; set; }
 }
@@ -169,5 +175,78 @@ public sealed class LocalFileStorage(IOptions<StorageOptions> options, IHostEnvi
 
         var request = http.HttpContext?.Request ?? throw new InvalidOperationException("Set Media:Storage:PublicBaseUrl to build file URLs outside a request.");
         return $"{request.Scheme}://{request.Host}{request.PathBase}";
+    }
+}
+
+/// <summary>Private files in their own Azure container, created on first use with no public access.</summary>
+internal sealed class AzurePrivateFileStore(IOptions<StorageOptions> options) : Shapers.Media.Contracts.IPrivateFileStore
+{
+    private readonly BlobContainerClient _container = new BlobServiceClient(
+            options.Value.ConnectionString ?? throw new InvalidOperationException("Media:Storage:ConnectionString is required for Azure storage."))
+        .GetBlobContainerClient(options.Value.PrivateContainer);
+
+    private bool _created;
+
+    public async Task SaveAsync(string key, Stream content, string contentType, CancellationToken cancellationToken)
+    {
+        if (!_created)
+        {
+            await _container.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.None, cancellationToken: cancellationToken);
+            _created = true;
+        }
+
+        await _container.GetBlobClient(key).UploadAsync(
+            content,
+            new Azure.Storage.Blobs.Models.BlobUploadOptions { HttpHeaders = new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = contentType } },
+            cancellationToken);
+    }
+
+    public async Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _container.GetBlobClient(key).OpenReadAsync(cancellationToken: cancellationToken);
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            throw new FileNotFoundException($"'{key}' isn't in private storage.", ex);
+        }
+    }
+
+    public Task DeleteAsync(string key, CancellationToken cancellationToken) =>
+        _container.GetBlobClient(key).DeleteIfExistsAsync(cancellationToken: cancellationToken);
+}
+
+/// <summary>Private files on the local disk (development, tests, demo), outside anything served to the web.</summary>
+public sealed class LocalPrivateFileStore(IOptions<StorageOptions> options, IHostEnvironment environment) : Shapers.Media.Contracts.IPrivateFileStore
+{
+    private string Root => Path.GetFullPath(Path.Combine(environment.ContentRootPath, options.Value.LocalPrivatePath));
+
+    public async Task SaveAsync(string key, Stream content, string contentType, CancellationToken cancellationToken)
+    {
+        var path = PathFor(key);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        await using var file = File.Create(path);
+        await content.CopyToAsync(file, cancellationToken);
+    }
+
+    public Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken)
+    {
+        var path = PathFor(key);
+        return File.Exists(path) ? Task.FromResult<Stream>(File.OpenRead(path)) : throw new FileNotFoundException($"'{key}' isn't in private storage.");
+    }
+
+    public Task DeleteAsync(string key, CancellationToken cancellationToken)
+    {
+        File.Delete(PathFor(key));
+        return Task.CompletedTask;
+    }
+
+    private string PathFor(string key)
+    {
+        var full = Path.GetFullPath(Path.Combine(Root, key));
+        return full.StartsWith(Root + Path.DirectorySeparatorChar, StringComparison.Ordinal)
+            ? full
+            : throw new InvalidOperationException("Invalid storage key.");
     }
 }

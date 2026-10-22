@@ -87,6 +87,9 @@ public sealed class EventAdminService(
     public Task<Result<EventAdminDto>> PublishAsync(Guid id, CancellationToken cancellationToken) =>
         ChangeAsync(id, EventsPermissions.Publish, "events.event.published", (e, now) => e.Publish(now), cancellationToken);
 
+    public Task<Result<EventAdminDto>> ScheduleAsync(Guid id, ScheduleEventRequest request, CancellationToken cancellationToken) =>
+        ChangeAsync(id, EventsPermissions.Publish, "events.event.scheduled", (e, now) => e.Schedule(request.PublishAt, now), cancellationToken);
+
     public Task<Result<EventAdminDto>> UnpublishAsync(Guid id, CancellationToken cancellationToken) =>
         ChangeAsync(id, EventsPermissions.Publish, "events.event.unpublished", (e, now) => e.Unpublish(now), cancellationToken);
 
@@ -142,7 +145,8 @@ public sealed class EventAdminService(
             waitlisted,
             counts.Count(c => c.CheckedInAt is not null),
             e.NotifyEmail,
-            e.FollowUpRegistrants);
+            e.FollowUpRegistrants,
+            e.PublishAt);
     }
 
     private Task<bool> CanAsync(string permission, Event e, CancellationToken cancellationToken) =>
@@ -150,6 +154,19 @@ public sealed class EventAdminService(
 
     private Task AuditAsync(string action, Event e, CancellationToken cancellationToken) =>
         audit.RecordAsync(new AuditRecord(action, "event", e.Id.ToString(), ScopePath.Parse(e.Scope), new { e.Title }), cancellationToken);
+}
+
+/// <summary>Every minute: scheduled events whose time has come go live.</summary>
+public sealed class EventPublisherJob(IEventsDb db, TimeProvider clock)
+{
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
+    {
+        var now = clock.GetUtcNow();
+        var due = await db.Events.Where(e => e.Status == EventStatus.Draft && e.PublishAt != null && e.PublishAt <= now).ToListAsync(cancellationToken);
+        var published = due.Count(e => e.PublishIfDue(now));
+        await db.SaveChangesAsync(cancellationToken);
+        return published;
+    }
 }
 
 /// <summary>Published events anyone can see. Members-only events appear once signed in.</summary>

@@ -12,6 +12,7 @@ using Shapers.Groups.Contracts;
 using Shapers.Media.Contracts;
 using Shapers.Communications.Contracts;
 using Shapers.Content.Contracts;
+using Shapers.Documents.Contracts;
 using Shapers.Prayer.Contracts;
 using Shapers.Privacy.Contracts;
 using Shapers.People.Contracts;
@@ -53,15 +54,18 @@ public static class SystemRoles
                 GroupsPermissions.CellsManage, GroupsPermissions.ReportsView,
                 AssistPermissions.DraftsCreate,
                 ServicesPermissions.PlansEdit, ServicesPermissions.Schedule, ServicesPermissions.SongsEdit, ServicesPermissions.CategoriesManage,
+                DocumentsPermissions.View, DocumentsPermissions.Edit,
             ]),
             [CampusAdministrator] = ("Day-to-day administration of a campus.",
             [
                 PeoplePermissions.ProfilesView, PeoplePermissions.ProfilesEdit, ChurchPermissions.MinistriesManage,
                 CommunicationsPermissions.AnnouncementsSend, AssistPermissions.DraftsCreate,
+                DocumentsPermissions.View, DocumentsPermissions.Edit,
             ]),
             [MinistryLeader] = ("Leads a ministry; can see the people in it and send it announcements.",
             [
                 PeoplePermissions.ProfilesView, CommunicationsPermissions.AnnouncementsSend,
+                DocumentsPermissions.View, DocumentsPermissions.Edit,
             ]),
             [EventsTeam] = ("Plans events, manages registrations and runs the door.",
             [

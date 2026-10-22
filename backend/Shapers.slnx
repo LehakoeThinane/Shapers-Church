@@ -50,6 +50,14 @@
     <Project Path="src/Modules/Kids/Shapers.Kids.Domain/Shapers.Kids.Domain.csproj" />
     <Project Path="src/Modules/Kids/Shapers.Kids.Infrastructure/Shapers.Kids.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Documents/">
+    <Project Path="src/Modules/Documents/Shapers.Documents.Api/Shapers.Documents.Api.csproj" />
+    <Project Path="src/Modules/Documents/Shapers.Documents.Application/Shapers.Documents.Application.csproj" />
+    <Project Path="src/Modules/Documents/Shapers.Documents.Contracts/Shapers.Documents.Contracts.csproj" />
+    <Project Path="src/Modules/Documents/Shapers.Documents.Domain/Shapers.Documents.Domain.csproj" />
+    <Project Path="src/Modules/Documents/Shapers.Documents.Infrastructure/Shapers.Documents.Infrastructure.csproj" />
+    <Project Path="tests/Modules/Shapers.Documents.Tests/Shapers.Documents.Tests.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Giving/">
     <Project Path="src/Modules/Giving/Shapers.Giving.Api/Shapers.Giving.Api.csproj" />
     <Project Path="src/Modules/Giving/Shapers.Giving.Application/Shapers.Giving.Application.csproj" />

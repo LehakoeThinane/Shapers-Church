@@ -14,6 +14,7 @@
     <ProjectReference Include="../../Groups/Shapers.Groups.Contracts/Shapers.Groups.Contracts.csproj" />
     <ProjectReference Include="../../Assist/Shapers.Assist.Contracts/Shapers.Assist.Contracts.csproj" />
     <ProjectReference Include="../../Services/Shapers.Services.Contracts/Shapers.Services.Contracts.csproj" />
+    <ProjectReference Include="../../Documents/Shapers.Documents.Contracts/Shapers.Documents.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Shapers.Identity.Tests" />
