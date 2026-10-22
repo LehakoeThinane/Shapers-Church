@@ -289,10 +289,39 @@ public sealed class DocumentsService(
             db.Documents.Add(document);
         }
 
+        return await SaveVersionAsync(document, library, contentType, length, content, cancellationToken);
+    }
+
+    /// <summary>Saves a new version of a document by its ID, whatever its name, e.g. after editing it in the browser.</summary>
+    public async Task<Result<DocumentDto>> UploadVersionAsync(Guid id, string? contentType, long length, Stream content, CancellationToken cancellationToken)
+    {
+        if (length is <= 0 or > Document.MaxBytes)
+        {
+            return new Error("documents.size", "Files can be up to 100 MB.");
+        }
+
+        var (document, library, error) = await DocumentForAsync(id, LibraryAccess.Edit, cancellationToken);
+        return document is null ? error! : await SaveVersionAsync(document, library!, contentType, length, content, cancellationToken);
+    }
+
+    public async Task<Result<DocumentDetailDto>> DetailAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var document = await db.Documents.AsNoTracking().SingleOrDefaultAsync(d => d.Id == id && d.DeletedAt == null, cancellationToken);
+        if (document is null)
+        {
+            return NotFound;
+        }
+
+        var (library, access) = await LibraryWithAccessAsync(document.LibraryId, cancellationToken);
+        return library is null || access < LibraryAccess.View ? NotFound : new DocumentDetailDto(ToDto(document), library.Id, library.Name, access);
+    }
+
+    private async Task<Result<DocumentDto>> SaveVersionAsync(Document document, Library library, string? contentType, long length, Stream content, CancellationToken cancellationToken)
+    {
         var type = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType.Split(';')[0].Trim().ToLowerInvariant();
-        var key = document.NextStorageKey(name);
+        var key = document.NextStorageKey(document.Name);
         await files.SaveAsync(key, content, type, cancellationToken);
-        var dropped = document.AddVersion(key, type, length, currentUser.PersonId, await MyNameAsync(cancellationToken), now);
+        var dropped = document.AddVersion(key, type, length, currentUser.PersonId, await MyNameAsync(cancellationToken), clock.GetUtcNow());
         await db.SaveChangesAsync(cancellationToken);
         foreach (var old in dropped)
         {

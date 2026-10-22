@@ -33,6 +33,16 @@ public sealed class DocumentsTests(ApiFactory api) : IClassFixture<ApiFactory>
         Assert.Equal("inline", opened.Content.Headers.ContentDisposition?.DispositionType);
         Assert.Equal("first draft", await (await admin.GetAsync($"/api/admin/documents/files/{first.Id}/content?version=1")).Content.ReadAsStringAsync());
 
+        // The editor saves its copy as the document's next version, whatever name the browser sends.
+        var detail = await (await admin.GetAsync($"/api/admin/documents/files/{first.Id}")).ReadAsync<DocumentDetailDto>();
+        Assert.Equal(worship.Id, detail.LibraryId);
+        Assert.Equal(LibraryAccess.Manage, detail.Access);
+        var edited = new MultipartFormDataContent { { new ByteArrayContent(Encoding.UTF8.GetBytes("edited")), "file", "anything.docx" } };
+        var third = await (await admin.PostAsync($"/api/admin/documents/files/{first.Id}/versions", edited)).ReadAsync<DocumentDto>();
+        Assert.Equal(3, third.Version);
+        Assert.Equal("Run sheet.txt", third.Name);
+        Assert.Equal("edited", await (await admin.GetAsync($"/api/admin/documents/files/{first.Id}/content")).Content.ReadAsStringAsync());
+
         // A web page never opens in the browser from the API's own address.
         var page = await (await UploadAsync(admin, worship.Id, null, "notes.html", "<script>alert(1)</script>", "text/html")).ReadAsync<DocumentDto>();
         var html = await admin.GetAsync($"/api/admin/documents/files/{page.Id}/content");
