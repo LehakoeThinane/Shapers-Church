@@ -49,6 +49,12 @@ export const navIcons = {
       <path d="M3.5 10h17M8 3v4M16 3v4" />
     </>,
   ),
+  documents: icon(
+    <>
+      <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z" />
+      <path d="M8 13h8M8 16h5" />
+    </>,
+  ),
   collapse: icon(<path d="m14 6-6 6 6 6" />),
   expand: icon(<path d="m10 6 6 6-6 6" />),
 };
@@ -96,6 +102,17 @@ export const navSections: NavSection[] = [
           { to: '/giving', label: 'Overview', permission: Permissions.givingView },
           { to: '/giving/gifts', label: 'Gifts', permission: Permissions.givingView },
           { to: '/giving/funds', label: 'Funds', permission: Permissions.givingManage },
+        ],
+      },
+      {
+        key: 'documents',
+        label: 'Documents',
+        icon: navIcons.documents,
+        to: '/documents',
+        permission: [Permissions.documentsView, Permissions.documentsEdit, Permissions.documentsManage],
+        tabs: [
+          { to: '/documents', label: 'Files' },
+          { to: '/documents/bin', label: 'Recycle bin', permission: [Permissions.documentsEdit, Permissions.documentsManage] },
         ],
       },
     ],

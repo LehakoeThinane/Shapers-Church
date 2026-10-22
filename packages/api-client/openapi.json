@@ -10347,6 +10347,806 @@
           }
         }
       }
+    },
+    "/api/admin/documents/libraries": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "ListLibraries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LibraryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "CreateLibrary",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLibraryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/libraries/{id}": {
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "UpdateLibrary",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveLibraryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "DeleteLibrary",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/documents/libraries/{id}/members": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "LibraryMembers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MemberDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "SetLibraryMembers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MemberInput"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MemberDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/libraries/{id}/folder": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "DocumentsFolder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "folderId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FolderViewDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/search": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "SearchDocuments",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentHitDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/recent": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "RecentDocuments",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentHitDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/folders": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "CreateDocumentFolder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFolderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FolderDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/folders/{id}/rename": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "RenameDocumentFolder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FolderDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/folders/{id}/move": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "MoveDocumentFolder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FolderDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/folders/{id}": {
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "DeleteDocumentFolder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/documents/libraries/{id}/files": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "UploadDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "folderId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/IFormFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/documents/files/{id}/versions": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "UploadDocumentVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/IFormFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "DocumentVersions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VersionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/files/{id}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "GetDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDetailDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "DeleteDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/admin/documents/files/{id}/content": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "OpenDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/documents/files/{id}/versions/{number}/restore": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "RestoreDocumentVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/files/{id}/rename": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "RenameDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/files/{id}/move": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "MoveDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/recycle-bin": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "DocumentsRecycleBin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BinItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/documents/recycle-bin/{kind}/{id}/restore": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "operationId": "RestoreFromRecycleBin",
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11160,6 +11960,40 @@
                 "$ref": "#/components/schemas/JobsHealthDto"
               }
             ]
+          }
+        }
+      },
+      "BinItemDto": {
+        "required": [
+          "kind",
+          "id",
+          "name",
+          "libraryId",
+          "libraryName",
+          "deletedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "libraryName": {
+            "type": "string"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -12544,6 +13378,30 @@
           }
         }
       },
+      "CreateFolderRequest": {
+        "required": [
+          "libraryId",
+          "parentId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "parentId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "CreateGrantRequest": {
         "required": [
           "personId",
@@ -13110,6 +13968,101 @@
           }
         }
       },
+      "DocumentDetailDto": {
+        "required": [
+          "document",
+          "libraryId",
+          "libraryName",
+          "access"
+        ],
+        "type": "object",
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/DocumentDto"
+          },
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "libraryName": {
+            "type": "string"
+          },
+          "access": {
+            "$ref": "#/components/schemas/LibraryAccess"
+          }
+        }
+      },
+      "DocumentDto": {
+        "required": [
+          "id",
+          "name",
+          "folderId",
+          "contentType",
+          "sizeBytes",
+          "version",
+          "updatedAt",
+          "updatedBy"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "folderId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedBy": {
+            "type": "string"
+          }
+        }
+      },
+      "DocumentHitDto": {
+        "required": [
+          "document",
+          "libraryId",
+          "libraryName",
+          "path"
+        ],
+        "type": "object",
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/DocumentDto"
+          },
+          "libraryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "libraryName": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      },
       "DraftDto": {
         "required": [
           "id",
@@ -13507,6 +14460,73 @@
           "Public",
           "Members"
         ]
+      },
+      "FolderDto": {
+        "required": [
+          "id",
+          "name",
+          "parentId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "FolderViewDto": {
+        "required": [
+          "library",
+          "folder",
+          "breadcrumb",
+          "folders",
+          "documents"
+        ],
+        "type": "object",
+        "properties": {
+          "library": {
+            "$ref": "#/components/schemas/LibraryDto"
+          },
+          "folder": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/FolderDto"
+              }
+            ]
+          },
+          "breadcrumb": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FolderDto"
+            }
+          },
+          "folders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FolderDto"
+            }
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentDto"
+            }
+          }
+        }
       },
       "FundDto": {
         "required": [
@@ -14109,6 +15129,10 @@
           }
         }
       },
+      "IFormFile": {
+        "type": "string",
+        "format": "binary"
+      },
       "ImportResult": {
         "required": [
           "postsImported",
@@ -14406,6 +15430,42 @@
           },
           "body": {
             "type": "string"
+          }
+        }
+      },
+      "LibraryAccess": {
+        "enum": [
+          "None",
+          "View",
+          "Edit",
+          "Manage"
+        ]
+      },
+      "LibraryDto": {
+        "required": [
+          "id",
+          "name",
+          "scope",
+          "isPrivate",
+          "access"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "isPrivate": {
+            "type": "boolean"
+          },
+          "access": {
+            "$ref": "#/components/schemas/LibraryAccess"
           }
         }
       },
@@ -14808,6 +15868,42 @@
           "Image"
         ]
       },
+      "MemberDto": {
+        "required": [
+          "personId",
+          "name",
+          "canEdit"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "canEdit": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MemberInput": {
+        "required": [
+          "personId",
+          "canEdit"
+        ],
+        "type": "object",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "canEdit": {
+            "type": "boolean"
+          }
+        }
+      },
       "MemberRegisterRequest": {
         "required": [
           "attendeePersonIds",
@@ -15071,6 +16167,21 @@
         "properties": {
           "campusId": {
             "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "MoveRequest": {
+        "required": [
+          "folderId"
+        ],
+        "type": "object",
+        "properties": {
+          "folderId": {
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "uuid"
           }
         }
@@ -17642,6 +18753,17 @@
           }
         }
       },
+      "RenameRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "ReportDto": {
         "required": [
           "id",
@@ -18582,6 +19704,28 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "SaveLibraryRequest": {
+        "required": [
+          "name",
+          "scope",
+          "isPrivate"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isPrivate": {
+            "type": "boolean"
           }
         }
       },
@@ -21085,6 +22229,40 @@
           }
         }
       },
+      "VersionDto": {
+        "required": [
+          "number",
+          "contentType",
+          "sizeBytes",
+          "uploadedAt",
+          "uploadedBy",
+          "isCurrent"
+        ],
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "uploadedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "uploadedBy": {
+            "type": "string"
+          },
+          "isCurrent": {
+            "type": "boolean"
+          }
+        }
+      },
       "VideoDto": {
         "required": [
           "provider",
@@ -21294,6 +22472,9 @@
     },
     {
       "name": "Giving admin"
+    },
+    {
+      "name": "Documents"
     }
   ]
 }
