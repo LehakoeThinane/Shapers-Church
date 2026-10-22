@@ -55,3 +55,17 @@ public interface ISermonSource
 {
     Task<SermonForDrafting?> GetForDraftingAsync(Guid sermonId, CancellationToken cancellationToken);
 }
+
+/// <summary>
+/// Private files, e.g. church documents: kept in a storage container with no public access. Other modules stream
+/// them through the API, which checks who may open them; there are no public links.
+/// </summary>
+public interface IPrivateFileStore
+{
+    Task SaveAsync(string key, Stream content, string contentType, CancellationToken cancellationToken);
+
+    /// <summary>Opens a stored file for reading. Throws <see cref="FileNotFoundException"/> when it isn't there.</summary>
+    Task<Stream> OpenReadAsync(string key, CancellationToken cancellationToken);
+
+    Task DeleteAsync(string key, CancellationToken cancellationToken);
+}

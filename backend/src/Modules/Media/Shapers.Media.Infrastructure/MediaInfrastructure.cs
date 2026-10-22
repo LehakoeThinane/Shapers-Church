@@ -29,12 +29,14 @@ public static class MediaInfrastructure
         if (provider.Equals("Azure", StringComparison.OrdinalIgnoreCase))
         {
             services.AddSingleton<IFileStorage, AzureBlobFileStorage>();
+            services.AddSingleton<Shapers.Media.Contracts.IPrivateFileStore, AzurePrivateFileStore>();
         }
         // Local disk: development, tests, and the temporary demo server (a single machine with a persistent disk).
         else if (environment.IsDevelopment() || environment.IsEnvironment("Testing") || environment.IsEnvironment("Demo"))
         {
             services.AddSingleton<LocalFileStorage>();
             services.AddSingleton<IFileStorage>(sp => sp.GetRequiredService<LocalFileStorage>());
+            services.AddSingleton<Shapers.Media.Contracts.IPrivateFileStore, LocalPrivateFileStore>();
         }
         else
         {
