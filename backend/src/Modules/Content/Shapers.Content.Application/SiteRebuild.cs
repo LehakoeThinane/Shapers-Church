@@ -26,12 +26,16 @@ public sealed class SiteRebuildOptions
 /// <summary>Asks the website to rebuild after a page, post, sermon or event changes. Best effort: the site also rebuilds hourly.</summary>
 public sealed partial class RebuildSiteOnPublish(IHttpClientFactory httpClients, IOptions<SiteRebuildOptions> options, ILogger<RebuildSiteOnPublish> logger)
     : IIntegrationEventHandler<ContentPublishedIntegrationEvent>,
+        IIntegrationEventHandler<ContentWithdrawnIntegrationEvent>,
         IIntegrationEventHandler<SermonPublishedIntegrationEvent>,
         IIntegrationEventHandler<EventListingChangedIntegrationEvent>,
         IIntegrationEventHandler<EventCancelledIntegrationEvent>
 {
     public Task HandleAsync(ContentPublishedIntegrationEvent integrationEvent, CancellationToken cancellationToken) =>
         TriggerAsync($"{integrationEvent.Kind} {integrationEvent.Slug}", cancellationToken);
+
+    public Task HandleAsync(ContentWithdrawnIntegrationEvent integrationEvent, CancellationToken cancellationToken) =>
+        TriggerAsync($"{integrationEvent.Kind} {integrationEvent.Slug} withdrawn", cancellationToken);
 
     public Task HandleAsync(SermonPublishedIntegrationEvent integrationEvent, CancellationToken cancellationToken) =>
         TriggerAsync($"sermon {integrationEvent.Slug}", cancellationToken);

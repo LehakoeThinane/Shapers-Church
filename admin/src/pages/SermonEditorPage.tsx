@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
-import { DateInput } from '../components/DateInput';
+import { DateInput, DateTimeInput } from '../components/DateInput';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { AiBadge } from '../components/Assist';
@@ -485,7 +485,7 @@ function PublishCard({ sermon, canPublish, onChange }: { sermon: Admin; canPubli
                 Publish now
               </Button>
               <div className="row">
-                <TextInput type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
+                <DateTimeInput value={when} onChange={(v) => setWhen(v)} />
                 <Button busy={schedule.isPending} disabled={!when || sermon.publishProblems.length > 0} onClick={() => schedule.mutate()}>
                   Schedule
                 </Button>

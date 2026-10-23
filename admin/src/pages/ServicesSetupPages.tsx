@@ -320,8 +320,9 @@ function AddPerson({ team, onAdded }: { team: Team; onAdded: () => void }) {
   const [isLeader, setIsLeader] = useState(false);
   const people = useQuery({
     queryKey: ['people-pick', search],
-    queryFn: async () => unwrap(await api.GET('/api/admin/people', { params: { query: { Search: search, Page: 1, PageSize: 6 } } })),
-    enabled: mode === 'find' && search.trim().length >= 2,
+    // Everyone shows straight away (first 25, by name); typing narrows it down.
+    queryFn: async () => unwrap(await api.GET('/api/admin/people', { params: { query: { Search: search.trim() || undefined, Page: 1, PageSize: 25 } } })),
+    enabled: mode === 'find',
   });
   const add = useMutation({
     mutationFn: async () => {
@@ -624,6 +625,8 @@ function SongEditor({ song }: { song: Schemas['SongDto'] }) {
   });
   const [arrangements, setArrangements] = useState<ArrangementForm[]>(song.arrangements);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<unknown>(null);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
   const save = useMutation({
     mutationFn: async () =>
       unwrap(
@@ -643,16 +646,20 @@ function SongEditor({ song }: { song: Schemas['SongDto'] }) {
     onSuccess: (s) => {
       queryClient.setQueryData(['services', 'song', s.id], s);
       void queryClient.invalidateQueries({ queryKey: ['services', 'songs'] });
+      setSavedAt(new Intl.DateTimeFormat('en-ZA', { hour: '2-digit', minute: '2-digit' }).format(new Date()));
     },
   });
   const update = (i: number, patch: Partial<ArrangementForm>) => setArrangements(arrangements.map((a, j) => (j === i ? { ...a, ...patch } : a)));
   const upload = async (i: number, file: File | undefined, kind: 'chart' | 'audio') => {
     if (!file) return;
     setUploading(`${i}-${kind}`);
+    setUploadError(null);
     try {
       const mediaKind = kind === 'audio' ? 'Audio' : file.type === 'application/pdf' ? 'NotesPdf' : 'Image';
       const asset = await uploadFile(mediaKind, file, () => undefined);
       update(i, kind === 'audio' ? { audioUrl: asset.url } : { chartUrl: asset.url, chartFileName: file.name });
+    } catch (err) {
+      setUploadError(err);
     } finally {
       setUploading(null);
     }
@@ -736,6 +743,7 @@ function SongEditor({ song }: { song: Schemas['SongDto'] }) {
               </div>
             ))}
             <Button
+              type="button"
               onClick={() =>
                 setArrangements([
                   ...arrangements,
@@ -745,10 +753,15 @@ function SongEditor({ song }: { song: Schemas['SongDto'] }) {
             >
               Add an arrangement
             </Button>
-            <ErrorNote error={save.error} />
+            <ErrorNote error={save.error ?? uploadError} />
             <Button variant="primary" type="submit" busy={save.isPending}>
               Save song
             </Button>
+            {savedAt && !save.isPending && !save.error && (
+              <p className="small saved-note" role="status">
+                ✓ Saved at {savedAt}. Charts and recordings saved with it are now on the music stand.
+              </p>
+            )}
           </div>
         </Card>
       </form>

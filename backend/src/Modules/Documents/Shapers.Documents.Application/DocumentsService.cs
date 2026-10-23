@@ -46,8 +46,10 @@ public sealed class DocumentsService(
 
     public async Task<Result<LibraryDto>> CreateLibraryAsync(SaveLibraryRequest request, CancellationToken cancellationToken)
     {
+        // No place chosen: the whole church if the person may manage documents there, otherwise the campus or ministry
+        // where they may (an administrator granted for one campus still gets libraries, for that campus).
         ScopePath? scope = string.IsNullOrWhiteSpace(request.Scope)
-            ? ScopePath.Parse((await church.GetRootScopeAsync(cancellationToken)).Path)
+            ? await DefaultLibraryScopeAsync(cancellationToken)
             : ScopePath.TryParse(request.Scope, out var parsed) && await church.ScopeExistsAsync(parsed.Value, cancellationToken) ? parsed : null;
         if (scope is null)
         {
@@ -620,6 +622,18 @@ public sealed class DocumentsService(
         }
 
         return trail;
+    }
+
+    private async Task<ScopePath> DefaultLibraryScopeAsync(CancellationToken cancellationToken)
+    {
+        var root = ScopePath.Parse((await church.GetRootScopeAsync(cancellationToken)).Path);
+        if (await authorizer.CanAsync(DocumentsPermissions.Manage, root, cancellationToken))
+        {
+            return root;
+        }
+
+        var scopes = await authorizer.ScopesForAsync(DocumentsPermissions.Manage, cancellationToken);
+        return scopes.OrderBy(s => s.Value.Length).FirstOrDefault() ?? root;
     }
 
     private async Task<string> MyNameAsync(CancellationToken cancellationToken) =>

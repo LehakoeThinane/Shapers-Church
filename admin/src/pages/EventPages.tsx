@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { ImagePicker } from '../components/ImagePicker';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateTimeInput } from '../components/DateInput';
 import { api, apiBaseUrl, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 
@@ -275,10 +276,10 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
               </Field>
               <div className="row">
                 <Field label="Starts">
-                  <TextInput type="datetime-local" required value={form.startsAt} onChange={(e) => set({ startsAt: e.target.value })} />
+                  <DateTimeInput required value={form.startsAt} onChange={(v) => set({ startsAt: v })} />
                 </Field>
                 <Field label="Ends">
-                  <TextInput type="datetime-local" required value={form.endsAt} onChange={(e) => set({ endsAt: e.target.value })} />
+                  <DateTimeInput required value={form.endsAt} onChange={(v) => set({ endsAt: v })} />
                 </Field>
               </div>
               <Field label="Venue">
@@ -334,10 +335,10 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
                   </label>
                   <div className="row">
                     <Field label="Opens" hint="Empty: as soon as it's published.">
-                      <TextInput type="datetime-local" value={form.opensAt} onChange={(e) => set({ opensAt: e.target.value })} />
+                      <DateTimeInput value={form.opensAt} onChange={(v) => set({ opensAt: v })} />
                     </Field>
                     <Field label="Closes" hint="Empty: when the event starts.">
-                      <TextInput type="datetime-local" value={form.closesAt} onChange={(e) => set({ closesAt: e.target.value })} />
+                      <DateTimeInput value={form.closesAt} onChange={(v) => set({ closesAt: v })} />
                     </Field>
                   </div>
                   <Field label="Questions" hint="Up to five, e.g. dietary needs. Only ask what you need.">
@@ -412,7 +413,7 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
                     Publish now
                   </Button>
                   <div className="row">
-                    <TextInput type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} aria-label="Publish at" />
+                    <DateTimeInput value={when} onChange={(v) => setWhen(v)} aria-label="Publish at" />
                     <Button type="button" busy={status.isPending} disabled={!when} onClick={() => status.mutate('schedule')}>
                       Schedule
                     </Button>

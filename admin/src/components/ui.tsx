@@ -17,9 +17,10 @@ export function Card({ title, actions, children, className = '' }: { title?: Rea
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'danger' | 'ghost'; busy?: boolean };
 
-export function Button({ variant = 'secondary', busy, children, disabled, className = '', ...rest }: ButtonProps) {
+/** A button. Plain by default (not a form submit): Save/Create buttons say type="submit". */
+export function Button({ variant = 'secondary', busy, children, disabled, className = '', type = 'button', ...rest }: ButtonProps) {
   return (
-    <button className={`btn btn-${variant} ${className}`} disabled={disabled || busy} {...rest}>
+    <button type={type} className={`btn btn-${variant} ${className}`} disabled={disabled || busy} {...rest}>
       {busy ? 'Working…' : children}
     </button>
   );
