@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { Button, ErrorNote, Field, TextInput } from '../components/ui';
+import { Button, ErrorNote, Field, PasswordInput, TextInput } from '../components/ui';
 import { api, unwrap } from '../lib/api';
 
 export function LoginPage() {
@@ -56,7 +56,7 @@ export function LoginPage() {
           <TextInput type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={needsCode} />
         </Field>
         <Field label="Password">
-          <TextInput type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={needsCode} />
+          <PasswordInput autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={needsCode} />
         </Field>
 
         {needsCode && (
@@ -121,10 +121,10 @@ export function SetPasswordPage() {
         <h1>Choose a password</h1>
         <p className="muted">Use at least 12 characters. A short sentence is easy to remember and hard to guess.</p>
         <Field label="New password">
-          <TextInput type="password" autoComplete="new-password" minLength={12} required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput autoComplete="new-password" minLength={12} required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
         <Field label="Confirm password">
-          <TextInput type="password" autoComplete="new-password" minLength={12} required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <PasswordInput autoComplete="new-password" minLength={12} required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </Field>
         <ErrorNote error={error} />
         <Button variant="primary" type="submit" busy={busy} disabled={!userId || !token}>

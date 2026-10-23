@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
+import { useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react';
 import { errorMessage } from '../lib/api';
 
 export function Card({ title, actions, children, className = '' }: { title?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string }) {
@@ -37,6 +37,30 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input className="input" {...props} />;
+}
+
+/** A password box with an eye button to show what was typed, e.g. to check it before signing in. */
+export function PasswordInput(props: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>) {
+  const [shown, setShown] = useState(false);
+  return (
+    <span className="password-input">
+      <input className="input" {...props} type={shown ? 'text' : 'password'} />
+      <button
+        type="button"
+        className="password-toggle"
+        aria-label={shown ? 'Hide password' : 'Show password'}
+        aria-pressed={shown}
+        title={shown ? 'Hide password' : 'Show password'}
+        disabled={props.disabled}
+        onClick={() => setShown(!shown)}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+          <circle cx="12" cy="12" r="3" />
+          {shown && <path d="M4 4l16 16" />}
+        </svg>
+      </button>
+    </span>
+  );
 }
 
 export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
