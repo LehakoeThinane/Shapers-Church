@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
 import { AppCrashBoundary, RouteCrash } from './components/CrashScreen';
+import { DialogHost } from './components/Dialogs';
 import { Layout } from './components/Layout';
 import { ApiError } from './lib/api';
 import { reportUncaughtErrors } from './lib/errors';
@@ -149,6 +150,7 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <PaletteProvider>
           <RouterProvider router={router} />
+        <DialogHost />
         </PaletteProvider>
       </QueryClientProvider>
     </AppCrashBoundary>

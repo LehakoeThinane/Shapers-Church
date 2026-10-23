@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 
@@ -150,7 +151,7 @@ function AllRequests() {
                 <span>{formatDateTime(p.createdAt)}</span>
                 {p.prayedCount > 0 && <span>{p.prayedCount} prayed</span>}
                 {p.status === 'OnWall' && can(access, Permissions.prayerModerate) && (
-                  <Button variant="ghost" busy={takeDown.isPending} onClick={() => confirm('Take this request off the wall?') && takeDown.mutate(p.id)}>
+                  <Button variant="ghost" busy={takeDown.isPending} onClick={async () => (await askConfirm('Take this request off the wall?')) && takeDown.mutate(p.id)}>
                     Take off the wall
                   </Button>
                 )}

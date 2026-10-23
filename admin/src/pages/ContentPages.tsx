@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateInput, DateTimeInput } from '../components/DateInput';
 import { api, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -105,7 +106,7 @@ function useDeleteContent(kind: 'pages' | 'posts') {
 }
 
 const confirmDelete = (title: string) =>
-  confirm(`Delete "${title}" for good? It comes off the website and app, with any translations. This can't be undone.`);
+  askConfirm(`Delete "${title}" for good? It comes off the website and app, with any translations. This can't be undone.`);
 
 function PagesList() {
   const pages = useQuery({ queryKey: ['content', 'pages'], queryFn: async () => unwrap(await api.GET('/api/admin/content/pages')) });
@@ -143,7 +144,7 @@ function PagesList() {
                 </td>
                 {canDelete && (
                   <td className="docs-actions">
-                    <Button variant="ghost" busy={remove.isPending && remove.variables === p.page.id} onClick={() => confirmDelete(p.page.title) && remove.mutate(p.page.id)}>
+                    <Button variant="ghost" busy={remove.isPending && remove.variables === p.page.id} onClick={async () => (await confirmDelete(p.page.title)) && remove.mutate(p.page.id)}>
                       Delete
                     </Button>
                   </td>
@@ -196,7 +197,7 @@ function PostsList({ kind }: { kind: Kind }) {
                 </td>
                 {canDelete && (
                   <td className="docs-actions">
-                    <Button variant="ghost" busy={remove.isPending && remove.variables === p.id} onClick={() => confirmDelete(p.title) && remove.mutate(p.id)}>
+                    <Button variant="ghost" busy={remove.isPending && remove.variables === p.id} onClick={async () => (await confirmDelete(p.title)) && remove.mutate(p.id)}>
                       Delete
                     </Button>
                   </td>
@@ -548,7 +549,7 @@ function PublishCard({
           </Button>
         )}
         {status !== 'Archived' && (
-          <Button variant="ghost" busy={change.isPending} onClick={() => confirm('Archive this? It comes off the website and app.') && change.mutate('archive')}>
+          <Button variant="ghost" busy={change.isPending} onClick={async () => (await askConfirm('Archive this? It comes off the website and app.')) && change.mutate('archive')}>
             Archive
           </Button>
         )}
@@ -556,7 +557,7 @@ function PublishCard({
         <Button
           variant="danger"
           busy={remove.isPending}
-          onClick={() => confirmDelete('this') && remove.mutate(id, { onSuccess: () => navigate(kind === 'pages' ? '/content?tab=pages' : '/content') })}>
+          onClick={async () => (await confirmDelete('this')) && remove.mutate(id, { onSuccess: () => navigate(kind === 'pages' ? '/content?tab=pages' : '/content') })}>
           Delete
         </Button>
       </div>

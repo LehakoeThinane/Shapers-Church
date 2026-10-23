@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateInput } from '../components/DateInput';
 import { api, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -202,7 +203,7 @@ function PlanEditor({ plan }: { plan: Plan }) {
                   <Button variant="primary" type="submit" busy={saveDetails.isPending}>
                     Save details
                   </Button>
-                  <Button variant="ghost" onClick={() => window.confirm('Delete this plan and everyone scheduled on it?') && remove.mutate()}>
+                  <Button variant="ghost" onClick={async () => (await askConfirm('Delete this plan and everyone scheduled on it?')) && remove.mutate()}>
                     Delete plan
                   </Button>
                 </div>

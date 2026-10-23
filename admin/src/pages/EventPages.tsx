@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { ImagePicker } from '../components/ImagePicker';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateTimeInput } from '../components/DateInput';
 import { api, apiBaseUrl, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -430,7 +431,7 @@ function EventEditor({ existing }: { existing?: AdminEvent }) {
                     type="button"
                     variant="danger"
                     busy={status.isPending}
-                    onClick={() => confirm('Cancel this event? Everyone registered will be emailed.') && status.mutate('cancel')}>
+                    onClick={async () => (await askConfirm('Cancel this event? Everyone registered will be emailed.')) && status.mutate('cancel')}>
                     Cancel event
                   </Button>
                 </>
@@ -527,7 +528,7 @@ export function EventAttendeesPage() {
                       ))}
                       <td>
                         {canManage && r.status !== 'Cancelled' && !r.checkedInAt && (
-                          <Button variant="ghost" onClick={() => confirm(`Cancel the booking by ${r.registrantName}?`) && cancel.mutate(r.registrationId)}>
+                          <Button variant="ghost" onClick={async () => (await askConfirm(`Cancel the booking by ${r.registrantName}?`)) && cancel.mutate(r.registrationId)}>
                             Cancel
                           </Button>
                         )}

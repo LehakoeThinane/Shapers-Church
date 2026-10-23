@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { api, formatDate, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 
@@ -55,7 +56,7 @@ function YouTubeCaptionsCard() {
             </span>
           </span>
           {canConnect && (
-            <Button variant="ghost" busy={disconnect.isPending} onClick={() => window.confirm('Stop reading captions from YouTube?') && disconnect.mutate()}>
+            <Button variant="ghost" busy={disconnect.isPending} onClick={async () => (await askConfirm('Stop reading captions from YouTube?')) && disconnect.mutate()}>
               Disconnect
             </Button>
           )}

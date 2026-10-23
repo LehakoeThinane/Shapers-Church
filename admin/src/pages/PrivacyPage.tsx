@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { api, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 
 type Request = Schemas['DataRequestAdminDto'];
@@ -106,7 +107,7 @@ function RequestCard({ request: r }: { request: Request }) {
               <Button
                 variant={deletion ? 'danger' : 'primary'}
                 busy={complete.isPending}
-                onClick={() => (!deletion || confirm(`Erase ${r.personName} everywhere? This can't be undone.`)) && complete.mutate()}>
+                onClick={async () => (!deletion || (await askConfirm(`Erase ${r.personName} everywhere? This can't be undone.`))) && complete.mutate()}>
                 {deletion ? 'Erase their data' : 'Mark corrected'}
               </Button>
               <Button busy={decline.isPending} disabled={!response.trim()} onClick={() => decline.mutate()}>

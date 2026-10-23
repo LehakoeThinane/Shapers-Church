@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateInput } from '../components/DateInput';
 import { api, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -155,7 +156,7 @@ function CategoriesCard({ categories }: { categories: Category[] }) {
               <button type="button" className="link-button" onClick={() => setEditing({ id: c.id, name: c.name })}>
                 Rename
               </button>
-              <button type="button" className="link-button" onClick={() => window.confirm(`Remove ${c.name}? Its teams stay, without a category.`) && remove.mutate(c.id)}>
+              <button type="button" className="link-button" onClick={async () => (await askConfirm(`Remove ${c.name}? Its teams stay, without a category.`)) && remove.mutate(c.id)}>
                 Remove
               </button>
             </span>
@@ -247,7 +248,7 @@ function TeamEditor({ team, categories }: { team: Team; categories: Category[] }
                     {m.positionIds.length > 0 && <span className="small muted"> · {m.positionIds.map(positionName).filter(Boolean).join(', ')}</span>}{' '}
                     {m.isLeader && <Badge tone="accent">Leads</Badge>}
                   </span>
-                  <button type="button" className="link-button" onClick={() => window.confirm(`Remove ${m.name} from ${team.name}?`) && removeMember.mutate(m.personId)}>
+                  <button type="button" className="link-button" onClick={async () => (await askConfirm(`Remove ${m.name} from ${team.name}?`)) && removeMember.mutate(m.personId)}>
                     Remove
                   </button>
                 </span>
@@ -278,7 +279,7 @@ function TeamEditor({ team, categories }: { team: Team; categories: Category[] }
             {team.positions.map((p) => (
               <li key={p.id} className="list-row">
                 {p.name}
-                <button type="button" className="link-button" onClick={() => window.confirm(`Remove ${p.name}?`) && archivePosition.mutate(p.id)}>
+                <button type="button" className="link-button" onClick={async () => (await askConfirm(`Remove ${p.name}?`)) && archivePosition.mutate(p.id)}>
                   Remove
                 </button>
               </li>

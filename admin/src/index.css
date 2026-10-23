@@ -2638,3 +2638,62 @@ a.cal-entry:hover {
     padding: 4px 8px;
   }
 }
+
+/* ---------- Dialogs (in place of the browser's confirm and prompt boxes) ---------- */
+
+.dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--color-glass-edge);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-primary);
+}
+
+.dialog::backdrop {
+  background: var(--color-glass-shadow);
+  backdrop-filter: blur(4px);
+}
+
+.dialog[open] {
+  animation: dialog-in 0.16s ease-out;
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open] {
+    animation: none;
+  }
+}
+
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+}
+
+.dialog-body h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.dialog-body p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}

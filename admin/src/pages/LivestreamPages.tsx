@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateTimeInput } from '../components/DateInput';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -162,7 +163,7 @@ function Console({ stream }: { stream: Stream }) {
             {live && (
               <div className="stack">
                 <p className="small">Live since {formatDateTime(stream.startedAt)}.</p>
-                <Button variant="danger" busy={control.isPending} onClick={() => confirm('End the stream for everyone?') && control.mutate('end')}>
+                <Button variant="danger" busy={control.isPending} onClick={async () => (await askConfirm('End the stream for everyone?')) && control.mutate('end')}>
                   End stream
                 </Button>
               </div>
