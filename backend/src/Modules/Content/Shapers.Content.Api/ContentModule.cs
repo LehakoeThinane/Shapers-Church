@@ -71,6 +71,8 @@ public sealed class ContentModule : IModule
         pages.MapPost("/{id:guid}/archive", async (Guid id, ContentAdminService s, CancellationToken ct) =>
                 (await s.ChangePageAsync(id, "content.page.archived", (p, now) => p.Archive(now), ct)).ToHttp())
             .WithName("ArchivePage").RequirePermission(ContentPermissions.Publish);
+        pages.MapDelete("/{id:guid}", async (Guid id, ContentAdminService s, CancellationToken ct) => (await s.DeletePageAsync(id, ct)).ToHttp())
+            .WithName("DeletePage").RequirePermission(ContentPermissions.Publish);
 
         var posts = admin.MapGroup("/posts");
         posts.MapGet("/", (PostKind? kind, ContentAdminService s, CancellationToken ct) => s.PostsAsync(kind, ct)).WithName("AdminListPosts").RequirePermission(ContentPermissions.Edit);
@@ -96,5 +98,7 @@ public sealed class ContentModule : IModule
         posts.MapPost("/{id:guid}/archive", async (Guid id, ContentAdminService s, CancellationToken ct) =>
                 (await s.ChangePostAsync(id, "content.post.archived", (p, now) => p.Archive(now), ct)).ToHttp())
             .WithName("ArchivePost").RequirePermission(ContentPermissions.Publish);
+        posts.MapDelete("/{id:guid}", async (Guid id, ContentAdminService s, CancellationToken ct) => (await s.DeletePostAsync(id, ct)).ToHttp())
+            .WithName("DeletePost").RequirePermission(ContentPermissions.Publish);
     }
 }

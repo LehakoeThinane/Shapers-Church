@@ -48,6 +48,7 @@ public sealed class ContentDbContext(DbContextOptions<ContentDbContext> options)
     protected override IEnumerable<IIntegrationEvent> ToIntegrationEvents(IDomainEvent domainEvent) => domainEvent switch
     {
         ContentPublished e => [new ContentPublishedIntegrationEvent(e.Id, e.Kind, e.Slug)],
+        ContentWithdrawn e => [new ContentWithdrawnIntegrationEvent(e.Id, e.Kind, e.Slug)],
         _ => [],
     };
 
@@ -96,6 +97,7 @@ public static class ContentInfrastructure
         services.AddScoped<IContentSource, ContentSource>();
         services.AddScoped<ContentPublisherJob>();
         services.AddScoped<IIntegrationEventHandler<ContentPublishedIntegrationEvent>, RebuildSiteOnPublish>();
+        services.AddScoped<IIntegrationEventHandler<ContentWithdrawnIntegrationEvent>, RebuildSiteOnPublish>();
         services.AddScoped<IIntegrationEventHandler<SermonPublishedIntegrationEvent>, RebuildSiteOnPublish>();
         services.AddScoped<IIntegrationEventHandler<Shapers.Events.Contracts.EventListingChangedIntegrationEvent>, RebuildSiteOnPublish>();
         services.AddScoped<IIntegrationEventHandler<Shapers.Events.Contracts.EventCancelledIntegrationEvent>, RebuildSiteOnPublish>();

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { DateTimeInput } from '../components/DateInput';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, covers, Permissions, scopesFor, useAccess } from '../lib/access';
 import { RewriteHelp } from '../components/Assist';
@@ -207,7 +208,7 @@ function Editor({ existing }: { existing?: Announcement }) {
                 Also email people who agreed to church emails
               </label>
               <Field label="Send at (optional)" hint="Empty: as soon as it's ready. Nothing buzzes between 21:00 and 07:00.">
-                <TextInput type="datetime-local" value={form.sendAt} onChange={(e) => set({ sendAt: e.target.value })} />
+                <DateTimeInput value={form.sendAt} onChange={(v) => set({ sendAt: v })} />
               </Field>
             </fieldset>
             <ErrorNote error={save.error} />

@@ -182,3 +182,77 @@ export function DateInput({
     </div>
   );
 }
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/**
+ * A date and a time, as "yyyy-mm-ddThh:mm" (like a native datetime-local box): the portal's date picker, then hour
+ * and minute dropdowns (minutes in fives, keeping any other minute already set).
+ */
+export function DateTimeInput({
+  value,
+  onChange,
+  min,
+  max,
+  required,
+  disabled,
+  'aria-label': ariaLabel,
+}: {
+  value: string | null | undefined;
+  onChange: (value: string) => void;
+  min?: string;
+  max?: string;
+  required?: boolean;
+  disabled?: boolean;
+  'aria-label'?: string;
+}) {
+  const [date = '', time = ''] = (value ?? '').split('T');
+  const [hour = '', minute = ''] = time.split(':');
+  const set = (d: string, h: string, m: string) => onChange(d ? `${d}T${h || '09'}:${m || '00'}` : '');
+  const minutes = Array.from({ length: 12 }, (_, i) => pad2(i * 5));
+  if (minute && !minutes.includes(minute)) minutes.push(minute);
+  minutes.sort();
+
+  return (
+    <div className="datetime-input">
+      <DateInput
+        value={date}
+        onChange={(d) => set(d, hour, minute)}
+        min={min?.slice(0, 10)}
+        max={max?.slice(0, 10)}
+        required={required}
+        disabled={disabled}
+        aria-label={ariaLabel ? `${ariaLabel}: date` : 'Date'}
+      />
+      <div className="datetime-time">
+        <select
+          className="input"
+          aria-label={ariaLabel ? `${ariaLabel}: hour` : 'Hour'}
+          value={hour}
+          disabled={disabled || !date}
+          onChange={(e) => set(date, e.target.value, minute)}>
+          {!hour && <option value="">--</option>}
+          {Array.from({ length: 24 }, (_, h) => (
+            <option key={h} value={pad2(h)}>
+              {pad2(h)}
+            </option>
+          ))}
+        </select>
+        <span aria-hidden="true">:</span>
+        <select
+          className="input"
+          aria-label={ariaLabel ? `${ariaLabel}: minutes` : 'Minutes'}
+          value={minute}
+          disabled={disabled || !date}
+          onChange={(e) => set(date, hour, e.target.value)}>
+          {!minute && <option value="">--</option>}
+          {minutes.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}

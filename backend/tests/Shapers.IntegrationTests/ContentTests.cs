@@ -61,6 +61,20 @@ public sealed class ContentTests(ApiFactory api) : IClassFixture<ApiFactory>
         Assert.True(response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden);
     }
 
+    [Fact]
+    public async Task A_published_article_can_be_deleted_for_good_and_leaves_the_public_list()
+    {
+        var admin = await api.SignInAdminAsync();
+        var post = await CreatePostAsync(admin, new SavePostRequest(PostKind.Blog, "Unwanted article", null, null, "Remove me.", null, null, null));
+        (await admin.PostAsync($"/api/admin/content/posts/{post.Id}/publish", null)).EnsureSuccessStatusCode();
+
+        Assert.Equal(System.Net.HttpStatusCode.NoContent, (await admin.DeleteAsync($"/api/admin/content/posts/{post.Id}")).StatusCode);
+
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, (await admin.GetAsync($"/api/admin/content/posts/{post.Id}")).StatusCode);
+        var listed = await (await api.Browser().GetAsync("/api/content/posts?pageSize=50")).Content.ReadAsStringAsync();
+        Assert.DoesNotContain("Unwanted article", listed, StringComparison.Ordinal);
+    }
+
     private static async Task<PostAdminDto> CreatePostAsync(HttpClient admin, SavePostRequest request) =>
         await (await admin.PostJsonAsync("/api/admin/content/posts", request)).ReadAsync<PostAdminDto>();
 }
