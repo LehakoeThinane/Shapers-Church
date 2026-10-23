@@ -24,6 +24,9 @@ public enum PostKind
 
 public sealed record ContentPublished(Guid Id, string Kind, string Slug) : IDomainEvent;
 
+/// <summary>Something that was public no longer is (unpublished, archived or deleted): the website needs rebuilding.</summary>
+public sealed record ContentWithdrawn(Guid Id, string Kind, string Slug) : IDomainEvent;
+
 /// <summary>Draft, schedule, publish and archive rules shared by pages and posts.</summary>
 public abstract class PublishableContent : AggregateRoot<Guid>
 {
@@ -191,6 +194,7 @@ public abstract class PublishableContent : AggregateRoot<Guid>
 
     public void Unpublish(DateTimeOffset now)
     {
+        WithdrawIfLive();
         Status = ContentStatus.Draft;
         PublishAt = null;
         UpdatedAt = now;
@@ -198,9 +202,21 @@ public abstract class PublishableContent : AggregateRoot<Guid>
 
     public void Archive(DateTimeOffset now)
     {
+        WithdrawIfLive();
         Status = ContentStatus.Archived;
         PublishAt = null;
         UpdatedAt = now;
+    }
+
+    /// <summary>Called just before the item is deleted for good, so the website drops it if it was live.</summary>
+    public void Deleting() => WithdrawIfLive();
+
+    private void WithdrawIfLive()
+    {
+        if (Status == ContentStatus.Published)
+        {
+            Raise(new ContentWithdrawn(Id, GetType().Name, Slug));
+        }
     }
 
     protected static string Required(string value, int max, string message)

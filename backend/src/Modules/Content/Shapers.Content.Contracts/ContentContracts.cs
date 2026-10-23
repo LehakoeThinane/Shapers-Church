@@ -15,6 +15,9 @@ public static class ContentPermissions
 /// <summary>A page or post went live. The website rebuilds so it appears.</summary>
 public sealed record ContentPublishedIntegrationEvent(Guid ContentId, string Kind, string Slug) : IntegrationEvent;
 
+/// <summary>A page or post that was public no longer is (unpublished, archived or deleted).</summary>
+public sealed record ContentWithdrawnIntegrationEvent(Guid ContentId, string Kind, string Slug) : IntegrationEvent;
+
 /// <summary>A page or a post: what can be translated.</summary>
 public enum ContentType
 {

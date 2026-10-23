@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 import Markdown from 'react-markdown';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
-import { DateInput } from '../components/DateInput';
+import { DateInput, DateTimeInput } from '../components/DateInput';
 import { api, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 import { RewriteHelp } from '../components/Assist';
@@ -92,11 +92,29 @@ function ImportCard() {
   );
 }
 
+/** Deletes a page or post for good (with its translations), after asking. */
+function useDeleteContent(kind: 'pages' | 'posts') {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) =>
+      kind === 'pages'
+        ? unwrap(await api.DELETE('/api/admin/content/pages/{id}', { params: { path: { id } } }))
+        : unwrap(await api.DELETE('/api/admin/content/posts/{id}', { params: { path: { id } } })),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['content'] }),
+  });
+}
+
+const confirmDelete = (title: string) =>
+  confirm(`Delete "${title}" for good? It comes off the website and app, with any translations. This can't be undone.`);
+
 function PagesList() {
   const pages = useQuery({ queryKey: ['content', 'pages'], queryFn: async () => unwrap(await api.GET('/api/admin/content/pages')) });
+  const { data: access } = useAccess();
+  const remove = useDeleteContent('pages');
+  const canDelete = can(access, Permissions.contentPublish);
   return (
     <Card>
-      <ErrorNote error={pages.error} />
+      <ErrorNote error={pages.error ?? remove.error} />
       {pages.isPending ? (
         <Loading />
       ) : pages.data?.length === 0 ? (
@@ -109,6 +127,7 @@ function PagesList() {
               <th>Address</th>
               <th>In menu</th>
               <th>Status</th>
+              {canDelete && <th aria-label="Actions" />}
             </tr>
           </thead>
           <tbody>
@@ -122,6 +141,13 @@ function PagesList() {
                 <td>
                   <Badge tone={statusTone[p.status]}>{p.status}</Badge>
                 </td>
+                {canDelete && (
+                  <td className="docs-actions">
+                    <Button variant="ghost" busy={remove.isPending && remove.variables === p.page.id} onClick={() => confirmDelete(p.page.title) && remove.mutate(p.page.id)}>
+                      Delete
+                    </Button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -136,9 +162,12 @@ function PostsList({ kind }: { kind: Kind }) {
     queryKey: ['content', 'posts', kind],
     queryFn: async () => unwrap(await api.GET('/api/admin/content/posts', { params: { query: { kind } } })),
   });
+  const { data: access } = useAccess();
+  const remove = useDeleteContent('posts');
+  const canDelete = can(access, Permissions.contentPublish);
   return (
     <Card>
-      <ErrorNote error={posts.error} />
+      <ErrorNote error={posts.error ?? remove.error} />
       {posts.isPending ? (
         <Loading />
       ) : posts.data?.length === 0 ? (
@@ -151,6 +180,7 @@ function PostsList({ kind }: { kind: Kind }) {
               <th>Published</th>
               {kind === 'News' && <th>Shown until</th>}
               <th>Status</th>
+              {canDelete && <th aria-label="Actions" />}
             </tr>
           </thead>
           <tbody>
@@ -164,6 +194,13 @@ function PostsList({ kind }: { kind: Kind }) {
                 <td>
                   <Badge tone={statusTone[p.status]}>{p.status}</Badge>
                 </td>
+                {canDelete && (
+                  <td className="docs-actions">
+                    <Button variant="ghost" busy={remove.isPending && remove.variables === p.id} onClick={() => confirmDelete(p.title) && remove.mutate(p.id)}>
+                      Delete
+                    </Button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -456,8 +493,10 @@ function PublishCard({
   blocked?: boolean;
 }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { data: access } = useAccess();
   const [when, setWhen] = useState(toLocalInput(publishAt));
+  const remove = useDeleteContent(kind);
   const change = useMutation({
     mutationFn: async (action: 'publish' | 'schedule' | 'unpublish' | 'archive') => {
       const path = { params: { path: { id } } };
@@ -497,7 +536,7 @@ function PublishCard({
         )}
         {status !== 'Published' && !blocked && (
           <div className="row">
-            <TextInput type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} aria-label="Publish at" />
+            <DateTimeInput value={when} onChange={(v) => setWhen(v)} aria-label="Publish at" />
             <Button busy={change.isPending} disabled={!when} onClick={() => change.mutate('schedule')}>
               Schedule
             </Button>
@@ -513,6 +552,13 @@ function PublishCard({
             Archive
           </Button>
         )}
+        <ErrorNote error={remove.error} />
+        <Button
+          variant="danger"
+          busy={remove.isPending}
+          onClick={() => confirmDelete('this') && remove.mutate(id, { onSuccess: () => navigate(kind === 'pages' ? '/content?tab=pages' : '/content') })}>
+          Delete
+        </Button>
       </div>
     </Card>
   );

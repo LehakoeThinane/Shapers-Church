@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, TextInput } from '../components/ui';
+import { DateTimeInput } from '../components/DateInput';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
 
@@ -73,7 +74,7 @@ export function LivestreamsPage() {
               <TextInput required maxLength={150} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
             </Field>
             <Field label="Starts">
-              <TextInput type="datetime-local" required value={form.start} onChange={(e) => setForm({ ...form, start: e.target.value })} />
+              <DateTimeInput required value={form.start} onChange={(v) => setForm({ ...form, start: v })} />
             </Field>
             <Field label="YouTube Live link" hint="From YouTube Studio → Go live → Share. You can add it later.">
               <TextInput placeholder="https://www.youtube.com/live/…" value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} />
@@ -300,7 +301,7 @@ function DetailsCard({ stream, onChange }: { stream: Stream; onChange: (s: Strea
           <TextInput required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </Field>
         <Field label="Starts">
-          <TextInput type="datetime-local" required value={form.start} onChange={(e) => setForm({ ...form, start: e.target.value })} />
+          <DateTimeInput required value={form.start} onChange={(v) => setForm({ ...form, start: v })} />
         </Field>
         <Field label="YouTube Live link">
           <TextInput value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} />

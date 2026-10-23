@@ -2511,3 +2511,130 @@ a.cal-entry:hover {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.saved-note {
+  margin: 0;
+  color: var(--color-success);
+  text-align: center;
+}
+
+.steps-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.matrix-assign {
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* Date and time together: the date picker, then hour and minute. */
+.datetime-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.datetime-input .date-input {
+  flex: 1 1 200px;
+}
+
+.datetime-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.datetime-time .input {
+  width: auto;
+  min-width: 72px;
+}
+
+/* ---------- Phones ---------- */
+
+/* Columns shrink to the screen instead of growing to fit their widest content (a table row, a long name). */
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+}
+
+.form-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+}
+
+.grid-2 > *,
+.form-grid > *,
+.docs-layout > *,
+.content > * {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .shell,
+  .shell-collapsed {
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+
+  .card {
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+  }
+
+  .card-header,
+  .row {
+    flex-wrap: wrap;
+  }
+
+  /* Wide tables scroll sideways inside their card rather than pushing the page wider. */
+  .table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .docs-actions {
+    white-space: normal;
+  }
+
+  .page-header {
+    align-items: flex-start;
+  }
+
+  .page-header > :last-child:not(:first-child) {
+    width: 100%;
+  }
+
+  /* 16px text in boxes stops iPhones zooming in when one is tapped. */
+  .input,
+  select.input,
+  textarea.input {
+    font-size: 16px;
+  }
+
+  .word-toolbar {
+    position: static;
+  }
+
+  .date-popover {
+    width: min(300px, calc(100vw - 32px));
+  }
+}
+@media (max-width: 720px) {
+  /* Size, date and who changed it are in Versions; on a phone the name and the buttons need the room. */
+  .docs-table th:nth-child(2),
+  .docs-table th:nth-child(3),
+  .docs-table th:nth-child(4),
+  .docs-table td:nth-child(2),
+  .docs-table td:nth-child(3),
+  .docs-table td:nth-child(4) {
+    display: none;
+  }
+
+  .docs-actions .btn {
+    padding: 4px 8px;
+  }
+}

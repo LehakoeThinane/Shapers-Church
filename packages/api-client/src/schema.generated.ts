@@ -3054,7 +3054,7 @@ export interface paths {
         get: operations["AdminGetPage"];
         put: operations["UpdatePage"];
         post?: never;
-        delete?: never;
+        delete: operations["DeletePage"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3182,7 +3182,7 @@ export interface paths {
         get: operations["AdminGetPost"];
         put: operations["UpdatePost"];
         post?: never;
-        delete?: never;
+        delete: operations["DeletePost"];
         options?: never;
         head?: never;
         patch?: never;
@@ -12649,6 +12649,26 @@ export interface operations {
             };
         };
     };
+    DeletePage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     TranslatePage: {
         parameters: {
             query?: never;
@@ -12880,6 +12900,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PostAdminDto"];
                 };
+            };
+        };
+    };
+    DeletePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -548,7 +548,33 @@ export function ServingMatrixPage() {
         {matrix.isPending ? (
           <Loading />
         ) : !m || m.plans.length === 0 ? (
-          <Empty>No services in this period.</Empty>
+          <Empty>
+            No services in this period. <Link to="/services">Plan a service</Link> first.
+          </Empty>
+        ) : m.rows.length === 0 ? (
+          <div className="stack">
+            <p>
+              <strong>No one can be scheduled yet: the services don&apos;t have any positions to fill.</strong>
+            </p>
+            <ol className="steps-list">
+              <li>
+                In <Link to="/services/teams">Teams</Link>, create your teams (e.g. Worship, Production, Welcome) with their positions (Vocals, Keys,
+                Sound…), and use <em>Add someone</em> to put people from the church database in each team.
+              </li>
+              <li>
+                Open a service ({m.plans.map((p, i) => (
+                  <span key={p.id}>
+                    {i > 0 && ', '}
+                    <Link to={`/services/plans/${p.id}`}>
+                      {shortDay(p.date)} {p.title}
+                    </Link>
+                  </span>
+                ))}
+                ), add the positions it needs, and choose who serves from each team.
+              </li>
+              <li>Everyone you schedule then shows here, with who has accepted.</li>
+            </ol>
+          </div>
         ) : (
           <div className="matrix-scroll">
             <table className="table matrix">
@@ -582,6 +608,11 @@ export function ServingMatrixPage() {
                             </div>
                           ))}
                           {gap && <span className="small danger-text">Needs {(cell?.needed ?? 0) - confirmed - asked}</span>}
+                          {cell && (
+                            <Link className="small matrix-assign" to={`/services/plans/${p.id}`}>
+                              {gap ? 'Choose someone' : 'Change'}
+                            </Link>
+                          )}
                         </td>
                       );
                     })}

@@ -297,6 +297,39 @@ public sealed class ContentAdminService(IContentDb db, IChurchDirectory church, 
     public Task<Result<PostAdminDto>> ChangePostAsync(Guid id, string action, Action<Post, DateTimeOffset> change, CancellationToken cancellationToken) =>
         ChangeAsync(db.Posts, id, action, change, PostDtoAsync, PostNotFound, cancellationToken);
 
+    public Task<Result> DeletePageAsync(Guid id, CancellationToken cancellationToken) =>
+        DeleteAsync(db.Pages, id, "content.page.deleted", PageNotFound, cancellationToken);
+
+    public Task<Result> DeletePostAsync(Guid id, CancellationToken cancellationToken) =>
+        DeleteAsync(db.Posts, id, "content.post.deleted", PostNotFound, cancellationToken);
+
+    /// <summary>
+    /// Deletes a page or post for good, with its translations. Needs the right to take content down; if it was live,
+    /// the website rebuilds without it. Old addresses it redirected stop redirecting.
+    /// </summary>
+    private async Task<Result> DeleteAsync<TItem>(DbSet<TItem> set, Guid id, string action, Error notFound, CancellationToken cancellationToken)
+        where TItem : PublishableContent
+    {
+        var item = await set.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (item is null || !await authorizer.CanAsync(ContentPermissions.Publish, ScopePath.Parse(item.Scope), cancellationToken))
+        {
+            return notFound;
+        }
+
+        var translations = await set.Where(x => x.TranslationOfId == id).ToListAsync(cancellationToken);
+        foreach (var gone in translations.Append(item))
+        {
+            gone.Deleting();
+            set.Remove(gone);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        await audit.RecordAsync(
+            new AuditRecord(action, item.GetType().Name.ToLowerInvariant(), item.Id.ToString(), ScopePath.Parse(item.Scope), new { item.Title, translations = translations.Count }),
+            cancellationToken);
+        return Result.Success();
+    }
+
     // ---------- Translations ----------
 
     /// <summary>Every translation, unchecked first: the translators' to-do list.</summary>

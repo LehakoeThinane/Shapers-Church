@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, TextInput } from '../components/ui';
+import { DateTimeInput } from '../components/DateInput';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 
 type Breach = Schemas['BreachDto'];
@@ -148,10 +149,10 @@ function BreachForm({ existing, onDone }: { existing?: Breach; onDone?: () => vo
         </Field>
         <div className="row">
           <Field label="Discovered">
-            <TextInput type="datetime-local" required value={form.discoveredAt} onChange={(e) => set({ discoveredAt: e.target.value })} />
+            <DateTimeInput required value={form.discoveredAt} onChange={(v) => set({ discoveredAt: v })} />
           </Field>
           <Field label="Happened (if known)">
-            <TextInput type="datetime-local" value={form.occurredAt} onChange={(e) => set({ occurredAt: e.target.value })} />
+            <DateTimeInput value={form.occurredAt} onChange={(v) => set({ occurredAt: v })} />
           </Field>
         </div>
         <Field label="Information involved" hint="What kind of information, about whom.">
@@ -171,10 +172,10 @@ function BreachForm({ existing, onDone }: { existing?: Breach; onDone?: () => vo
         </Field>
         <div className="row">
           <Field label="Information Regulator told" hint="POPIA section 22.">
-            <TextInput type="datetime-local" value={form.regulatorNotifiedAt} onChange={(e) => set({ regulatorNotifiedAt: e.target.value })} />
+            <DateTimeInput value={form.regulatorNotifiedAt} onChange={(v) => set({ regulatorNotifiedAt: v })} />
           </Field>
           <Field label="People affected told">
-            <TextInput type="datetime-local" value={form.peopleNotifiedAt} onChange={(e) => set({ peopleNotifiedAt: e.target.value })} />
+            <DateTimeInput value={form.peopleNotifiedAt} onChange={(v) => set({ peopleNotifiedAt: v })} />
           </Field>
         </div>
         <ErrorNote error={save.error ?? status.error} />
