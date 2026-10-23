@@ -2,6 +2,7 @@
 import '@shapers/tokens/tokens.css';
 import '../styles/site.css';
 import CookieNotice from '../components/CookieNotice.astro';
+import VisitInvite from '../components/VisitInvite.astro';
 import Logo from '../components/Logo.astro';
 import { get, type Schemas } from '../lib/api';
 import { church, telHref, whatsappHref } from '../lib/church';
@@ -146,6 +147,7 @@ const shareImage = new URL(image ?? '/images/og-shapers.jpg', Astro.site);
       </div>
     </footer>
     <CookieNotice />
+    <VisitInvite />
   </body>
 </html>
 

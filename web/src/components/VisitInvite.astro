@@ -1,0 +1,76 @@
+---
+// "Planning your first visit?": a small card that slides up once someone has had a look around (20 seconds or a
+// little scrolling). Never alongside the cookie note, never on the visit or connect pages, and once closed it
+// stays away for 30 days. Not a page-covering pop-up: those annoy, and search engines mark sites down for them.
+import { church } from '../lib/church';
+---
+
+<aside class="visit-invite" id="visit-invite" role="dialog" aria-labelledby="visit-invite-title" hidden>
+  <button type="button" class="visit-invite-close" id="visit-invite-close" aria-label="Close">×</button>
+  <span class="eyebrow">New here?</span>
+  <h2 id="visit-invite-title">Planning your first visit?</h2>
+  <p>
+    Join us <strong>on {church.sunday.day} at {church.sunday.time}</strong>, {church.shortAddress}. Come as you are: we'd love to meet you.
+  </p>
+  <div class="visit-invite-actions">
+    <a class="button" href="/contact#visit" data-visit-go>Plan my visit</a>
+    <a class="button ghost" href="/connect" data-visit-go>Tell us you're coming</a>
+  </div>
+</aside>
+
+<script>
+  const KEY = 'shapers-visit-invite';
+  const QUIET_DAYS = 30;
+  const card = document.getElementById('visit-invite');
+  const read = (key: string) => {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  };
+  const remember = () => {
+    try {
+      localStorage.setItem(KEY, String(Date.now()));
+    } catch {
+      // Not remembered: it may show again next visit.
+    }
+  };
+
+  const closedAt = Number(read(KEY) ?? 0);
+  const recentlyClosed = Date.now() - closedAt < QUIET_DAYS * 24 * 60 * 60 * 1000;
+  const onVisitPages = /^\/(contact|connect)(\/|$)/.test(location.pathname);
+
+  if (card && !recentlyClosed && !onVisitPages) {
+    let shown = false;
+    const show = () => {
+      if (shown) return;
+      // Wait for the cookie note to be closed first, so there's only ever one thing to deal with.
+      const cookie = document.getElementById('cookie-notice');
+      if (cookie && !cookie.hidden) {
+        window.addEventListener('shapers:cookie-notice-closed', () => setTimeout(show, 1500), { once: true });
+        return;
+      }
+      shown = true;
+      card.hidden = false;
+      requestAnimationFrame(() => card.classList.add('visit-invite-in'));
+    };
+    const close = () => {
+      card.classList.remove('visit-invite-in');
+      card.hidden = true;
+      remember();
+    };
+
+    setTimeout(show, 20_000);
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.6) {
+        window.removeEventListener('scroll', onScroll);
+        show();
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.getElementById('visit-invite-close')?.addEventListener('click', close);
+    card.querySelectorAll('[data-visit-go]').forEach((a) => a.addEventListener('click', remember));
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && !card.hidden && close());
+  }
+</script>
