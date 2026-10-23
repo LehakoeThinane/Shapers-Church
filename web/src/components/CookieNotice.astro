@@ -1,0 +1,34 @@
+---
+// A short, honest note about cookies, shown once. The site sets no tracking or advertising cookies, so there's
+// nothing to accept or refuse: if analytics is ever added, this becomes a choice before anything loads.
+---
+
+<aside class="cookie-notice" id="cookie-notice" role="region" aria-label="About cookies" hidden>
+  <p>
+    <strong>Cookies</strong>: this website only uses what it needs to work. No tracking or advertising cookies, and nothing about you is shared.
+    <a href="/privacy#cookies">More about cookies and privacy</a>
+  </p>
+  <button type="button" class="button" id="cookie-notice-ok">Got it</button>
+</aside>
+
+<script>
+  const KEY = 'shapers-cookie-notice';
+  const notice = document.getElementById('cookie-notice');
+  let seen = false;
+  try {
+    seen = localStorage.getItem(KEY) === '1';
+  } catch {
+    // Storage blocked (private browsing): show the note; it just won't be remembered.
+  }
+  if (notice && !seen) {
+    notice.hidden = false;
+    document.getElementById('cookie-notice-ok')?.addEventListener('click', () => {
+      notice.hidden = true;
+      try {
+        localStorage.setItem(KEY, '1');
+      } catch {
+        // Not remembered; fine.
+      }
+    });
+  }
+</script>

@@ -311,9 +311,14 @@ public sealed class ContentAdminService(IContentDb db, IChurchDirectory church, 
         where TItem : PublishableContent
     {
         var item = await set.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
-        if (item is null || !await authorizer.CanAsync(ContentPermissions.Publish, ScopePath.Parse(item.Scope), cancellationToken))
+        if (item is null)
         {
             return notFound;
+        }
+
+        if (!await authorizer.CanAsync(ContentPermissions.Publish, ScopePath.Parse(item.Scope), cancellationToken))
+        {
+            return NotYours;
         }
 
         var translations = await set.Where(x => x.TranslationOfId == id).ToListAsync(cancellationToken);
@@ -352,14 +357,24 @@ public sealed class ContentAdminService(IContentDb db, IChurchDirectory church, 
 
     // ---------- Shared ----------
 
+    /// <summary>Pages and posts belong to the whole church: publishing rights for one campus or ministry don't reach them.</summary>
+    private static readonly Error NotYours = Error.Forbidden(
+        "content.not_yours",
+        "Your publishing rights don't cover the church's website. Ask an administrator to give you the Content team (or administrator) role for the whole church, not one campus or ministry.");
+
     private async Task<Result<TDto>> ChangeAsync<TItem, TDto>(
         DbSet<TItem> set, Guid id, string action, Action<TItem, DateTimeOffset> change, Func<TItem, CancellationToken, Task<TDto>> toDto, Error notFound, CancellationToken cancellationToken)
         where TItem : PublishableContent
     {
         var item = await set.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
-        if (item is null || !await authorizer.CanAsync(ContentPermissions.Publish, ScopePath.Parse(item.Scope), cancellationToken))
+        if (item is null)
         {
             return notFound;
+        }
+
+        if (!await authorizer.CanAsync(ContentPermissions.Publish, ScopePath.Parse(item.Scope), cancellationToken))
+        {
+            return NotYours;
         }
 
         change(item, clock.GetUtcNow());

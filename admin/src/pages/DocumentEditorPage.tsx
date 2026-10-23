@@ -7,6 +7,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Button, ErrorNote, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm, askText } from '../lib/dialogs';
 import { api, formatDateTime, unwrap } from '../lib/api';
 import { DOCX_TYPE, fileUrl, sendDocument } from '../lib/documents';
 import { htmlToWord, wordToHtml } from '../lib/wordDocuments';
@@ -132,8 +133,11 @@ export default function DocumentEditorPage() {
           <>
             <Link
               to={back}
-              onClick={(e) => {
-                if (dirty && !confirm('Leave without saving your changes?')) e.preventDefault();
+              onClick={async (e) => {
+                if (!dirty) return;
+                // Stay put while asking; leave only if they say so.
+                e.preventDefault();
+                if (await askConfirm("Your changes haven't been saved. Leave without saving them?", { title: 'Unsaved changes', confirmLabel: 'Leave without saving', cancelLabel: 'Stay', danger: true })) navigate(back);
               }}>
               {detail.data?.libraryName ?? 'Back to the library'}
             </Link>
@@ -173,9 +177,13 @@ function Toolbar({ editor }: { editor: Editor }) {
   const chain = () => editor.chain().focus();
   const inTable = editor.isActive('table');
 
-  const addLink = () => {
+  const addLink = async () => {
     const current = editor.getAttributes('link').href as string | undefined;
-    const href = prompt('Link address (leave empty to remove the link)', current ?? 'https://');
+    const href = await askText(current ? 'Change the link' : 'Add a link', {
+      label: 'Link address (leave empty to remove the link)',
+      value: current ?? 'https://',
+      confirmLabel: 'Save link',
+    });
     if (href === null) return;
     if (!href.trim() || href.trim() === 'https://') chain().extendMarkRange('link').unsetLink().run();
     else chain().extendMarkRange('link').setLink({ href: href.trim() }).run();
@@ -240,7 +248,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         </Tool>
       ))}
       <span className="word-sep" />
-      <Tool label="Link" active={editor.isActive('link')} onClick={addLink}>
+      <Tool label="Link" active={editor.isActive('link')} onClick={() => void addLink()}>
         🔗
       </Tool>
       <label className="word-tool" title="Insert a picture" aria-label="Insert a picture">

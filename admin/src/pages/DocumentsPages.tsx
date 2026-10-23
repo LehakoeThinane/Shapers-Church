@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type DragEvent, type FormEvent } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { fileUrl, isWordFile, sendDocument } from '../lib/documents';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -259,7 +260,7 @@ function FolderPanel({ library, folderId, onOpenFolder }: { library: Library; fo
                         <Button variant="ghost" onClick={() => setNaming({ kind: 'folder', id: f.id, name: f.name })}>
                           Rename
                         </Button>
-                        <Button variant="ghost" onClick={() => confirm(`Move "${f.name}" and everything in it to the recycle bin?`) && remove.mutate({ kind: 'folder', id: f.id })}>
+                        <Button variant="ghost" onClick={async () => (await askConfirm(`Move "${f.name}" and everything in it to the recycle bin?`)) && remove.mutate({ kind: 'folder', id: f.id })}>
                           Delete
                         </Button>
                       </>
@@ -275,7 +276,7 @@ function FolderPanel({ library, folderId, onOpenFolder }: { library: Library; fo
                   versionsOpen={versionsOf === d.id}
                   onVersions={() => setVersionsOf(versionsOf === d.id ? null : d.id)}
                   onRename={() => setNaming({ kind: 'document', id: d.id, name: d.name })}
-                  onDelete={() => confirm(`Move "${d.name}" to the recycle bin?`) && remove.mutate({ kind: 'document', id: d.id })}
+                  onDelete={async () => (await askConfirm(`Move "${d.name}" to the recycle bin?`)) && remove.mutate({ kind: 'document', id: d.id })}
                 />
               ))}
             </tbody>
@@ -523,7 +524,7 @@ function LibrarySettings({ library, onClose }: { library: Library; onClose: () =
         <Button variant="ghost" onClick={onClose}>
           Close
         </Button>
-        <Button variant="danger" busy={remove.isPending} onClick={() => confirm(`Delete the library "${library.name}"? It has to be empty.`) && remove.mutate()}>
+        <Button variant="danger" busy={remove.isPending} onClick={async () => (await askConfirm(`Delete the library "${library.name}"? It has to be empty.`)) && remove.mutate()}>
           Delete library
         </Button>
       </div>

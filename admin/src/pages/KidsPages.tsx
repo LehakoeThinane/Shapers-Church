@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateInput } from '../components/DateInput';
 import { api, formatDate, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -225,7 +226,7 @@ function Pickup({ onDone }: { onDone: () => void }) {
             <Button
               variant="primary"
               busy={handOver.isPending}
-              onClick={() => window.confirm(`Hand over ${find.data!.children.map((c) => c.name).join(' and ')}? Only do this once you've seen the code on the parent's phone or tag.`) && handOver.mutate()}
+              onClick={async () => (await askConfirm(`Hand over ${find.data!.children.map((c) => c.name).join(' and ')}? Only do this once you've seen the code on the parent's phone or tag.`)) && handOver.mutate()}
             >
               Hand over {find.data.children.length === 1 ? 'this child' : `these ${find.data.children.length} children`}
             </Button>
@@ -515,7 +516,7 @@ function ClassRow({ kidsClass: c, onChanged }: { kidsClass: Schemas['KidsClassDt
         <Button
           variant="ghost"
           busy={toggle.isPending}
-          onClick={() => (c.isArchived || window.confirm(`Stop using ${c.name}? Children its age go to another class that fits, or can't be checked in until one does.`)) && toggle.mutate()}
+          onClick={async () => (c.isArchived || (await askConfirm(`Stop using ${c.name}? Children its age go to another class that fits, or can't be checked in until one does.`))) && toggle.mutate()}
         >
           {c.isArchived ? 'Use again' : 'Stop using'}
         </Button>
