@@ -5,6 +5,7 @@ import CookieNotice from '../components/CookieNotice.astro';
 import Logo from '../components/Logo.astro';
 import { get, type Schemas } from '../lib/api';
 import { church, telHref, whatsappHref } from '../lib/church';
+import { churchLd } from '../lib/structuredData';
 
 interface Props {
   title?: string;
@@ -16,9 +17,11 @@ interface Props {
   lang?: string;
   /** The same page in other languages, for search engines. */
   alternates?: { lang: string; href: string }[];
+  /** schema.org data about what's on the page (an event, an article), for search results. */
+  structuredData?: Record<string, unknown>[];
 }
 
-const { title, description, image, noindex, lang = 'en', alternates = [] } = Astro.props;
+const { title, description, image, noindex, lang = 'en', alternates = [], structuredData = [] } = Astro.props;
 const menu = await get<Schemas['MenuItemDto'][]>('/api/content/menu', []);
 const fullTitle = title ? `${title} · Shapers Church` : 'Shapers Church · Rivonia, Johannesburg';
 const summary = description ?? 'Shapers Church in Rivonia, Johannesburg: building productive people for the kingdom of God.';
@@ -33,6 +36,8 @@ const nav = [
 ];
 const current = (href: string) => (path === href || path.startsWith(`${href}/`) ? 'page' : undefined);
 const shareImage = new URL(image ?? '/images/og-shapers.jpg', Astro.site);
+// The church itself is described on the pages people search for it from: home, contact and what to expect.
+const ld = [...(['/', '/contact', '/what-to-expect'].includes(path.replace(/\/$/, '') || '/') ? [churchLd(Astro.site!)] : []), ...structuredData];
 ---
 
 <!doctype html>
@@ -54,6 +59,7 @@ const shareImage = new URL(image ?? '/images/og-shapers.jpg', Astro.site);
     <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title="Shapers Church sermons" href="/podcast.xml" />
+    {ld.map((data) => <script is:inline type="application/ld+json" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />)}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -130,6 +136,7 @@ const shareImage = new URL(image ?? '/images/og-shapers.jpg', Astro.site);
         <div>
           <h2>Explore</h2>
           <ul class="footer-links">
+            <li><a href="/what-to-expect">What to expect</a></li>
             <li><a href="/sermons">Sermons</a></li>
             <li><a href="/live">Watch live</a></li>
             <li><a href="/events">Events</a></li>
