@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { church, telHref } from '../lib/church';
+---
+
+<Base
+  title="What to expect"
+  description={`Visiting Shapers Church for the first time? ${church.sunday.day} at ${church.sunday.time}, ${church.shortAddress}. Here's what a Sunday looks like, for you and your kids.`}>
+  <PageHeader
+    eyebrow="Your first Sunday"
+    title="What to"
+    accent="expect."
+    intro="Visiting a church for the first time can feel like a big step. Here's what a Sunday at Shapers looks like, so you know before you arrive.">
+    <div class="row" style="margin-top: 1.5rem">
+      <a class="button" href="/connect">Tell us you're coming</a>
+      <a class="button ghost" href={church.mapsUrl} rel="noopener" target="_blank">Get directions ↗</a>
+    </div>
+  </PageHeader>
+
+  <section class="band band-raised">
+    <div class="wrap">
+      <div class="info-grid">
+        <div>
+          <span class="label">When</span>
+          <h3>{church.sunday.day} at {church.sunday.time}</h3>
+          <p class="muted">Arrive a few minutes early to find a seat and say hello. Someone will be at the door to welcome you.</p>
+        </div>
+        <div>
+          <span class="label">Where</span>
+          <h3>{church.shortAddress}</h3>
+          <p class="muted">{church.address}</p>
+          <p><a href={church.mapsUrl} rel="noopener" target="_blank">Open in Google Maps ↗</a></p>
+        </div>
+        <div>
+          <span class="label">What to wear</span>
+          <h3>Come as you are</h3>
+          <p class="muted">There's no dress code. Whatever you're comfortable in is perfect.</p>
+        </div>
+        <div>
+          <span class="label">Questions?</span>
+          <h3>Call or write</h3>
+          {church.phones.map((p) => <p><a href={telHref(p)}>{p}</a></p>)}
+          <p><a href={`mailto:${church.email}`}>{church.email}</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-paper">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">The service</span>
+        <h2>Worship, prayer <span class="serif">and the Word.</span></h2>
+        <p class="lead">
+          We sing together, pray, and open the Bible: a message that's practical for your faith, family, work and calling. You're welcome to
+          simply watch and listen; nobody will put you on the spot.
+        </p>
+        <p>
+          If there's anything we can pray with you about, let someone know after the service, or <a href="/connect">send us a prayer request</a>: only
+          our pastoral team sees it.
+        </p>
+      </div>
+      <div>
+        <span class="eyebrow">Your kids</span>
+        <h2>Children <span class="serif">are welcome.</span></h2>
+        <p class="lead">
+          Our kids team looks after children during the service. Check them in when you arrive: you'll get a code, and only someone with that code
+          can collect them.
+        </p>
+        <p>New to us? Tell us you're coming and we'll help you get your children settled.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-dark band-glow">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Can't make it in person?</span>
+          <h2>Join us online.</h2>
+          <p class="lead">
+            Watch the service live, or catch up on any message. Midweek, we meet on {church.midweek.day} at {church.midweek.time}
+            {` ${church.midweek.where}`} (meeting ID {church.midweek.zoomId}).
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <a class="button" href="/live">Watch live</a>
+        <a class="button ghost" href="/sermons">Recent messages</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-paper cta">
+    <div class="wrap">
+      <span class="eyebrow">After your first visit</span>
+      <h2>Your next step <span class="serif">starts here.</span></h2>
+      <p class="lead">
+        The Growth Track is two weeks to help you discover your purpose in God, find your place in the church, and become productive in every area of
+        life.
+      </p>
+      <div class="row">
+        <a class="button dark" href="/growth-track">About the Growth Track</a>
+        <a class="button secondary" href="/connect">I'm new: say hello</a>
+      </div>
+    </div>
+  </section>
+</Base>

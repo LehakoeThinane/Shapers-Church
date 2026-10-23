@@ -2267,3 +2267,106 @@ a.calendar-entry:hover {
     align-items: stretch;
   }
 }
+/* ---------- "Planning your first visit?" ---------- */
+
+.visit-invite {
+  position: fixed;
+  z-index: 79;
+  right: 20px;
+  bottom: 20px;
+  width: min(360px, calc(100% - 32px));
+  padding: 22px 22px 20px;
+  border: 1px solid var(--night-line);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--night-raised) 94%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lift);
+  color: var(--color-text-primary);
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.visit-invite[hidden] {
+  display: none;
+}
+
+.visit-invite.visit-invite-in {
+  opacity: 1;
+  transform: none;
+}
+
+.visit-invite .eyebrow {
+  margin-bottom: 6px;
+}
+
+.visit-invite h2 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.visit-invite p {
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.visit-invite p strong {
+  color: var(--color-text-primary);
+}
+
+.visit-invite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.visit-invite-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text-secondary);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.visit-invite-close:hover {
+  background: color-mix(in srgb, var(--site-white) 8%, transparent);
+  color: var(--color-text-primary);
+}
+
+/* Phones: a compact card along the bottom, not a cover over the page. */
+@media (max-width: 560px) {
+  .visit-invite {
+    right: 16px;
+    left: 16px;
+    bottom: 16px;
+    width: auto;
+    padding: 18px;
+  }
+
+  .visit-invite h2 {
+    font-size: 1.15rem;
+    padding-right: 28px;
+  }
+
+  .visit-invite-actions .button {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visit-invite {
+    transition: none;
+  }
+}

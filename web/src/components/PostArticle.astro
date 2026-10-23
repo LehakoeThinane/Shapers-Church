@@ -5,6 +5,7 @@ import LanguageSwitch from './LanguageSwitch.astro';
 import Share from './Share.astro';
 import type { Schemas } from '../lib/api';
 import { longDate, renderMarkdown } from '../lib/format';
+import { articleLd } from '../lib/structuredData';
 
 interface Props {
   post: Schemas['PostDto'];
@@ -21,7 +22,7 @@ const readMinutes = Math.max(1, Math.round(post.body.split(/\s+/).length / 220))
 const alternates = post.languages.map((l) => ({ lang: l.code, href: l.code === 'en' ? basePath : `${basePath}/${l.code}` }));
 ---
 
-<Base title={p.title} description={p.summary ?? undefined} image={p.coverImageUrl} lang={post.language} alternates={alternates}>
+<Base title={p.title} description={p.summary ?? undefined} image={p.coverImageUrl} lang={post.language} alternates={alternates} structuredData={[articleLd(p, Astro.url.pathname, Astro.site!)]}>
   <section class="band band-dark band-glow detail-hero">
     <div class="wrap prose-wrap">
       <a class="back-link" href="/blog">Blog</a>
