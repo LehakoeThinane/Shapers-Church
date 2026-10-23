@@ -2448,3 +2448,66 @@ a.cal-entry:hover {
     padding: 24px 18px;
   }
 }
+/* ---------- Password with show/hide ---------- */
+
+.password-input {
+  position: relative;
+  display: block;
+}
+
+.password-input .input {
+  width: 100%;
+  padding-right: 48px;
+}
+
+/* Edge adds its own eye; ours works in every browser, so one is enough. */
+.password-input .input::-ms-reveal,
+.password-input .input::-ms-clear {
+  display: none;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--color-text-secondary);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.password-toggle:hover:not(:disabled) {
+  background: var(--color-glass-fill);
+  color: var(--color-text-primary);
+}
+
+.password-toggle[aria-pressed='true'] {
+  color: var(--color-accent);
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.password-toggle:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
