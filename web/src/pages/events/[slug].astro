@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Share from '../../components/Share.astro';
 import { get, type Schemas } from '../../lib/api';
 import { dayAndTime, renderMarkdown, time } from '../../lib/format';
+import { eventLd } from '../../lib/structuredData';
 
 export async function getStaticPaths() {
   const events = await get<Schemas['EventDto'][]>('/api/events', []);
@@ -13,7 +14,7 @@ const { event: e } = Astro.props as { event: Schemas['EventDto'] };
 const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURIComponent(e.location.address)}` : null;
 ---
 
-<Base title={e.title} description={e.summary ?? undefined} image={e.imageUrl}>
+<Base title={e.title} description={e.summary ?? undefined} image={e.imageUrl} structuredData={[eventLd(e, Astro.site!)]}>
   <section class="band band-dark band-glow detail-hero">
     <div class="wrap">
       <a class="back-link" href="/events">All events</a>
