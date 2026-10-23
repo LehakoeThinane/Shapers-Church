@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateTimeInput } from '../components/DateInput';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, covers, Permissions, scopesFor, useAccess } from '../lib/access';
@@ -267,7 +268,7 @@ function Editor({ existing }: { existing?: Announcement }) {
                   </Button>
                 )}
                 {existing.status !== 'Sent' && existing.status !== 'Cancelled' && can(access, Permissions.announcementsSend) && (
-                  <Button variant="danger" busy={action.isPending} onClick={() => confirm('Cancel this announcement?') && action.mutate({ kind: 'cancel' })}>
+                  <Button variant="danger" busy={action.isPending} onClick={async () => (await askConfirm('Cancel this announcement?')) && action.mutate({ kind: 'cancel' })}>
                     Cancel announcement
                   </Button>
                 )}
@@ -284,7 +285,7 @@ function ApproveActions({ busy, onApprove, onReturn }: { busy: boolean; onApprov
   const [note, setNote] = useState('');
   return (
     <div className="stack">
-      <Button variant="primary" busy={busy} onClick={() => confirm('Approve and send this announcement?') && onApprove()}>
+      <Button variant="primary" busy={busy} onClick={async () => (await askConfirm('Approve and send this announcement?')) && onApprove()}>
         Approve
       </Button>
       <Field label="Or send it back with a note">

@@ -2221,3 +2221,49 @@ a.calendar-entry:hover {
   color: var(--color-accent);
   font-weight: 600;
 }
+/* ---------- Cookie note ---------- */
+
+.cookie-notice {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(720px, calc(100% - 32px));
+  padding: 14px 16px 14px 20px;
+  border: 1px solid var(--night-line);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--night-raised) 92%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lift);
+  color: var(--color-text-primary);
+  transform: translateX(-50%);
+}
+
+.cookie-notice[hidden] {
+  display: none;
+}
+
+.cookie-notice p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.cookie-notice a {
+  margin-left: 4px;
+  color: var(--color-accent);
+}
+
+.cookie-notice .button {
+  flex: none;
+}
+
+@media (max-width: 560px) {
+  .cookie-notice {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

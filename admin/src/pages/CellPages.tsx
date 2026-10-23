@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { AiBadge } from '../components/Assist';
 import { useCanDraft, useReviewDraft } from '../lib/assist';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, Select, TextInput } from '../components/ui';
+import { askConfirm } from '../lib/dialogs';
 import { DateInput } from '../components/DateInput';
 import { api, ApiError, formatDate, formatDateTime, unwrap, type Schemas } from '../lib/api';
 import { can, Permissions, useAccess } from '../lib/access';
@@ -229,7 +230,7 @@ export function CellPage() {
             <Button
               variant="danger"
               busy={close.isPending}
-              onClick={() => window.confirm(`Close ${c.name}? Its reports stay for the pastors.`) && close.mutate()}
+              onClick={async () => (await askConfirm(`Close ${c.name}? Its reports stay for the pastors.`)) && close.mutate()}
             >
               Close cell
             </Button>
@@ -627,7 +628,7 @@ function LeaderMembers({ cell: c }: { cell: Cell }) {
               {m.name} {m.role !== 'Member' && <Badge tone="accent">{roleLabel[m.role]}</Badge>}
             </span>
             {m.role === 'Member' && (
-              <button type="button" className="link-button" onClick={() => window.confirm(`Remove ${m.name} from the cell?`) && remove.mutate(m.personId)}>
+              <button type="button" className="link-button" onClick={async () => (await askConfirm(`Remove ${m.name} from the cell?`)) && remove.mutate(m.personId)}>
                 Remove
               </button>
             )}
@@ -756,7 +757,7 @@ function LeaderMaterials({ cellId }: { cellId: string }) {
               <button type="button" className="link-button" onClick={() => open(m)}>
                 Edit
               </button>
-              <button type="button" className="link-button" onClick={() => window.confirm(`Delete “${m.title}”?`) && remove.mutate(m.id)}>
+              <button type="button" className="link-button" onClick={async () => (await askConfirm(`Delete “${m.title}”?`)) && remove.mutate(m.id)}>
                 Delete
               </button>
             </span>
@@ -1095,7 +1096,7 @@ export function ChurchLessonsPage() {
                     >
                       Edit
                     </button>
-                    <button type="button" className="link-button" onClick={() => window.confirm(`Delete “${m.title}”?`) && remove.mutate(m.id)}>
+                    <button type="button" className="link-button" onClick={async () => (await askConfirm(`Delete “${m.title}”?`)) && remove.mutate(m.id)}>
                       Delete
                     </button>
                   </span>

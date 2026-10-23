@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { Badge, Button, Card, Empty, ErrorNote, Field, Loading, PageHeader, TextInput } from '../components/ui';
+import { askConfirm, askText } from '../lib/dialogs';
 import { api, formatDateTime, unwrap, type Schemas } from '../lib/api';
 
 type Message = Schemas['ModChatMessageDto'];
@@ -116,12 +117,21 @@ function MessageItem({ room, message: m, onDone, compact = false }: { room: Room
   const show = useMutation({ mutationFn: async () => unwrap(await api.POST('/api/admin/media/chat/{livestreamId}/messages/{messageId}/show', path)), onSuccess: onDone });
   const sanction = useMutation({
     mutationFn: async (kind: Schemas['ChatSanctionKind']) => {
-      const reason = prompt(kind === 'Ban' ? 'Why are you banning them? (Kept with the record.)' : 'Why are you timing them out? (Optional.)');
+      const reason = await askText(kind === 'Ban' ? `Ban ${m.author}?` : `Time out ${m.author}?`, {
+        label: kind === 'Ban' ? 'Why are you banning them? (Kept with the record.)' : 'Why are you timing them out? (Optional.)',
+        confirmLabel: kind === 'Ban' ? 'Ban' : 'Time out',
+      });
       if (reason === null) return;
+      const hideMessages = await askConfirm('Also hide everything they said in this service?', {
+        title: 'Their earlier messages',
+        confirmLabel: 'Hide them',
+        cancelLabel: 'Leave them',
+        danger: false,
+      });
       return unwrap(
         await api.POST('/api/admin/media/chat/{livestreamId}/sanctions', {
           params: { path: { livestreamId: room.livestreamId } },
-          body: { personId: m.personId, kind, reason: reason || null, hideMessages: confirm('Also hide everything they said in this service?') },
+          body: { personId: m.personId, kind, reason: reason || null, hideMessages },
         }),
       );
     },
