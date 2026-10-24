@@ -2,6 +2,7 @@
 import '@shapers/tokens/tokens.css';
 import '../styles/site.css';
 import CookieNotice from '../components/CookieNotice.astro';
+import VisitInvite from '../components/VisitInvite.astro';
 import Logo from '../components/Logo.astro';
 import { get, type Schemas } from '../lib/api';
 import { church, telHref, whatsappHref } from '../lib/church';
@@ -153,6 +154,7 @@ const ld = [...(['/', '/contact', '/what-to-expect'].includes(path.replace(/\/$/
       </div>
     </footer>
     <CookieNotice />
+    <VisitInvite />
   </body>
 </html>
 

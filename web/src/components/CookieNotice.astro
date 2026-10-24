@@ -24,6 +24,7 @@
     notice.hidden = false;
     document.getElementById('cookie-notice-ok')?.addEventListener('click', () => {
       notice.hidden = true;
+      window.dispatchEvent(new Event('shapers:cookie-notice-closed'));
       try {
         localStorage.setItem(KEY, '1');
       } catch {
