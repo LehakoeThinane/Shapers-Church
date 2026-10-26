@@ -6,7 +6,7 @@ import { church, telHref } from '../lib/church';
 
 <Base
   title="What to expect"
-  description={`Visiting Shapers Church for the first time? ${church.sunday.day} at ${church.sunday.time}, ${church.shortAddress}. Here's what a Sunday looks like, for you and your kids.`}>
+  description={`Visiting Shapers Church for the first time? ${church.sunday.day} at ${church.sunday.time}, ${church.shortAddress}. Parking inside, about two hours, and a kids team with secure check-in.`}>
   <PageHeader
     eyebrow="Your first Sunday"
     title="What to"
@@ -24,13 +24,26 @@ import { church, telHref } from '../lib/church';
         <div>
           <span class="label">When</span>
           <h3>{church.sunday.day} at {church.sunday.time}</h3>
-          <p class="muted">Arrive a few minutes early to find a seat and say hello. Someone will be at the door to welcome you.</p>
+          <p class="muted">The service runs about two hours, until 12:00. Arrive a few minutes early to find a seat and say hello.</p>
         </div>
         <div>
           <span class="label">Where</span>
           <h3>{church.shortAddress}</h3>
           <p class="muted">{church.address}</p>
           <p><a href={church.mapsUrl} rel="noopener" target="_blank">Open in Google Maps ↗</a></p>
+        </div>
+        <div>
+          <span class="label">Parking</span>
+          <h3>Park inside</h3>
+          <p class="muted">There's parking inside the property, so you don't need to look for a spot on the street.</p>
+        </div>
+        <div>
+          <span class="label">Access</span>
+          <h3>There are steps</h3>
+          <p class="muted">
+            The building has no ramp, so it isn't easy for a wheelchair. If you or someone with you finds steps difficult, call us before you come
+            and we'll talk through how we can help.
+          </p>
         </div>
         <div>
           <span class="label">What to wear</span>

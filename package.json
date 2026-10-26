@@ -19,13 +19,16 @@
   "pnpm": {
     "overrides": {
       "source-map-js": "^1.2.2",
-      "shell-quote": "^1.11.0"
+      "shell-quote": "^1.11.0",
+      "zod@4": "4.6.6"
     },
     "auditConfig": {
       "ignoreGhsas": [
         "GHSA-86w9-cpqp-85rv",
         "GHSA-ch52-4w7c-c8xp",
-        "GHSA-vfj7-8cjw-p6xm"
+        "GHSA-vfj7-8cjw-p6xm",
+        "GHSA-mrhx-c7xc-m3w5",
+        "GHSA-xjj6-f33q-929c"
       ]
     }
   }
