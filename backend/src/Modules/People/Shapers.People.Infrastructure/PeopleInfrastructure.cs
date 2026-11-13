@@ -25,6 +25,9 @@ public static class PeopleInfrastructure
         services.AddScoped<MergeService>();
         services.AddScoped<MyProfileService>();
         services.AddScoped<ConnectCardService>();
+        services.AddScoped<EmailConsentRequests>();
+        services.Configure<EmailConsentOptions>(configuration.GetSection("People:EmailConsent"));
+        services.PostConfigure<EmailConsentOptions>(o => o.PublicApiUrl ??= configuration["Communications:PublicApiUrl"]);
         services.AddScoped<Shapers.Platform.Messaging.IIntegrationEventHandler<Shapers.Groups.Contracts.CellVisitorsRecordedIntegrationEvent>, FileCellVisitors>();
         services.AddScoped<IGuestRecords, GuestRecords>();
         services.AddScoped<IFollowUps, FollowUps>();

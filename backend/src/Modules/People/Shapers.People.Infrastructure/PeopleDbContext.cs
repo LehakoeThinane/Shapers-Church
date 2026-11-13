@@ -20,6 +20,8 @@ public sealed class PeopleDbContext(DbContextOptions<PeopleDbContext> options) :
 
     public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
 
+    public DbSet<ConsentRequest> ConsentRequests => Set<ConsentRequest>();
+
     public DbSet<DuplicateCandidate> DuplicateCandidates => Set<DuplicateCandidate>();
 
     public DbSet<PersonMerge> PersonMerges => Set<PersonMerge>();
@@ -110,6 +112,14 @@ public sealed class PeopleDbContext(DbContextOptions<PeopleDbContext> options) :
             b.Property(c => c.LawfulBasis).HasConversion<string>().HasMaxLength(30);
             b.Property(c => c.Source).HasConversion<string>().HasMaxLength(30);
             b.HasIndex(c => new { c.PersonId, c.Purpose, c.RecordedAt });
+        });
+
+        modelBuilder.Entity<ConsentRequest>(b =>
+        {
+            b.ToTable("consent_requests");
+            b.Property(r => r.Id).ValueGeneratedNever();
+            b.Property(r => r.Purpose).HasMaxLength(100);
+            b.HasIndex(r => new { r.PersonId, r.Purpose }).IsUnique();
         });
 
         modelBuilder.Entity<DuplicateCandidate>(b =>

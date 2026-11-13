@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -36,7 +37,61 @@ public sealed class PeopleModule : IModule
             .WithName("SubmitConnectCard")
             .AllowAnonymous()
             .RequireRateLimiting(RateLimitPolicies.Auth);
+
+        // The link in an email consent request. No sign-in: the signature proves it came from us. Opening the link only
+        // shows the choice, so email scanners that follow links can't answer for anyone.
+        endpoints.MapGet(EmailConsentRequests.AnswerPath, async (string? p, string? s, EmailConsentRequests requests, CancellationToken ct) =>
+            {
+                var found = await requests.FindAsync(p, s, ct);
+                if (found.IsFailure)
+                {
+                    return ConsentPage("That link didn't work", found.Error!.Message, null, 400);
+                }
+
+                var form = $"""
+                    <form method="post" action="{EmailConsentRequests.AnswerPath}">
+                      <input type="hidden" name="p" value="{WebUtility.HtmlEncode(p)}">
+                      <input type="hidden" name="s" value="{WebUtility.HtmlEncode(s)}">
+                      <p><button name="answer" value="yes" style="{ConsentButton(true)}">Yes, email me</button></p>
+                      <p><button name="answer" value="no" style="{ConsentButton(false)}">No thanks</button></p>
+                    </form>
+                    """;
+                return ConsentPage($"Hi {found.Value}", "Would you like Shapers Church to email you about what's happening at church? You can unsubscribe from any email.", form, 200);
+            })
+            .WithTags("Connect")
+            .AllowAnonymous()
+            .RequireRateLimiting(RateLimitPolicies.Auth)
+            .ExcludeFromDescription();
+        endpoints.MapPost(EmailConsentRequests.AnswerPath, async (HttpRequest request, EmailConsentRequests requests, CancellationToken ct) =>
+            {
+                var form = await request.ReadFormAsync(ct);
+                var agree = form["answer"] == "yes";
+                var result = await requests.AnswerAsync(form["p"], form["s"], agree, ct);
+                return result.IsFailure
+                    ? ConsentPage("That link didn't work", result.Error!.Message, null, 400)
+                    : ConsentPage(agree ? "Thank you!" : "Thanks for letting us know", agree
+                        ? "We'll keep you in the loop by email. Every email has a link to unsubscribe."
+                        : "We won't email you, and we won't ask again. If you change your mind, you can turn emails on in the Shapers app.", null, 200);
+            })
+            .WithTags("Connect")
+            .AllowAnonymous()
+            .DisableAntiforgery()
+            .RequireRateLimiting(RateLimitPolicies.Auth)
+            .ExcludeFromDescription();
     }
+
+    private static string ConsentButton(bool primary) =>
+        $"display:block;width:100%;padding:14px;border-radius:999px;border:0;font-size:16px;font-weight:600;cursor:pointer;{(primary ? "background:#3F3230;color:#EBE6E4" : "background:#EBE6E4;color:#3A2E2B;border:1px solid #3A2E2B")}";
+
+    private static IResult ConsentPage(string heading, string message, string? body, int status) =>
+        Results.Content(
+            "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+            + $"<title>{WebUtility.HtmlEncode(heading)} · Shapers Church</title></head>"
+            + "<body style=\"font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:480px;margin:10vh auto;padding:0 16px;line-height:1.5;color:#3A2E2B;background:#EBE6E4\">"
+            + "<p style=\"letter-spacing:.12em;text-transform:uppercase;font-size:12px\">Shapers Church</p>"
+            + $"<h1 style=\"font-size:24px\">{WebUtility.HtmlEncode(heading)}</h1><p>{WebUtility.HtmlEncode(message)}</p>{body}</body></html>",
+            "text/html; charset=utf-8",
+            statusCode: status);
 
     private static void MapStaffEndpoints(RouteGroupBuilder admin)
     {
@@ -55,7 +110,15 @@ public sealed class PeopleModule : IModule
             .WithName("CreatePerson")
             .RequirePermission(PeoplePermissions.ProfilesEdit);
 
-        people.MapPost("/import", async (ImportPeopleRequest request, PeopleService service, CancellationToken ct) =>
+        people.MapGet("/email-consent", (EmailConsentRequests requests, CancellationToken ct) => requests.SummaryAsync(ct))
+            .WithName("EmailConsentSummary")
+            .RequirePermission(PeoplePermissions.ProfilesEdit);
+
+        people.MapPost("/email-consent/send", (EmailConsentRequests requests, CancellationToken ct) => requests.SendAsync(ct))
+            .WithName("SendEmailConsentRequests")
+            .RequirePermission(PeoplePermissions.ProfilesEdit);
+
+        people.MapPost("/import",async (ImportPeopleRequest request, PeopleService service, CancellationToken ct) =>
                 (await service.ImportAsync(request, ct)).ToHttp())
             .WithName("ImportPeople")
             .RequirePermission(PeoplePermissions.ProfilesEdit);

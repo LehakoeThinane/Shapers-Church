@@ -15,6 +15,7 @@ import { LoginPage, SetPasswordPage } from './pages/LoginPage';
 import { NewPersonPage, PeoplePage } from './pages/PeoplePage';
 import { PersonPage } from './pages/PersonPage';
 import { ImportPeoplePage } from './pages/ImportPeoplePage';
+import { EmailConsentPage } from './pages/EmailConsentPage';
 import { MediaLibraryPage } from './pages/MediaLibraryPage';
 import { SermonEditorPage } from './pages/SermonEditorPage';
 import { SermonsPage } from './pages/SermonsPage';
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
           { path: 'people', element: <PeoplePage /> },
           { path: 'people/new', element: <NewPersonPage /> },
           { path: 'people/import', element: <ImportPeoplePage /> },
+          { path: 'people/email-consent', element: <EmailConsentPage /> },
           { path: 'people/:id', element: <PersonPage /> },
           { path: 'duplicates', element: <DuplicatesPage /> },
           { path: 'sermons', element: <SermonsPage /> },

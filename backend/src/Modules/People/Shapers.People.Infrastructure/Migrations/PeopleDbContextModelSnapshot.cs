@@ -18,7 +18,7 @@ namespace Shapers.People.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("people")
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -149,6 +149,40 @@ namespace Shapers.People.Infrastructure.Migrations
                         .HasDatabaseName("ix_consent_records_person_id_purpose_recorded_at");
 
                     b.ToTable("consent_records", "people");
+                });
+
+            modelBuilder.Entity("Shapers.People.Domain.ConsentRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("person_id");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("purpose");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("sent_at");
+
+                    b.Property<Guid?>("SentByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("sent_by_user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_consent_requests");
+
+                    b.HasIndex("PersonId", "Purpose")
+                        .IsUnique()
+                        .HasDatabaseName("ix_consent_requests_person_id_purpose");
+
+                    b.ToTable("consent_requests", "people");
                 });
 
             modelBuilder.Entity("Shapers.People.Domain.DuplicateCandidate", b =>
