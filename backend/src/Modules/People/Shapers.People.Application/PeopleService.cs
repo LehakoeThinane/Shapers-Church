@@ -143,6 +143,118 @@ public sealed class PeopleService(
         return await builder.BuildAsync(person, cancellationToken);
     }
 
+    public const int MaxImportRows = 2000;
+
+    /// <summary>
+    /// Adds people in bulk, such as an export from another church system. Rows come across as they are; a row is
+    /// skipped only when it has no name, or when someone with the same name and a shared email or mobile is
+    /// already here, so the same file can be uploaded twice without making copies.
+    /// </summary>
+    public async Task<Result<ImportPeopleResult>> ImportAsync(ImportPeopleRequest request, CancellationToken cancellationToken)
+    {
+        if (request.Rows.Count > MaxImportRows)
+        {
+            return new Error("people.import_too_large", $"Import up to {MaxImportRows} people at a time.");
+        }
+
+        var scope = await ResolveCampusScopeAsync(request.CampusId, cancellationToken);
+        if (scope is null)
+        {
+            return Error.NotFound("people.campus_not_found", "Campus not found.");
+        }
+
+        if (!await authorizer.CanAsync(PeoplePermissions.ProfilesEdit, scope, cancellationToken))
+        {
+            return Error.Forbidden("people.forbidden", "You cannot add people to this campus.");
+        }
+
+        var status = request.MembershipStatusId is { } statusId
+            ? await db.MembershipStatuses.SingleOrDefaultAsync(s => s.Id == statusId && s.IsActive, cancellationToken)
+            : await db.MembershipStatuses.SingleAsync(s => s.IsDefault, cancellationToken);
+        if (status is null)
+        {
+            return Error.NotFound("people.status_not_found", "Membership status not found.");
+        }
+
+        var skipped = new List<ImportRowNote>();
+        var warnings = new List<ImportRowNote>();
+        var prepared = new List<(ImportPersonRow Row, string Name, List<string> Emails, List<string> Mobiles)>();
+        foreach (var row in request.Rows)
+        {
+            var name = $"{row.FirstName} {row.LastName}".Trim();
+            if (string.IsNullOrWhiteSpace(row.FirstName) || string.IsNullOrWhiteSpace(row.LastName))
+            {
+                skipped.Add(new ImportRowNote(row.RowNumber, name, "No first or last name."));
+                continue;
+            }
+
+            var emails = new List<string>();
+            foreach (var raw in row.Emails.Where(e => !string.IsNullOrWhiteSpace(e)))
+            {
+                if (ContactNormaliser.TryNormaliseEmail(raw, out var email)) emails.Add(email);
+                else warnings.Add(new ImportRowNote(row.RowNumber, name, $"Left out the email \"{raw.Trim()}\": it doesn't look right."));
+            }
+
+            var mobiles = new List<string>();
+            foreach (var raw in row.Mobiles.Where(m => !string.IsNullOrWhiteSpace(m)))
+            {
+                if (ContactNormaliser.TryNormalisePhone(raw, out var mobile)) mobiles.Add(mobile);
+                else warnings.Add(new ImportRowNote(row.RowNumber, name, $"Left out the mobile \"{raw.Trim()}\": it doesn't look right."));
+            }
+
+            prepared.Add((row, name, emails.Distinct().ToList(), mobiles.Distinct().ToList()));
+        }
+
+        var values = prepared.SelectMany(p => p.Emails.Concat(p.Mobiles)).Distinct().ToList();
+        var existing = await db.Persons.AsNoTracking()
+            .Where(p => p.Status != PersonStatus.Merged && p.Status != PersonStatus.Erased)
+            .Where(p => p.Contacts.Any(c => values.Contains(c.Value)))
+            .Select(p => new { p.FirstName, p.LastName, Values = p.Contacts.Select(c => c.Value).ToList() })
+            .ToListAsync(cancellationToken);
+
+        var now = clock.GetUtcNow();
+        var added = new List<Person>();
+        var alreadyThere = 0;
+        foreach (var (row, name, emails, mobiles) in prepared)
+        {
+            var contacts = emails.Concat(mobiles).ToHashSet();
+            var isKnown = existing.Any(e =>
+                string.Equals(e.FirstName, row.FirstName.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(e.LastName, row.LastName.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                e.Values.Any(contacts.Contains));
+            if (isKnown)
+            {
+                alreadyThere++;
+                continue;
+            }
+
+            var person = Person.Create(scope, row.FirstName, row.LastName, status, PersonSource.Import, now, currentUser.UserId);
+            if (row.DateOfBirth is { } dob)
+            {
+                if (dob > DateOnly.FromDateTime(now.UtcDateTime))
+                    warnings.Add(new ImportRowNote(row.RowNumber, name, $"Left out the birthdate {dob:yyyy-MM-dd}: it's in the future."));
+                else
+                    person.SetDemographics(dob, null, now);
+            }
+
+            for (var i = 0; i < emails.Count; i++) person.AddContact(ContactType.Email, emails[i], isPrimary: i == 0, isVerified: false, now);
+            for (var i = 0; i < mobiles.Count; i++) person.AddContact(ContactType.Mobile, mobiles[i], isPrimary: i == 0, isVerified: false, now);
+
+            db.Persons.Add(person);
+            added.Add(person);
+            existing.Add(new { person.FirstName, person.LastName, Values = contacts.ToList() });
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        foreach (var person in added)
+        {
+            await duplicates.DetectAsync(person, cancellationToken);
+            await audit.RecordAsync(new AuditRecord("people.person.imported", PeopleAudit.EntityPerson, person.Id.ToString(), scope), cancellationToken);
+        }
+
+        return new ImportPeopleResult(added.Count, alreadyThere, skipped, warnings);
+    }
+
     public Task<Result<PersonDetailDto>> UpdateAsync(Guid id, UpdatePersonRequest request, CancellationToken cancellationToken) =>
         EditAsync(id, "people.person.updated", person =>
         {

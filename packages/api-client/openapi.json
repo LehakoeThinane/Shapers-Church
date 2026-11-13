@@ -737,6 +737,36 @@
         }
       }
     },
+    "/api/admin/people/import": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "ImportPeople",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportPeopleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportPeopleResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/people/{id}/contacts": {
       "post": {
         "tags": [
@@ -15177,6 +15207,109 @@
         "type": "string",
         "format": "binary"
       },
+      "ImportPeopleRequest": {
+        "required": [
+          "campusId",
+          "membershipStatusId",
+          "rows"
+        ],
+        "type": "object",
+        "properties": {
+          "campusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "membershipStatusId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportPersonRow"
+            }
+          }
+        }
+      },
+      "ImportPeopleResult": {
+        "required": [
+          "added",
+          "alreadyThere",
+          "skipped",
+          "warnings"
+        ],
+        "type": "object",
+        "properties": {
+          "added": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alreadyThere": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "skipped": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportRowNote"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportRowNote"
+            }
+          }
+        }
+      },
+      "ImportPersonRow": {
+        "required": [
+          "rowNumber",
+          "firstName",
+          "lastName",
+          "dateOfBirth",
+          "emails",
+          "mobiles"
+        ],
+        "type": "object",
+        "properties": {
+          "rowNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mobiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "ImportResult": {
         "required": [
           "postsImported",
@@ -15232,6 +15365,26 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "ImportRowNote": {
+        "required": [
+          "rowNumber",
+          "name",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "rowNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
           }
         }
       },
