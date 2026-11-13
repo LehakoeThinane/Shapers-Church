@@ -40,7 +40,7 @@ const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURICom
             }
           </ul>
           <div class="row" style="margin-top: 1.5rem">
-            {e.registrationRequired && <a class="button" href="#booking">Book your place</a>}
+            {e.registrationRequired && <a class="button" href="#booking" data-ends={e.endsAt} data-archive="remove">Book your place</a>}
             <button
               class="button ghost"
               type="button"
@@ -70,7 +70,7 @@ const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURICom
       </div>
     {
       e.registrationRequired && (
-        <section class="glass stack detail-side" id="booking" data-slug={e.slug} data-max={e.maxPerRegistration} data-questions={JSON.stringify(e.questions)}>
+        <section class="glass stack detail-side" id="booking" data-ends={e.endsAt} data-archive="remove" data-slug={e.slug} data-max={e.maxPerRegistration} data-questions={JSON.stringify(e.questions)}>
           <h2>Book your place</h2>
           <p class="muted" id="seats" aria-live="polite">Checking availability…</p>
 
@@ -133,6 +133,8 @@ const mapLink = e.location?.address ? `https://maps.google.com/?q=${encodeURICom
 </Base>
 
 <script>
+  // Runs first, so an ended event's booking form is gone before the code below looks for it.
+  import '../../scripts/archive';
   import { getJson, post } from '../../scripts/live';
   import type { Schemas } from '@shapers/api-client';
 

@@ -1005,6 +1005,12 @@ main > .page-header + article {
   font-size: 1.1rem;
 }
 
+/* An event that has ended stays as a highlight, quieter than what's still coming up. */
+.poster.past img {
+  filter: grayscale(0.6);
+  opacity: 0.75;
+}
+
 /* Events list: one row per event, the poster shown whole beside the details. */
 .event-list {
   list-style: none;

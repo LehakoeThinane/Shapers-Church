@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Cover from '../components/Cover.astro';
 import { get, type Schemas } from '../lib/api';
 import { church, growthTrack } from '../lib/church';
+import { hasEnded } from '../lib/archive';
 import { dayAndTime, longDate } from '../lib/format';
 
 const [sermons, events, posts] = await Promise.all([
@@ -13,6 +14,47 @@ const [sermons, events, posts] = await Promise.all([
 const [latest, ...recent] = sermons.items;
 // The baptism poster links to its event's booking form once the event is published.
 const baptism = events.find((e) => /baptism/i.test(e.title) && e.registrationRequired);
+
+// Event posters. Each one archives itself once it ends (lib/archive.ts): no "coming up", no booking button.
+const posters = [
+  {
+    image: '/images/water-baptism-2026.jpg',
+    alt: 'Shapers Church Water Baptism, 25 October 2026',
+    width: 940,
+    height: 788,
+    date: 'Sunday 25 October 2026',
+    endsAt: '2026-10-25T12:00:00+02:00',
+    title: 'Water Baptism',
+    upcoming: 'Ready to be baptised? Book your place.',
+    past: 'Celebrating everyone who was baptised.',
+    booking: baptism ? `/events/${baptism.slug}#booking` : '/connect',
+  },
+  {
+    image: '/images/conference-2026.jpg',
+    alt: '2026 Shapers Conference poster with Pastor Israel Phiri',
+    width: 960,
+    height: 1199,
+    date: '3–5 September 2026',
+    endsAt: '2026-09-05T23:59:00+02:00',
+    title: 'Shapers Conference 2026',
+    upcoming: 'The servant songs of Isaiah',
+    past: 'The servant songs of Isaiah',
+  },
+  {
+    image: '/images/epa-2026.jpg',
+    alt: 'Expository Preaching Academy 2026 poster',
+    width: 960,
+    height: 960,
+    date: '22 August 2026',
+    endsAt: '2026-08-22T23:59:00+02:00',
+    title: 'Expository Preaching Academy',
+    upcoming: 'Preaching the Psalms',
+    past: 'Preaching the Psalms',
+  },
+].map((p) => ({ ...p, ended: hasEnded(p.endsAt) }));
+// Upcoming first, then the most recent highlights.
+posters.sort((a, b) => (a.ended === b.ended ? (a.ended ? b.endsAt.localeCompare(a.endsAt) : a.endsAt.localeCompare(b.endsAt)) : a.ended ? 1 : -1));
+const anyUpcoming = posters.some((p) => !p.ended);
 ---
 
 <Base>
@@ -148,7 +190,7 @@ const baptism = events.find((e) => /baptism/i.test(e.title) && e.registrationReq
     <div class="wrap">
       {
         events.length > 0 && (
-          <div style="margin-bottom: 88px">
+          <div style="margin-bottom: 88px" data-hide-when-empty>
             <div class="section-head">
               <div>
                 <span class="eyebrow">Coming up</span>
@@ -160,7 +202,7 @@ const baptism = events.find((e) => /baptism/i.test(e.title) && e.registrationReq
             </div>
             <div class="grid three">
               {events.slice(0, 3).map((e) => (
-                <a class="card" href={`/events/${e.slug}`}>
+                <a class="card" href={`/events/${e.slug}`} data-ends={e.endsAt} data-archive="remove">
                   <Cover src={e.imageUrl} title={e.title} kicker="Event" />
                   <span class="label">{dayAndTime(e.startsAt)}</span>
                   <strong>{e.title}</strong>
@@ -173,39 +215,35 @@ const baptism = events.find((e) => /baptism/i.test(e.title) && e.registrationReq
       }
       <div class="section-head">
         <div>
-          <span class="eyebrow">Coming up &amp; recent highlights</span>
+          <span class="eyebrow" data-past-heading="Recent highlights">{anyUpcoming ? 'Coming up & recent highlights' : 'Recent highlights'}</span>
           <h2>Life at Shapers</h2>
         </div>
         <a class="arrow-link" href="/events">All events</a>
       </div>
       <div class="posters">
-        <figure class="poster">
-          <img src="/images/water-baptism-2026.jpg" alt="Shapers Church Water Baptism, 25 October 2026" loading="lazy" width="940" height="788" />
-          <figcaption>
-            <span class="label">Coming up · Sunday 25 October 2026</span>
-            <strong>Water Baptism</strong>
-            <span class="muted">Ready to be baptised? Book your place.</span>
-            <div class="poster-actions">
-              <a class="button dark" href={baptism ? `/events/${baptism.slug}#booking` : '/connect'}>Register</a>
-            </div>
-          </figcaption>
-        </figure>
-        <figure class="poster">
-          <img src="/images/conference-2026.jpg" alt="2026 Shapers Conference poster with Pastor Israel Phiri" loading="lazy" width="960" height="1199" />
-          <figcaption>
-            <span class="label">3–5 September 2026</span>
-            <strong>Shapers Conference 2026</strong>
-            <span class="muted">The servant songs of Isaiah</span>
-          </figcaption>
-        </figure>
-        <figure class="poster">
-          <img src="/images/epa-2026.jpg" alt="Expository Preaching Academy 2026 poster" loading="lazy" width="960" height="960" />
-          <figcaption>
-            <span class="label">22 August 2026</span>
-            <strong>Expository Preaching Academy</strong>
-            <span class="muted">Preaching the Psalms</span>
-          </figcaption>
-        </figure>
+        {
+          posters.map((p) => (
+            <figure class:list={['poster', { past: p.ended }]} data-ends={p.endsAt}>
+              <img src={p.image} alt={p.alt} loading="lazy" width={p.width} height={p.height} />
+              <figcaption>
+                <span class="label" data-past-label={`Took place · ${p.date}`}>
+                  {p.ended ? `Took place · ${p.date}` : `Coming up · ${p.date}`}
+                </span>
+                <strong>{p.title}</strong>
+                <span class="muted" data-past-label={p.past}>
+                  {p.ended ? p.past : p.upcoming}
+                </span>
+                {!p.ended && p.booking && (
+                  <div class="poster-actions" data-booking>
+                    <a class="button dark" href={p.booking}>
+                      Register
+                    </a>
+                  </div>
+                )}
+              </figcaption>
+            </figure>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -285,6 +323,7 @@ const baptism = events.find((e) => /baptism/i.test(e.title) && e.registrationReq
 </Base>
 
 <script>
+  import '../scripts/archive';
   import { liveNow } from '../scripts/live';
 
   // Whether a service is on right now changes by the minute, so the browser asks the API directly.
