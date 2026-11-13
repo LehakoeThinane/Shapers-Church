@@ -55,6 +55,11 @@ public sealed class PeopleModule : IModule
             .WithName("CreatePerson")
             .RequirePermission(PeoplePermissions.ProfilesEdit);
 
+        people.MapPost("/import", async (ImportPeopleRequest request, PeopleService service, CancellationToken ct) =>
+                (await service.ImportAsync(request, ct)).ToHttp())
+            .WithName("ImportPeople")
+            .RequirePermission(PeoplePermissions.ProfilesEdit);
+
         people.MapPut("/{id:guid}", async (Guid id, UpdatePersonRequest request, PeopleService service, CancellationToken ct) =>
                 (await service.UpdateAsync(id, request, ct)).ToHttp())
             .WithName("UpdatePerson")
