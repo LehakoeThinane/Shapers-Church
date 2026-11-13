@@ -63,6 +63,9 @@ export function PeoplePage() {
         subtitle={people.data ? `${people.data.total} ${people.data.total === 1 ? 'person' : 'people'}` : undefined}
         actions={can(access, Permissions.peopleEdit) && (
           <>
+            <Link className="btn" to="/people/email-consent">
+              Ask for email consent
+            </Link>
             <Link className="btn" to="/people/import">
               Import
             </Link>

@@ -15,6 +15,8 @@ public interface IPeopleDb
 
     DbSet<ConsentRecord> ConsentRecords { get; }
 
+    DbSet<ConsentRequest> ConsentRequests { get; }
+
     DbSet<DuplicateCandidate> DuplicateCandidates { get; }
 
     DbSet<PersonMerge> PersonMerges { get; }

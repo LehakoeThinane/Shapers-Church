@@ -308,6 +308,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/people/email-consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["EmailConsentSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/people/email-consent/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SendEmailConsentRequests"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/people/import": {
         parameters: {
             query?: never;
@@ -5176,7 +5208,7 @@ export interface components {
             recordedAt: string;
         };
         /** @enum {unknown} */
-        ConsentSource: "MobileApp" | "Website" | "AdminPortal" | "PaperForm" | "Import";
+        ConsentSource: "MobileApp" | "Website" | "AdminPortal" | "PaperForm" | "Import" | "EmailRequest";
         ContactDto: {
             /** Format: uuid */
             id: string;
@@ -5422,6 +5454,24 @@ export interface components {
             accountNumber: null | string;
             branchCode: null | string;
             reference: null | string;
+        };
+        EmailConsentSendResult: {
+            /** Format: int32 */
+            sent: number;
+            /** Format: int32 */
+            failed: number;
+        };
+        EmailConsentSummary: {
+            /** Format: int32 */
+            canBeAsked: number;
+            /** Format: int32 */
+            alreadyAgreed: number;
+            /** Format: int32 */
+            saidNo: number;
+            /** Format: int32 */
+            alreadyAsked: number;
+            /** Format: int32 */
+            noEmail: number;
         };
         EnableTwoFactorRequest: {
             code: string;
@@ -8050,6 +8100,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonDetailDto"];
+                };
+            };
+        };
+    };
+    EmailConsentSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailConsentSummary"];
+                };
+            };
+        };
+    };
+    SendEmailConsentRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailConsentSendResult"];
                 };
             };
         };
