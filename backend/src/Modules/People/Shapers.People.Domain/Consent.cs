@@ -16,6 +16,39 @@ public enum ConsentSource
     AdminPortal,
     PaperForm,
     Import,
+
+    /// <summary>The person answered a one-time consent request sent to them by email.</summary>
+    EmailRequest,
+}
+
+/// <summary>
+/// A one-time request for consent to a purpose. POPIA s69(2) allows asking someone once, and not at all after they've
+/// said no, so this is kept to make sure nobody is asked twice.
+/// </summary>
+public sealed class ConsentRequest
+{
+    private ConsentRequest()
+    {
+    }
+
+    public Guid Id { get; private set; }
+
+    public Guid PersonId { get; private set; }
+
+    public string Purpose { get; private set; } = null!;
+
+    public DateTimeOffset SentAt { get; private set; }
+
+    public Guid? SentByUserId { get; private set; }
+
+    public static ConsentRequest Sent(Guid personId, string purpose, DateTimeOffset now, Guid? sentBy) => new()
+    {
+        Id = Guid.CreateVersion7(),
+        PersonId = personId,
+        Purpose = purpose,
+        SentAt = now,
+        SentByUserId = sentBy,
+    };
 }
 
 /// <summary>Well-known purposes. Stored as strings so new purposes don't need a migration.</summary>

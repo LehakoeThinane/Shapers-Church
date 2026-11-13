@@ -737,6 +737,46 @@
         }
       }
     },
+    "/api/admin/people/email-consent": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "EmailConsentSummary",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailConsentSummary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/people/email-consent/send": {
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "SendEmailConsentRequests",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailConsentSendResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/people/import": {
       "post": {
         "tags": [
@@ -13353,7 +13393,8 @@
           "Website",
           "AdminPortal",
           "PaperForm",
-          "Import"
+          "Import",
+          "EmailRequest"
         ]
       },
       "ContactDto": {
@@ -14318,6 +14359,55 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "EmailConsentSendResult": {
+        "required": [
+          "sent",
+          "failed"
+        ],
+        "type": "object",
+        "properties": {
+          "sent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "failed": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "EmailConsentSummary": {
+        "required": [
+          "canBeAsked",
+          "alreadyAgreed",
+          "saidNo",
+          "alreadyAsked",
+          "noEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "canBeAsked": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alreadyAgreed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "saidNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "alreadyAsked": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "noEmail": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
