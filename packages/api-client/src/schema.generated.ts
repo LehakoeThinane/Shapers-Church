@@ -308,6 +308,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/people/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImportPeople"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/people/{id}/contacts": {
         parameters: {
             query?: never;
@@ -5641,6 +5657,31 @@ export interface components {
         };
         /** Format: binary */
         IFormFile: string;
+        ImportPeopleRequest: {
+            /** Format: uuid */
+            campusId: null | string;
+            /** Format: uuid */
+            membershipStatusId: null | string;
+            rows: components["schemas"]["ImportPersonRow"][];
+        };
+        ImportPeopleResult: {
+            /** Format: int32 */
+            added: number;
+            /** Format: int32 */
+            alreadyThere: number;
+            skipped: components["schemas"]["ImportRowNote"][];
+            warnings: components["schemas"]["ImportRowNote"][];
+        };
+        ImportPersonRow: {
+            /** Format: int32 */
+            rowNumber: number;
+            firstName: string;
+            lastName: string;
+            /** Format: date */
+            dateOfBirth: null | string;
+            emails: string[];
+            mobiles: string[];
+        };
         ImportResult: {
             /** Format: int32 */
             postsImported: number;
@@ -5658,6 +5699,12 @@ export interface components {
             /** Format: int32 */
             alreadyImported: number;
             createdTitles: string[];
+        };
+        ImportRowNote: {
+            /** Format: int32 */
+            rowNumber: number;
+            name: string;
+            message: string;
         };
         InboxDto: {
             items: components["schemas"]["NotificationDto"][];
@@ -8003,6 +8050,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PersonDetailDto"];
+                };
+            };
+        };
+    };
+    ImportPeople: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportPeopleRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportPeopleResult"];
                 };
             };
         };

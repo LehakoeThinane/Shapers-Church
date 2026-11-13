@@ -60,6 +60,22 @@ public sealed record CreatePersonRequest(
     string? Email,
     string? Mobile);
 
+/// <summary>One row of a people import, already read from the file. A row may list several emails or mobiles.</summary>
+public sealed record ImportPersonRow(
+    int RowNumber,
+    string FirstName,
+    string LastName,
+    DateOnly? DateOfBirth,
+    IReadOnlyList<string> Emails,
+    IReadOnlyList<string> Mobiles);
+
+public sealed record ImportPeopleRequest(Guid? CampusId, Guid? MembershipStatusId, IReadOnlyList<ImportPersonRow> Rows);
+
+public sealed record ImportRowNote(int RowNumber, string Name, string Message);
+
+/// <summary>What an import did: who was added, who was already there, and anything it couldn't bring across.</summary>
+public sealed record ImportPeopleResult(int Added, int AlreadyThere, IReadOnlyList<ImportRowNote> Skipped, IReadOnlyList<ImportRowNote> Warnings);
+
 public sealed record UpdatePersonRequest(string FirstName, string LastName, string? PreferredName, DateOnly? DateOfBirth, Gender? Gender);
 
 public sealed record AddContactRequest(ContactType Type, string Value, bool IsPrimary);
